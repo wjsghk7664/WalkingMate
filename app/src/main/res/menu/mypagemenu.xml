@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <group
+        android:id="@+id/group1"
+        android:checkableBehavior="none">
+        <item
+            android:id="@+id/challenge"
+            android:icon="@drawable/white_arrow"
+            android:title="도전 과제"
+            />
+        <item
+            android:id="@+id/managefriends"
+            android:icon="@drawable/white_arrow"
+            android:title="친구 관리"
+            />
+    </group>
+
+    <group
+        android:id="@+id/group2"
+        android:checkableBehavior="none">
+        <item
+            android:id="@+id/helpinfo"
+            android:icon="@drawable/white_arrow"
+            android:title="도움말"
+            />
+        <item
+            android:id="@+id/appinfo"
+            android:icon="@drawable/white_arrow"
+            android:title="어플 정보"
+            />
+    </group>
+
+</menu>
