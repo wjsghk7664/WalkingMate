@@ -145,7 +145,6 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
 
         //비 동기적으로 네이버 지도 정보 가져옴
         MapFragment mapFragment = (MapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
-        mapFragment.getMapAsync(this);
 
         LocMan = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
         if (!LocMan.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
@@ -161,6 +160,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
                 if (location != null) {
                     startcoord[0] = location.getLatitude();
                     startcoord[1] = location.getLongitude();
+                    mapFragment.getMapAsync(MapActivity.this);
                 }
             }
         });
