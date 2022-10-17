@@ -46,7 +46,7 @@ public class MainActivity extends AppCompatActivity {
         findViewById(R.id.gotest).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                startActivity(new Intent(MainActivity.this, background_test_Activity.class));
+                startActivity(new Intent(MainActivity.this, TestActivity.class));
             }
         });
 
