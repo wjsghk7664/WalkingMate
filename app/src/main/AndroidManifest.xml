@@ -150,6 +150,32 @@
                 android:name="android.app.lib_name"
                 android:value="" />
         </activity>
+        <activity
+            android:name=".NaverLoginActivity"
+            android:exported="false">
+            <meta-data
+                android:name="android.app.lib_name"
+                android:value="" />
+        </activity>
+        <activity
+            android:name="com.nhn.android.naverlogin.ui.OAuthCustomTabActivity"
+            android:configChanges="orientation|screenSize"
+            android:exported="true"
+            android:launchMode="singleTask"
+            android:screenOrientation="behind"
+            android:theme="@android:style/Theme.Translucent.NoTitleBar">
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <!-- Intent URL 에서 로그인 액티비티를 실행하기 위해 설정 -->
+                <data
+                    android:host="authorize"
+                    android:path="/"
+                    android:scheme="naver3rdpartylogin" />
+            </intent-filter>
+        </activity>
     </application>
 
 </manifest>

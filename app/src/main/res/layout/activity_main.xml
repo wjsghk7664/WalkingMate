@@ -22,10 +22,12 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="달력으로가기"
-        app:layout_constraintBottom_toTopOf="@+id/tmplogin"
+        app:layout_constraintBottom_toTopOf="@+id/goLoginbtn"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.49"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.757" />
 
     <Button
         android:id="@+id/testbtn"
@@ -81,6 +83,18 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
+
+    <Button
+        android:id="@+id/goLoginbtn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="로그인"
+        app:layout_constraintBottom_toTopOf="@+id/tmplogin"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.51"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.785" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>
