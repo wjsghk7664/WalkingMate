@@ -64,6 +64,13 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+        findViewById(R.id.uitest).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+            }
+        });
+
 
 
 

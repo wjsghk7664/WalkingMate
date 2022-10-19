@@ -106,5 +106,15 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
+    <Button
+        android:id="@+id/uitest"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="UI test"
+        app:layout_constraintBottom_toTopOf="@+id/chatbtn"
+        app:layout_constraintEnd_toStartOf="@+id/gotest"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>
