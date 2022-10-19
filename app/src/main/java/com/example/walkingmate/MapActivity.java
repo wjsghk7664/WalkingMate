@@ -78,6 +78,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
     boolean[] IsTracking = new boolean[1]; //경로추적기능 실행중 여부 확인
     float displacement; //이동거리
     int step;//발걸음 수
+    long runtime;//걸은 시간(실시간 갱신)
 
     LatLng[] tmpcoord;
 
@@ -92,7 +93,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
 
     Button stBtn, endBtn, trackBtn, markBtn, setmarkBtn, feedBtn;
     ImageButton menuBtn;
-    TextView disTxt, walkTxt, timeTxt;
+    TextView disTxt, walkTxt, timeTxt,runtimeTxt;
 
     LinearLayout MapLayout;
     PathOverlay pathOverlay;
@@ -138,6 +139,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
 
         timeTxt = findViewById(R.id.timeTxt);
         walkTxt = findViewById(R.id.walkTxt);
+        runtimeTxt=findViewById(R.id.RuntimeTxt);
 
         IsTracking[0] = false;
 
@@ -200,6 +202,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
                     walkTxt.setText("발걸음 수: 0");
 
                     startStepCounterService();
+                    startTimeCheckingService();
 
                     timecheck[0] = getTime();
                     timeTxt.setText("시작시간: " + timecheck[0] + "\n종료시간:");
@@ -234,6 +237,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
                     IsTracking[0] = false;
 
                     stopStepCounterService();
+                    stopTimeCheckingService();
 
                     Toast.makeText(getApplicationContext(),"산책 기록이 종료되었습니다.",Toast.LENGTH_SHORT).show();
                 }
@@ -543,6 +547,8 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         stopLocationService();
     }
 
+
+
     //이 아래는 서비스 실행을 위한 코드
 
     private boolean isLocationServiceRunning() {
@@ -697,10 +703,39 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
             if(resultCode==10){
                 step=resultData.getInt("step");
                 walkTxt.setText("발걸음 수: "+step);
-                Log.d("만보기","종료 후 작동중 체크용");
+                Log.d("만보기","종료 후 작동중 체크용-walk");
+            }
+        }
+    };
+
+
+    public void startTimeCheckingService(){
+        Intent intent = new Intent(getApplicationContext(), TimecheckingService.class);
+        intent.setAction(Constants.ACTION_START_TIMECEHCKING_SERVICE);
+        intent.putExtra("TIMECHECKINGSERVICE",resultReceiverTime);
+        startService(intent);
+    }
+
+    public void stopTimeCheckingService(){
+        Log.d("걸은시간","정지액션 전송");
+        Intent intent = new Intent(getApplicationContext(), TimecheckingService.class);
+        intent.setAction(Constants.ACTION_STOP_TIMECHECKING_SERVICE);
+        startService(intent);
+    }
 
 
 
+    Handler handler3=new Handler();
+    ResultReceiver resultReceiverTime= new ResultReceiver(handler3){
+        @Override
+        protected void onReceiveResult(int resultCode, Bundle resultData) {
+            super.onReceiveResult(resultCode, resultData);
+            if(resultCode==15){
+                Log.d("걸은시간","종료 후 작동중 체크용-time");
+                runtime=resultData.getLong("time");
+                String m=String.valueOf(runtime/60000);
+                String s=String.format("%.1f",(float)(((runtime/100)%600))/10.0);
+                runtimeTxt.setText(m+"분 "+s+"초");
             }
         }
     };

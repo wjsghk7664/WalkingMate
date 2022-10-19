@@ -87,5 +87,4 @@ public class StepCounterService extends Service implements SensorEventListener {
         return super.onStartCommand(intent, flags, startId);
     }
 
-
 }
