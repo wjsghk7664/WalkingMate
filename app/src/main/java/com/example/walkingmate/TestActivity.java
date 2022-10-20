@@ -226,7 +226,7 @@ public class TestActivity extends AppCompatActivity implements OnMapReadyCallbac
             View view=layoutInflater.inflate(R.layout.dest_list_layout, null);
             View emptyview=layoutInflater.inflate(R.layout.list_layout_empty,null);
             if(nameList.size()==0){
-                return emptyview;
+                return null;
             }
             else{
                 TextView destorder=view.findViewById(R.id.destOrder);

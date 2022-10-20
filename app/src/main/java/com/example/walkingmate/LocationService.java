@@ -86,8 +86,8 @@ public class LocationService extends Service {
         builder.setAutoCancel(false);
         builder.setPriority(NotificationCompat.PRIORITY_MAX);
         builder.setOnlyAlertOnce(true);
-        builder.addAction(makeButton("Mark",R.drawable.add_marker_icon));
-        builder.addAction(makeButton("Finish",R.drawable.stop_icon));
+        builder.addAction(makeButton("Mark",R.drawable.add_marker_notification));
+        builder.addAction(makeButton("Finish",R.drawable.stop_icon_notification));
         builder.setStyle(new androidx.media.app.NotificationCompat.MediaStyle().setShowActionsInCompactView(0,1));
 
 
