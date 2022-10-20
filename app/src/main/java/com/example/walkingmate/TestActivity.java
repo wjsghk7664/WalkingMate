@@ -213,15 +213,6 @@ public class TestActivity extends AppCompatActivity implements OnMapReadyCallbac
         uiSettings.setLocationButtonEnabled(true);
         naverMap.setLocationTrackingMode(LocationTrackingMode.None);
 
-        /*naverMap.addOnCameraChangeListener(new NaverMap.OnCameraChangeListener() {
-            @Override
-            public void onCameraChange(int i, boolean b) {
-                CameraPosition tmp=naverMap.getCameraPosition();
-                yval=tmp.target.latitude;
-                xval=tmp.target.longitude;
-                coord.setText(yval+","+xval);
-            }
-        });*/
 
         naverMap.setOnMapClickListener(new NaverMap.OnMapClickListener() {
             @Override
