@@ -64,6 +64,7 @@ public class TestActivity extends AppCompatActivity implements OnMapReadyCallbac
     private FusedLocationSource locationSource;
     private FusedLocationProviderClient fusedLocationProviderClient;
     private NaverMap naverMap;
+    PathOverlay pathOverlay;
     private EditText mEtAddress;
     Button sync,add,reqroute;
     TextView coord, destlist;
@@ -90,6 +91,7 @@ public class TestActivity extends AppCompatActivity implements OnMapReadyCallbac
 
         pathOn=false;
         searchmove=true;
+
 
         destlist=findViewById(R.id.destList);
 
@@ -164,10 +166,8 @@ public class TestActivity extends AppCompatActivity implements OnMapReadyCallbac
         reqroute.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if(pathOn){
-                    mapFragmentFeed.getMapAsync(TestActivity.this);
-                    pathOn=false;
-                }
+                mapFragmentFeed.getMapAsync(TestActivity.this);
+                pathOn=false;
 
             }
         });
@@ -184,11 +184,11 @@ public class TestActivity extends AppCompatActivity implements OnMapReadyCallbac
 
         marker=new Marker();
 
-        PathOverlay pathOverlay=new PathOverlay();
-        pathOverlay.setColor(Color.BLUE);
-        pathOverlay.setOutlineColor(Color.BLUE);
-        pathOverlay.setWidth(5);
         if(pathOn){
+            pathOverlay=new PathOverlay();
+            pathOverlay.setColor(Color.BLUE);
+            pathOverlay.setOutlineColor(Color.BLUE);
+            pathOverlay.setWidth(5);
             pathOverlay.setCoords(coordlist);
             pathOverlay.setMap(naverMap);
             LatLng[] range=getMiddle(coordlist);
@@ -196,7 +196,10 @@ public class TestActivity extends AppCompatActivity implements OnMapReadyCallbac
             naverMap.moveCamera(cameraUpdate);
         }
         else{
-            pathOverlay.setMap(null);
+            if(pathOverlay!=null){
+                pathOverlay.setMap(null);
+            }
+
         }
 
         if(searchmove){
