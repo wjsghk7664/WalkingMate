@@ -68,7 +68,7 @@ public class FeedWrite_Activity extends AppCompatActivity implements OnMapReadyC
         }
 
         LatLng[] range=getMiddle(feedData.coordList);
-        CameraUpdate cameraUpdate =CameraUpdate.fitBounds(new LatLngBounds(range[0],range[1]),300,700,300,300);
+        CameraUpdate cameraUpdate =CameraUpdate.fitBounds(new LatLngBounds(range[0],range[1]),100,200,100,100);
         naverMap.moveCamera(cameraUpdate);
 
 

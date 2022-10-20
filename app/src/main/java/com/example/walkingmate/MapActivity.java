@@ -548,6 +548,17 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
     }
 
 
+    //실행중 뒤로가기로 종료 방지
+    @Override
+    public void onBackPressed() {
+        if(IsTracking[0]){
+            startActivity(new Intent(MapActivity.this, MainActivity.class));
+        }
+        else{
+            finish();
+        }
+
+    }
 
     //이 아래는 서비스 실행을 위한 코드
 

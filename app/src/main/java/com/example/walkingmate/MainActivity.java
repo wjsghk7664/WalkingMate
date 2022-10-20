@@ -157,6 +157,13 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
+    //뒤로가기로 나갔을시 홈버튼으로 나간것처럼 만들음. 종료로 인한 오류 방지
+    @Override
+    public void onBackPressed() {
+        Intent intent=new Intent(Intent.ACTION_MAIN);
+        intent.addCategory(Intent.CATEGORY_HOME);
+        startActivity(intent);
+    }
 
     @Override
     protected void onResume() {
