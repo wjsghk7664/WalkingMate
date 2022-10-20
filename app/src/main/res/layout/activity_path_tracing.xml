@@ -57,7 +57,7 @@
                 android:id="@+id/걸음"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="10dp"
+                android:layout_marginTop="15dp"
                 android:text="걸음 수"
                 android:textSize="15dp"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -69,7 +69,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="24dp"
-                android:layout_marginTop="10dp"
+                android:layout_marginTop="5dp"
                 android:text="0000"
                 android:textColor="@color/black"
                 android:textSize="25dp"
@@ -84,7 +84,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="3dp"
-                android:layout_marginTop="7dp"
+                android:layout_marginTop="3dp"
                 android:text="보"
                 android:textColor="@color/black"
                 android:textSize="20dp"
@@ -107,7 +107,7 @@
                 android:id="@+id/거리"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="10dp"
+                android:layout_marginTop="15dp"
                 android:text="이동 거리"
                 android:textSize="15dp"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -119,7 +119,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="24dp"
-                android:layout_marginTop="10dp"
+                android:layout_marginTop="5dp"
                 android:text="00.00"
                 android:textColor="@color/black"
                 android:textSize="25dp"
@@ -134,7 +134,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="3dp"
-                android:layout_marginTop="7dp"
+                android:layout_marginTop="3dp"
                 android:text="km"
                 android:textColor="@color/black"
                 android:textSize="20dp"
@@ -156,7 +156,7 @@
                 android:id="@+id/시간"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="10dp"
+                android:layout_marginTop="15dp"
                 android:text="이동 시간"
                 android:textSize="15dp"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -167,7 +167,7 @@
                 android:id="@+id/몇분"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="10dp"
+                android:layout_marginTop="5dp"
                 android:text="00:00:00"
                 android:textColor="@color/black"
                 android:textSize="25dp"
@@ -185,7 +185,7 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="8"
+        android:layout_weight="9"
         android:orientation="vertical"
         android:background="@color/gray">
 
@@ -199,13 +199,48 @@
             android:text="지도 API가 들어갈 위치입니다." />
     </LinearLayout>
 
-    <LinearLayout
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:orientation="horizontal"
-        android:layout_weight="4">
-    </LinearLayout>
+        android:layout_weight="3">
 
+
+        <ImageButton
+            android:id="@+id/markerPlus"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@color/transparent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:srcCompat="@drawable/add_marker_icon"
+            tools:layout_editor_absoluteX="165dp" />
+
+        <ImageButton
+            android:id="@+id/pauseBtn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@color/transparent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/markerPlus"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:srcCompat="@drawable/pause_icon"
+            android:layout_marginLeft="115dp"
+            android:layout_marginTop="25dp"/>
+
+        <ImageButton
+            android:id="@+id/stopBtn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@color/transparent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/markerPlus"
+            app:layout_constraintTop_toTopOf="parent"
+            app:srcCompat="@drawable/stop_icon"
+            android:layout_marginRight="115dp"
+            android:layout_marginTop="25dp"/>
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
 
 </LinearLayout>
