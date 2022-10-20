@@ -8,6 +8,7 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.FragmentTransaction;
 
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.PointF;
@@ -16,12 +17,16 @@ import android.location.Location;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.webkit.JavascriptInterface;
 import android.webkit.WebChromeClient;
 import android.webkit.WebView;
+import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -39,6 +44,7 @@ import com.naver.maps.map.NaverMap;
 import com.naver.maps.map.OnMapReadyCallback;
 import com.naver.maps.map.UiSettings;
 import com.naver.maps.map.overlay.Marker;
+import com.naver.maps.map.overlay.OverlayImage;
 import com.naver.maps.map.overlay.PathOverlay;
 import com.naver.maps.map.util.FusedLocationSource;
 
@@ -59,6 +65,8 @@ import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
 
+//여행게시물 등록 activity
+
 public class TestActivity extends AppCompatActivity implements OnMapReadyCallback{
 
     private FusedLocationSource locationSource;
@@ -67,19 +75,23 @@ public class TestActivity extends AppCompatActivity implements OnMapReadyCallbac
     PathOverlay pathOverlay;
     private EditText mEtAddress;
     Button sync,add,reqroute;
-    TextView coord, destlist;
+    TextView coord;
     String location, x, y;//x-lon, y-lat(반대임)
     double xval,yval;
 
     boolean pathOn,searchmove;
 
     Marker marker;
-    ArrayList<LatLng> locList=new ArrayList<>();
+    ArrayList<LatLng> locList=new ArrayList<>();//선택지 좌표모음
     LatLng cur=null;
     String curName;
-    ArrayList<String> nameList=new ArrayList<>();
+    ArrayList<String> nameList;//선택지 주소명 모음
 
-    ArrayList<LatLng> coordlist;
+    ArrayList<LatLng> coordlist;//이동경로 좌표모음
+
+    ListView destList;
+
+    DestAdapter destAdapter;
 
     private static final int ACCESS_LOCATION_PERMISSION_REQUEST_CODE = 100;
 
@@ -89,11 +101,12 @@ public class TestActivity extends AppCompatActivity implements OnMapReadyCallbac
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_test);
 
-        pathOn=false;
+
         searchmove=true;
 
+        nameList=new ArrayList<>();
 
-        destlist=findViewById(R.id.destList);
+        destList=findViewById(R.id.destList);
 
         coord=findViewById(R.id.coord);
 
@@ -135,12 +148,16 @@ public class TestActivity extends AppCompatActivity implements OnMapReadyCallbac
         sync.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                pathOn=false;
+
                 searchmove=true;
                 mapFragmentFeed.getMapAsync(TestActivity.this);
                 searchmove=false;
             }
         });
+
+
+        destAdapter=new DestAdapter(getApplicationContext());
+        destList.setAdapter(destAdapter);
 
         add.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -155,7 +172,7 @@ public class TestActivity extends AppCompatActivity implements OnMapReadyCallbac
                             requestName(cur);
                             if(locList.size()>1){
                                 RequestTmap();
-                                pathOn=true;
+
                             }
                         }
                     }).start();
@@ -167,11 +184,96 @@ public class TestActivity extends AppCompatActivity implements OnMapReadyCallbac
             @Override
             public void onClick(View view) {
                 mapFragmentFeed.getMapAsync(TestActivity.this);
-                pathOn=false;
+                Log.d("주소 검색", locList.toString());
+                Log.d("주소 검색-경로", coordlist.toString());
 
+                Log.d("주소 검색-경로선",pathOverlay.getCoords().toString());
             }
         });
 
+
+    }
+
+    public class DestAdapter extends BaseAdapter{
+
+        Context context;
+        LayoutInflater layoutInflater;
+
+
+        public DestAdapter(Context context){
+            this.context = context;
+            this.layoutInflater = LayoutInflater.from(context);
+
+        }
+
+        @Override
+        public int getCount() {
+            return nameList.size();
+        }
+
+        @Override
+        public Object getItem(int i) {
+            return nameList.get(i);
+        }
+
+        @Override
+        public long getItemId(int i) {
+            return i;
+        }
+
+        @Override
+        public View getView(int i, View convertview, ViewGroup viewGroup) {
+            View view=layoutInflater.inflate(R.layout.dest_list_layout, null);
+            View emptyview=layoutInflater.inflate(R.layout.list_layout_empty,null);
+            if(nameList.size()==0){
+                return emptyview;
+            }
+            else{
+                TextView destorder=view.findViewById(R.id.destOrder);
+                TextView destItem=view.findViewById(R.id.destlist);
+                Button delbtn=view.findViewById(R.id.destdelbtn);
+
+                String destorderString="";
+                switch (i){
+                    case 0:
+                        destorderString+="출발지";
+                        destorder.setTextColor(Color.RED);
+                        break;
+                    case 1:
+                        destorderString+="1st"; break;
+                    case 2:
+                        destorderString+="2nd"; break;
+                    case 3:
+                        destorderString+="3rd"; break;
+                    default:
+                        destorderString+=i+"th"; break;
+                }
+                destorder.setText(destorderString);
+                destItem.setText(nameList.get(i));
+
+                delbtn.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        nameList.remove(i);
+                        locList.remove(i);
+                        notifyDataSetChanged();
+                        if(nameList.size()<2){
+                            coordlist.clear();
+                        }
+                        else{
+                            new Thread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    RequestTmap();
+                                }
+                            }).start();
+                        }
+                    }
+                });
+
+                return view;
+            }
+        }
     }
 
     @Override
@@ -184,22 +286,21 @@ public class TestActivity extends AppCompatActivity implements OnMapReadyCallbac
 
         marker=new Marker();
 
-        if(pathOn){
+        if(pathOverlay!=null){
+            pathOverlay.setMap(null);
+        }
+        if(locList.size()>1&&coordlist!=null){
             pathOverlay=new PathOverlay();
             pathOverlay.setColor(Color.BLUE);
             pathOverlay.setOutlineColor(Color.BLUE);
-            pathOverlay.setWidth(5);
+            pathOverlay.setWidth(30);
+            pathOverlay.setPatternImage(OverlayImage.fromResource(R.drawable.patharrow_20dp));
+            pathOverlay.setPatternInterval(20);
             pathOverlay.setCoords(coordlist);
             pathOverlay.setMap(naverMap);
             LatLng[] range=getMiddle(coordlist);
             CameraUpdate cameraUpdate =CameraUpdate.fitBounds(new LatLngBounds(range[0],range[1]),0);
             naverMap.moveCamera(cameraUpdate);
-        }
-        else{
-            if(pathOverlay!=null){
-                pathOverlay.setMap(null);
-            }
-
         }
 
         if(searchmove){
@@ -382,19 +483,13 @@ public class TestActivity extends AppCompatActivity implements OnMapReadyCallbac
                 nameList.add(curName);
                 locList.add(cur);
 
-
                 new Thread(new Runnable() {
                     @Override
                     public void run() {
                         runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
-                                String tmp="";
-                                for(int i=0; i<nameList.size(); ++i){
-                                    tmp+=nameList.get(i)+"\n";
-                                }
-                                tmp=tmp.substring(0,tmp.length()-1);
-                                destlist.setText(tmp);
+                                destAdapter.notifyDataSetChanged();
                             }
                         });
                     }

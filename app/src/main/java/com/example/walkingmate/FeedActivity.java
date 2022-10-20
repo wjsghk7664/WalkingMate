@@ -51,8 +51,6 @@ public class FeedActivity extends Activity {
 
         getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
 
-
-
         feedListView=findViewById(R.id.feedListView);
 
         isFeedexist=false;
