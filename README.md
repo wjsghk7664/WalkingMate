@@ -20,7 +20,7 @@
 -FeedCalendarActivity: 캘린더 화면. 날짜별 미작성 피드와 작성 피드, 그리고 전체 미작성 피드와 작성 피드를 볼 수 있음.
 -FeedActivity: 미작성 피드 확인을 할 시 실행되는 화면. 설정별로 날짜별, 전체피드목록 확인가능
 
-4.MyPage: 다른 화면들 상에 NavigationView로 띄우는 사이드바.
+4. MyPage: 다른 화면들 상에 NavigationView로 띄우는 사이드바.
 -challenge_activity: 도전과제 화면
 -HelpInfo_Activity: 도움말 화면
 -AppInfo_Activity: 어플 정보 화면
