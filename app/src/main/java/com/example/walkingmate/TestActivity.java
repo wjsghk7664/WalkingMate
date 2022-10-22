@@ -43,10 +43,12 @@ import com.naver.maps.map.MapFragment;
 import com.naver.maps.map.NaverMap;
 import com.naver.maps.map.OnMapReadyCallback;
 import com.naver.maps.map.UiSettings;
+import com.naver.maps.map.overlay.Align;
 import com.naver.maps.map.overlay.Marker;
 import com.naver.maps.map.overlay.OverlayImage;
 import com.naver.maps.map.overlay.PathOverlay;
 import com.naver.maps.map.util.FusedLocationSource;
+import com.naver.maps.map.util.MarkerIcons;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -79,9 +81,10 @@ public class TestActivity extends AppCompatActivity implements OnMapReadyCallbac
     String location, x, y;//x-lon, y-lat(반대임)
     double xval,yval;
 
-    boolean pathOn,searchmove;
+    boolean searchmove;
 
     Marker marker;
+    ArrayList<Marker> markers;
     ArrayList<LatLng> locList=new ArrayList<>();//선택지 좌표모음
     LatLng cur=null;
     String curName;
@@ -89,11 +92,16 @@ public class TestActivity extends AppCompatActivity implements OnMapReadyCallbac
 
     ArrayList<LatLng> coordlist;//이동경로 좌표모음
 
+
     ListView destList;
 
     DestAdapter destAdapter;
 
+    boolean setmarkers;
+
     private static final int ACCESS_LOCATION_PERMISSION_REQUEST_CODE = 100;
+
+    int selecteditem=7;//index 7은 존재할 수 없으므로 미클릭된 상태 값으로 사용
 
 
     @Override
@@ -101,6 +109,7 @@ public class TestActivity extends AppCompatActivity implements OnMapReadyCallbac
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_test);
 
+        setmarkers=false;
 
         searchmove=true;
 
@@ -108,7 +117,8 @@ public class TestActivity extends AppCompatActivity implements OnMapReadyCallbac
 
         destList=findViewById(R.id.destList);
 
-        coord=findViewById(R.id.coord);
+        markers=new ArrayList<>();
+
 
         sync=findViewById(R.id.sync);
 
@@ -126,8 +136,10 @@ public class TestActivity extends AppCompatActivity implements OnMapReadyCallbac
                 if (location != null) {
                     yval = location.getLatitude();
                     xval = location.getLongitude();
+                    marker=new Marker();
+                    marker.setPosition(new LatLng(yval,xval));
+                    cur=new LatLng(yval,xval);
                     mapFragmentFeed.getMapAsync(TestActivity.this);
-                    coord.setText(yval+","+xval);
                 }
             }
         });
@@ -149,6 +161,7 @@ public class TestActivity extends AppCompatActivity implements OnMapReadyCallbac
             @Override
             public void onClick(View view) {
 
+                marker.setPosition(new LatLng(yval,xval));
                 searchmove=true;
                 mapFragmentFeed.getMapAsync(TestActivity.this);
                 searchmove=false;
@@ -166,16 +179,22 @@ public class TestActivity extends AppCompatActivity implements OnMapReadyCallbac
                     Toast.makeText(getApplicationContext(),"더 이상 추가 할 수 없습니다.",Toast.LENGTH_SHORT).show();
                 }
                 else if(cur!=null){
-                    new Thread(new Runnable() {
-                        @Override
-                        public void run() {
-                            requestName(cur);
-                            if(locList.size()>1){
-                                RequestTmap();
+                    if(locList.contains(cur)){
+                        Toast.makeText(getApplicationContext(),"이미 등록한 위치입니다.",Toast.LENGTH_SHORT).show();
+                    }
+                    else{
+                        new Thread(new Runnable() {
+                            @Override
+                            public void run() {
+                                requestName(cur);
+                                if(locList.size()>1){
+                                    RequestTmap();
 
+                                }
                             }
-                        }
-                    }).start();
+                        }).start();
+                    }
+
                 }
             }
         });
@@ -183,11 +202,12 @@ public class TestActivity extends AppCompatActivity implements OnMapReadyCallbac
         reqroute.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                mapFragmentFeed.getMapAsync(TestActivity.this);
-                Log.d("주소 검색", locList.toString());
-                Log.d("주소 검색-경로", coordlist.toString());
+                setmarkers=true;
+                for(int i=0; i<markers.size(); ++i){
+                    markers.get(i).setMap(null);
+                }
 
-                Log.d("주소 검색-경로선",pathOverlay.getCoords().toString());
+                mapFragmentFeed.getMapAsync(TestActivity.this);
             }
         });
 
@@ -271,6 +291,47 @@ public class TestActivity extends AppCompatActivity implements OnMapReadyCallbac
                     }
                 });
 
+                //순서바꾸기. 추가, 삭제로 리스트 변경시 선택아이템은 초기화
+                destorder.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        if(locList.size()<2){
+                            return;
+                        }
+                        else if(selecteditem==7){
+                            selecteditem=i;
+                            destorder.setBackgroundColor(Color.GRAY);
+                        }
+                        else if(selecteditem==i){
+                            selecteditem=7;
+                            destorder.setBackgroundColor(Color.TRANSPARENT);
+                        }
+                        else{
+                            String tmpname=nameList.get(selecteditem);
+                            String destname=nameList.get(i);
+                            LatLng tmploc=locList.get(selecteditem);
+                            LatLng destloc=locList.get(i);
+
+                            locList.remove(tmploc);
+                            nameList.remove(tmpname);
+
+                            int tmpidx=locList.indexOf(destloc);
+                            locList.add(tmpidx,tmploc);
+                            nameList.add(tmpidx,tmpname);
+
+                            notifyDataSetChanged();
+                            new Thread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    RequestTmap();
+                                }
+                            }).start();
+                            selecteditem=7;
+                            destorder.setBackgroundColor(Color.TRANSPARENT);
+                        }
+                    }
+                });
+
                 return view;
             }
         }
@@ -280,26 +341,61 @@ public class TestActivity extends AppCompatActivity implements OnMapReadyCallbac
     public void onMapReady(@NonNull NaverMap naverMap) {
         this.naverMap=naverMap;
 
-        if(marker!=null){
-            marker.setMap(null);
+        marker.setMap(naverMap);
+
+        if(setmarkers){
+            markers.clear();
+            for(int i=0; i<locList.size(); ++i){
+                Marker tmp=new Marker();
+                tmp.setPosition(locList.get(i));
+                tmp.setIcon(MarkerIcons.BLACK);
+                tmp.setCaptionAligns(Align.Top);
+                markers.add(tmp);
+            }
+            for(int i=0; i<markers.size(); ++i){
+                String destorderString="";
+                switch (i){
+                    case 0:
+                        destorderString+="출발지";
+                        break;
+                    case 1:
+                        destorderString+="1st"; break;
+                    case 2:
+                        destorderString+="2nd"; break;
+                    case 3:
+                        destorderString+="3rd"; break;
+                    default:
+                        destorderString+=i+"th"; break;
+                }
+                if(i==0){
+                    markers.get(i).setCaptionColor(Color.RED);
+                    markers.get(i).setIconTintColor(Color.RED);
+                }
+                else{
+                    markers.get(i).setCaptionColor(Color.BLUE);
+                    markers.get(i).setIconTintColor(Color.BLUE);
+                }
+                markers.get(i).setCaptionText(destorderString);
+                markers.get(i).setMap(naverMap);
+            }
+            setmarkers=false;
         }
 
-        marker=new Marker();
 
-        if(pathOverlay!=null){
+        //이동 버튼이 아닌 탐색버튼으로 갱신시 새 경로 그리기전에 초기화
+        if(pathOverlay!=null&&(!searchmove)){
             pathOverlay.setMap(null);
         }
-        if(locList.size()>1&&coordlist!=null){
+
+        //2개이상 위치선택한 상태에서 이동버튼이 아닌 탐색으로 지도 갱신시 새로 경로 탐색 진행
+        if(locList.size()>1&&coordlist!=null&&(!searchmove)){
             pathOverlay=new PathOverlay();
             pathOverlay.setColor(Color.BLUE);
             pathOverlay.setOutlineColor(Color.BLUE);
-            pathOverlay.setWidth(30);
-            pathOverlay.setPatternImage(OverlayImage.fromResource(R.drawable.patharrow_20dp));
-            pathOverlay.setPatternInterval(20);
             pathOverlay.setCoords(coordlist);
             pathOverlay.setMap(naverMap);
             LatLng[] range=getMiddle(coordlist);
-            CameraUpdate cameraUpdate =CameraUpdate.fitBounds(new LatLngBounds(range[0],range[1]),0);
+            CameraUpdate cameraUpdate =CameraUpdate.fitBounds(new LatLngBounds(range[0],range[1]),200);
             naverMap.moveCamera(cameraUpdate);
         }
 
@@ -319,7 +415,6 @@ public class TestActivity extends AppCompatActivity implements OnMapReadyCallbac
             @Override
             public void onMapClick(@NonNull PointF pointF, @NonNull LatLng latLng) {
                 marker.setPosition(latLng);
-                marker.setMap(naverMap);
                 cur=latLng;
             }
         });

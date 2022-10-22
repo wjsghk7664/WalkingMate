@@ -6,9 +6,11 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.core.app.ActivityCompat;
 
 import android.Manifest;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
+import android.location.LocationManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.Settings;
@@ -71,6 +73,13 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+        findViewById(R.id.gowalkwrite).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                startActivity(new Intent(MainActivity.this,WalkWriteActivity.class));
+            }
+        });
+
 
 
 
@@ -118,6 +127,14 @@ public class MainActivity extends AppCompatActivity {
         tmploginbtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+
+                //gps꺼져있으면 켜기
+                LocationManager LocMan = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+                if (!LocMan.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
+                    Toast.makeText(MainActivity.this, "GPS가 꺼져있습니다.", Toast.LENGTH_LONG).show();
+                    Intent gpsIntent = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
+                    startActivity(gpsIntent);
+                }
                 Intent GoMap =new Intent(MainActivity.this, MapActivity.class);
                 startActivity(GoMap);
             }

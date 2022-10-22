@@ -11,11 +11,12 @@
         android:id="@+id/tmplogin"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="로그인화면 넘기기"
+        android:text="경로 추적 화면"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.456" />
 
     <Button
         android:id="@+id/gocal"
@@ -24,10 +25,9 @@
         android:text="달력으로가기"
         app:layout_constraintBottom_toTopOf="@+id/goLoginbtn"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.49"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.757" />
+        app:layout_constraintVertical_bias="0.787" />
 
     <Button
         android:id="@+id/testbtn"
@@ -81,8 +81,10 @@
         android:text="길찾기"
         app:layout_constraintBottom_toTopOf="@+id/gocal"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.913"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.729" />
 
     <Button
         android:id="@+id/goLoginbtn"
@@ -103,8 +105,10 @@
         android:text="채팅"
         app:layout_constraintBottom_toTopOf="@+id/testText"
         app:layout_constraintEnd_toStartOf="@+id/goLoginbtn"
+        app:layout_constraintHorizontal_bias="0.48"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.446" />
 
     <Button
         android:id="@+id/uitest"
@@ -113,8 +117,35 @@
         android:text="UI test"
         app:layout_constraintBottom_toTopOf="@+id/chatbtn"
         app:layout_constraintEnd_toStartOf="@+id/gotest"
+        app:layout_constraintHorizontal_bias="0.178"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.787" />
+
+    <Button
+        android:id="@+id/gowalkwrite"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="산책게시물작성"
+        app:layout_constraintBottom_toTopOf="@+id/uitest"
+        app:layout_constraintEnd_toStartOf="@+id/gotest"
+        app:layout_constraintHorizontal_bias="0.806"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.729" />
+
+    <TextView
+        android:textStyle="bold"
+        android:textColor="@color/black"
+        android:textSize="15dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:text="-디자인 적용완료목록-\n\n캘린더-달력으로가기\n산책게시물작성\n경로추적화면"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/testText" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -9,114 +9,113 @@
     tools:context=".TestActivity">
 
 
-    <ScrollView
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
-
+        android:layout_height="match_parent"
+        android:orientation="vertical">
         <LinearLayout
+            android:layout_weight="2"
+            android:layout_marginHorizontal="16dp"
+            android:layout_marginTop="16dp"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="0dp"
             android:orientation="vertical">
+
+            <EditText
+                android:layout_marginBottom="5dp"
+                android:layout_weight="1"
+                android:id="@+id/edit_address"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:background="@drawable/search_box"
+                android:drawableRight="@drawable/search_icon_writing"
+                android:hint="주소명으로 위치 검색"
+                android:inputType="textPersonName"
+                android:paddingStart="20dp"
+                android:paddingEnd="10dp" />
 
             <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="1500dp"
-                android:orientation="vertical">
-                <LinearLayout
-                    android:layout_marginHorizontal="16dp"
-                    android:layout_marginTop="16dp"
-                    android:layout_width="match_parent"
-                    android:layout_height="200dp"
-                    android:orientation="vertical">
+                android:layout_height="0dp"
+                android:layout_weight="1"
+                android:orientation="horizontal">
 
-                    <TextView
-                        android:layout_weight="1"
-                        android:layout_width="match_parent"
-                        android:layout_height="0dp"
-                        android:textSize="20dp"
-                        android:textColor="@color/black"
-                        android:text="주소검색" />
-
-                    <LinearLayout
-                        android:layout_weight="4"
-                        android:weightSum="10"
-                        android:layout_width="match_parent"
-                        android:layout_height="0dp"
-                        android:orientation="horizontal">
-
-                        <EditText
-                            android:layout_weight="8"
-                            android:id="@+id/edit_address"
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="16dp"
-                            android:hint="주소를 입력해 주세요." />
-
-                        <LinearLayout
-                            android:layout_width="0dp"
-                            android:layout_height="match_parent"
-                            android:layout_weight="2"
-                            android:orientation="vertical">
-
-                            <Button
-                                android:id="@+id/sync"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_weight="1"
-                                android:text="이동" />
-
-                            <Button
-                                android:id="@+id/addloc"
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:layout_weight="1"
-                                android:text="추가" />
-
-                            <Button
-                                android:id="@+id/reqRoute"
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:layout_weight="1"
-                                android:text="탐색" />
-                        </LinearLayout>
-
-                    </LinearLayout>
-
-                    <TextView
-                        android:layout_weight="1"
-                        android:layout_marginTop="10dp"
-                        android:id="@+id/coord"
-                        android:textSize="20dp"
-                        android:layout_width="match_parent"
-                        android:layout_height="0dp"
-                        android:text="TextView" />
-                </LinearLayout>
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="400dp"
-                    android:orientation="vertical">
-                    <fragment
-                        android:id="@+id/testmap"
-                        android:name="com.naver.maps.map.MapFragment"
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        tools:layout="@android:layout/activity_list_item" />
-
-                </LinearLayout>
-
-                <LinearLayout
-                    android:layout_width="match_parent"
+                <Button
+                    android:background="@drawable/plusbtn"
+                    android:textColor="@color/white"
+                    android:textStyle="bold"
+                    android:layout_margin="5dp"
+                    android:id="@+id/reqRoute"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:orientation="vertical">
+                    android:layout_weight="1"
+                    android:text="경로 탐색" />
 
-                    <ListView
-                        android:id="@+id/destList"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content" />
+                <Button
+                    android:background="@drawable/plusbtn"
+                    android:textColor="@color/white"
+                    android:textStyle="bold"
+                    android:layout_margin="5dp"
+                    android:id="@+id/addloc"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="추가" />
 
-                </LinearLayout>
+                <Button
+                    android:background="@drawable/plusbtn"
+                    android:textColor="@color/white"
+                    android:textStyle="bold"
+                    android:layout_margin="5dp"
+                    android:id="@+id/sync"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="이동" />
             </LinearLayout>
         </LinearLayout>
-    </ScrollView>
+
+        <LinearLayout
+            android:layout_marginTop="5dp"
+            android:layout_weight="7"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:orientation="vertical">
+            <fragment
+                android:id="@+id/testmap"
+                android:name="com.naver.maps.map.MapFragment"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                tools:layout="@android:layout/activity_list_item" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_marginBottom="10dp"
+            android:layout_weight="7"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:orientation="vertical">
+
+            <ListView
+                android:id="@+id/destList"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent" />
+
+        </LinearLayout>
+
+        <Button
+            android:id="@+id/finish_setroute"
+            android:layout_marginBottom="10dp"
+            android:layout_gravity="center"
+            android:gravity="center"
+            android:layout_weight="1"
+            android:layout_width="150dp"
+            android:layout_height="0dp"
+            android:background="@drawable/orangebtn"
+            android:textStyle="bold"
+            android:textColor="@color/white"
+            android:textSize="25dp"
+            android:text="완료" />
+    </LinearLayout>
 </LinearLayout>

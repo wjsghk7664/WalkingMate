@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="wrap_content"
-    android:layout_height="300sp"
+    android:layout_height="300dp"
     android:weightSum="25"
     android:background="@drawable/dialog_radius"
     android:id="@+id/feedListbackground"
