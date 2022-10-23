@@ -141,7 +141,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:gravity="center"
-        android:text="-디자인 적용완료목록-\n\n캘린더-달력으로가기\n산책게시물작성\n경로추적화면"
+        android:text="-디자인 적용완료목록-\n\n캘린더-달력으로가기\n산책게시물작성\n여행게시물작성\n경로추적화면"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
