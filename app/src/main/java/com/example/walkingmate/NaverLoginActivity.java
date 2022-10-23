@@ -11,11 +11,8 @@ import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParseException;
+import com.google.gson.Gson;
 import com.nhn.android.naverlogin.OAuthLogin;
 import com.nhn.android.naverlogin.OAuthLoginHandler;
 import com.nhn.android.naverlogin.ui.view.OAuthLoginButton;
@@ -31,7 +28,6 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
 
 public class NaverLoginActivity extends AppCompatActivity {
@@ -47,6 +43,7 @@ public class NaverLoginActivity extends AppCompatActivity {
     private static OAuthLogin mOAuthLoginInstance;
     private static Context mContext;
     private NaverUserModel model;
+
 
     private OAuthLoginButton mOAuthLoginButton;
 
@@ -88,6 +85,8 @@ public class NaverLoginActivity extends AppCompatActivity {
                 Log.d(TAG, "success : " + accessToken);
                 Log.d(TAG, "expiresAt : " + Long.toString(expiresAt));
                 getUser(accessToken);
+
+
                 //mOauthRT.setText(refreshToken);
                 //mOauthExpires.setText(String.valueOf(expiresAt));
                 //mOauthTokenType.setText(tokenType);
@@ -103,6 +102,7 @@ public class NaverLoginActivity extends AppCompatActivity {
 
     private void getUser(String token){
         new GetUserTask().execute(token);
+
     }
 
     private void init() {
@@ -176,24 +176,42 @@ public class NaverLoginActivity extends AppCompatActivity {
         protected void onPostExecute(String s) {
             try {
                 JSONObject jsonObject = new JSONObject(s);
-                if(jsonObject.getString("resultcode").equals("00")){
+                if (jsonObject.getString("resultcode").equals("00")) {
                     JSONObject object = new JSONObject(jsonObject.getString("response"));
+                    String id = object.getString("id");
                     String nickname = object.getString("nickname");
-                    String email = object.getString("email");
+                    String name = object.getString("name");
                     String age = object.getString("age");
                     String gender = object.getString("gender");
                     String birthyear = object.getString("birthyear");
-                    model = new NaverUserModel(nickname, email, age, gender, birthyear);
+                    model = new NaverUserModel(id, nickname, name, age, gender, birthyear);
                 }
-                sendDatatoFire();
             } catch (JSONException e) {
                 e.printStackTrace();
             }
-        }
 
-        protected void sendDatatoFire(){
+            Map<String,String> user = new HashMap<>();
 
-            NaverUserModel model;
+            user.put("nickname",model.getNickname());
+            user.put("name",model.getName());
+            user.put("age",model.getAge());
+            user.put("gender",model.getGender());
+            user.put("birthyear",model.getBirthyear());
+
+            db.collection("users").document(model.getId())
+                    .set(user)
+                    .addOnSuccessListener(new OnSuccessListener<Void>() {
+                        @Override
+                        public void onSuccess(Void aVoid) {
+                            Log.d(TAG, "DocumentSnapshot successfully written!");
+                        }
+                    })
+                    .addOnFailureListener(new OnFailureListener() {
+                        @Override
+                        public void onFailure(@NonNull Exception e) {
+                            Log.w(TAG, "Error writing document", e);
+                        }
+                    });
 
         }
 
@@ -201,6 +219,4 @@ public class NaverLoginActivity extends AppCompatActivity {
     }
 
 }
-
-
 
