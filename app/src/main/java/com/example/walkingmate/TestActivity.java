@@ -77,7 +77,6 @@ public class TestActivity extends AppCompatActivity implements OnMapReadyCallbac
     PathOverlay pathOverlay;
     private EditText mEtAddress;
     Button sync,add,reqroute;
-    TextView coord;
     String location, x, y;//x-lon, y-lat(반대임)
     double xval,yval;
 
@@ -211,6 +210,24 @@ public class TestActivity extends AppCompatActivity implements OnMapReadyCallbac
             }
         });
 
+        findViewById(R.id.finish_setroute).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if(locList.size()<2){
+                    Toast.makeText(getApplicationContext(),"2개 이상의 목적지를 추가해 주세요.",Toast.LENGTH_SHORT).show();
+                    return;
+                }
+                else{
+                    Intent finintent=new Intent(TestActivity.this,TripwriteActivity.class);
+                    finintent.putExtra("routecoords",coordlist);
+                    finintent.putExtra("loccoords",locList);
+                    finintent.putExtra("locnames",nameList);
+                    setResult(RESULT_OK,finintent);
+                    finish();
+                }
+
+            }
+        });
 
     }
 

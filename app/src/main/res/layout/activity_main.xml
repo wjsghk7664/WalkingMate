@@ -78,7 +78,7 @@
         android:id="@+id/gotest"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="길찾기"
+        android:text="여행게시물작성"
         app:layout_constraintBottom_toTopOf="@+id/gocal"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.913"

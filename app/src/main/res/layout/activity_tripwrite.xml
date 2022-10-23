@@ -7,6 +7,8 @@
     android:background="@color/white">
 
     <ScrollView
+        android:id="@+id/scrollView_trip"
+        android:fillViewport="true"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
@@ -27,7 +29,7 @@
 
                 <ImageButton
                     android:background="@color/transparent"
-                    android:id="@+id/back_challenge"
+                    android:id="@+id/back_trip"
                     android:layout_marginStart="10dp"
                     android:layout_gravity="center|start"
                     android:layout_width="wrap_content"
@@ -74,7 +76,7 @@
                 android:background="@drawable/layout_divider">
 
                 <EditText
-                    android:id="@+id/제목입력"
+                    android:id="@+id/title_trip"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:textSize="16dp"
@@ -106,7 +108,7 @@
                     android:textSize="17dp" />
 
                 <Button
-                    android:id="@+id/search_bar"
+                    android:id="@+id/search_trip"
                     android:layout_width="match_parent"
                     android:layout_height="40dp"
                     android:layout_marginLeft="20dp"
@@ -126,124 +128,27 @@
 
             <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:orientation="vertical">
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    android:weightSum="15"
-                    android:background="@drawable/layout_divider">
-
-
-                    <ImageView
-                        android:id="@+id/pin"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="center"
-                        android:layout_marginLeft="5dp"
-                        android:layout_marginTop="3dp"
-                        android:layout_marginBottom="3dp"
-                        android:layout_weight="2"
-                        app:srcCompat="@drawable/pin_writing" />
-
-                    <TextView
-                        android:id="@+id/textView5"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="10"
-                        android:layout_gravity="center"
-                        android:text="목적지가 이곳에 추가됩니다."
-                        android:textColor="#AA000000"
-                        android:textSize="16dp" />
-
-                    <ImageButton
-                        android:id="@+id/imageButton"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:background="@color/transparent"
-                        android:layout_gravity="center"
-                        app:srcCompat="@drawable/ic_baseline_horizontal_rule_24" />
-
-                    <ImageButton
-                        android:id="@+id/imageButton3"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:background="@color/transparent"
-                        android:layout_gravity="center"
-                        app:srcCompat="@drawable/ic_baseline_reorder_24" />
-
-                </LinearLayout>
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    android:weightSum="15"
-                    android:background="@drawable/layout_divider">
-
-
-                    <ImageView
-                        android:id="@+id/pin2"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="center"
-                        android:layout_marginLeft="5dp"
-                        android:layout_marginTop="3dp"
-                        android:layout_marginBottom="3dp"
-                        android:layout_weight="2"
-                        app:srcCompat="@drawable/pin_writing" />
-
-                    <TextView
-                        android:id="@+id/textView6"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="10"
-                        android:layout_gravity="center"
-                        android:text="목적지가 이곳에 추가됩니다."
-                        android:textColor="#AA000000"
-                        android:textSize="16dp" />
-
-                    <ImageButton
-                        android:id="@+id/imageButton2"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:background="@color/transparent"
-                        android:layout_gravity="center"
-                        app:srcCompat="@drawable/ic_baseline_horizontal_rule_24" />
-
-                    <ImageButton
-                        android:id="@+id/imageButton4"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:background="@color/transparent"
-                        android:layout_gravity="center"
-                        app:srcCompat="@drawable/ic_baseline_reorder_24" />
-
-                </LinearLayout>
-
-            </LinearLayout>
-
-
-
-
-            <LinearLayout
-                android:layout_width="match_parent"
                 android:layout_height="200dp"
                 android:orientation="vertical"
                 android:background="@drawable/layout_divider">
 
-                <TextView
-                    android:id="@+id/textView4"
+                <fragment
+                    android:id="@+id/tripwriteMap"
+                    android:name="com.naver.maps.map.MapFragment"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="지도 api가 추가될 위치입니다. \n가능하다면 목적지가 추가될 때마다 실시간으로 마커가 추가되면 좋겠습니다." />
+                    android:layout_height="match_parent"
+                    app:navermap_scrollGesturesEnabled="false"
+                    tools:layout="@layout/activity_feed_write" />
+
             </LinearLayout>
+
+            <ListView
+                android:dividerHeight="0dp"
+                android:divider="@color/transparent"
+                android:layout_marginTop="10dp"
+                android:id="@+id/loclist_trip"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent" />
 
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
@@ -272,7 +177,7 @@
                 android:background="@drawable/layout_divider">
 
                 <EditText
-                    android:id="@+id/month"
+                    android:id="@+id/month_trip"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:textSize="16dp"
@@ -294,7 +199,7 @@
                     android:textColor="@color/black"/>
 
                 <EditText
-                    android:id="@+id/day"
+                    android:id="@+id/day_trip"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:textSize="16dp"
@@ -315,7 +220,7 @@
                     android:textColor="@color/black"/>
 
                 <EditText
-                    android:id="@+id/hour"
+                    android:id="@+id/hour_trip"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:textSize="16dp"
@@ -336,7 +241,7 @@
                     android:textColor="@color/black"/>
 
                 <EditText
-                    android:id="@+id/min"
+                    android:id="@+id/min_trip"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:textSize="16dp"
@@ -385,7 +290,7 @@
                 android:background="@drawable/layout_divider">
 
                 <EditText
-                    android:id="@+id/minute"
+                    android:id="@+id/taken_time"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:textSize="16dp"
@@ -446,7 +351,7 @@
                     android:layout_marginBottom="15dp"/>
 
                 <Spinner
-                    android:id="@+id/spinner_sex"
+                    android:id="@+id/spinner_sex_trip"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:entries="@array/array_sex"
@@ -464,7 +369,7 @@
                     android:textColor="@color/black"/>
 
                 <Spinner
-                    android:id="@+id/spinner_age"
+                    android:id="@+id/spinner_age_trip"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:entries="@array/array_age"
@@ -478,7 +383,7 @@
                 android:layout_height="wrap_content">
 
                 <Button
-                    android:id="@+id/button"
+                    android:id="@+id/finish_trip"
                     android:layout_width="150dp"
                     android:layout_height="wrap_content"
                     android:text="완료"
