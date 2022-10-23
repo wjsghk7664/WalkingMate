@@ -40,11 +40,11 @@
  -SetLocationWalkActivity: 출발지 선택 페이지. 주소검색을 통한 지도이동과 출발지 선택을 한다.
  -SearchActivity: 여행메이트에 사용된 액티비티와 동일 액티비티. 검색된 주소명을 SetLocationWalkActivity로 보냄
 
-7. 기타 사용 클래스
+8. 기타 사용 클래스
  -Constants: 고정 상수값들을 저장하기 위한 클래스. Notification채널 아이디와 서비스의 Action 문자열이 저장되어 있음.
  -FeedData: 도보 기록 데이터를 다루기 위한 클래스. 도보기록 정보를 문자열로 encode, decode, save, load, 저장 기록 탐색, 저장 기록 삭제 기능이 존재.
 
-8. UitestingActivity: UI작성시 테스트를 위한 임시 액티비티.
+9. UitestingActivity: UI작성시 테스트를 위한 임시 액티비티.
 
 
 
