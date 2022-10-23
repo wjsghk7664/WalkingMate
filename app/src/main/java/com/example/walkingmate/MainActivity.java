@@ -6,6 +6,7 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.core.app.ActivityCompat;
 
 import android.Manifest;
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -13,6 +14,7 @@ import android.location.Location;
 import android.location.LocationManager;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Looper;
 import android.provider.Settings;
 import android.text.Layout;
 import android.view.View;
@@ -135,8 +137,11 @@ public class MainActivity extends AppCompatActivity {
                     Intent gpsIntent = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
                     startActivity(gpsIntent);
                 }
-                Intent GoMap =new Intent(MainActivity.this, MapActivity.class);
-                startActivity(GoMap);
+                else{
+                    Intent GoMap =new Intent(MainActivity.this, MapActivity.class);
+                    startActivity(GoMap);
+                }
+
             }
         });
 
@@ -203,5 +208,9 @@ public class MainActivity extends AppCompatActivity {
             reqperm+="신체활동 권한: 허용으로 설정";
         }
         permlist.setText(reqperm);
+
+
+
     }
+
 }

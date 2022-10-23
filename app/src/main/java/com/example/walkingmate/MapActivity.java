@@ -44,6 +44,9 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationCallback;
+import com.google.android.gms.location.LocationRequest;
+import com.google.android.gms.location.LocationResult;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.navigation.NavigationView;
@@ -92,14 +95,11 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
     String[] timecheck = new String[2];//시작과 종료 시간,0이 시작-1이 종료
 
 
-    ImageButton backBtn,endBtn, markBtn;
-    TextView disTxt, walkTxt,runtimeTxt;
+    ImageButton backBtn, endBtn, markBtn;
+    TextView disTxt, walkTxt, runtimeTxt;
 
     LinearLayout MapLayout;
     PathOverlay pathOverlay;
-
-
-
 
 
     @Override
@@ -108,13 +108,12 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         setContentView(R.layout.activity_map);
 
 
-
-        backBtn=findViewById(R.id.back_tracing);
+        backBtn = findViewById(R.id.back_tracing);
         endBtn = findViewById(R.id.endBtn);
 
         disTxt = findViewById(R.id.displacement_walk);
         walkTxt = findViewById(R.id.walk_tracking);
-        runtimeTxt=findViewById(R.id.time_tracking);
+        runtimeTxt = findViewById(R.id.time_tracking);
 
         IsTracking[0] = true;
 
@@ -126,6 +125,13 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         MapFragment mapFragment = (MapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
 
         fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
+
+        Log.d("도보 기록-flpc체크",(fusedLocationProviderClient==null)+"");
+
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            Log.d("도보 기록","권한 체크 에러");
+            return;
+        }
         fusedLocationProviderClient.getLastLocation().addOnSuccessListener(this, new OnSuccessListener<Location>() {
             @Override
             public void onSuccess(Location location) {
@@ -133,9 +139,14 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
                     //시작위치부터 좌표모음 시작
                     startcoord[0] = location.getLatitude();
                     startcoord[1] = location.getLongitude();
-                    coordList.add(new LatLng(startcoord[0],startcoord[1]));
-                    tmpcoord[0]=coordList.get(0);
+                    coordList.add(new LatLng(startcoord[0], startcoord[1]));
+                    tmpcoord[0] = coordList.get(0);
+                    Log.d("도보 기록", "시작좌표" + tmpcoord[0]);
                     mapFragment.getMapAsync(MapActivity.this);
+                }
+                else{
+                    mapFragment.getMapAsync(MapActivity.this);
+                    Log.d("도보 기록", "시작 null");
                 }
             }
         });
@@ -206,7 +217,6 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
 
-        //
         switch (requestCode) {
             case ACCESS_LOCATION_PERMISSION_REQUEST_CODE:
                 locationSource.onRequestPermissionsResult(requestCode, permissions, grantResults);
@@ -218,6 +228,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
     //지도 로딩 후 호출되는 매소드
     @Override
     public void onMapReady(@NonNull NaverMap naverMap) {
+
 
         //실시간 이동거리 계산을 위한 위치 변수, idx0이 현재, idx1이 과거 위치
 
@@ -551,7 +562,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
             if(resultCode==10){
                 step=resultData.getInt("step");
                 walkTxt.setText(""+step);
-                Log.d("만보기","종료 후 작동중 체크용-walk");
+                //Log.d("만보기","종료 후 작동중 체크용-walk");
             }
         }
     };
@@ -579,7 +590,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         protected void onReceiveResult(int resultCode, Bundle resultData) {
             super.onReceiveResult(resultCode, resultData);
             if(resultCode==15){
-                Log.d("걸은시간","종료 후 작동중 체크용-time");
+                //Log.d("걸은시간","종료 후 작동중 체크용-time");
                 runtime=resultData.getLong("time");
                 String h=String.format("%02d",runtime/(3600000));
                 String m=String.format("%02d",runtime/60000);
