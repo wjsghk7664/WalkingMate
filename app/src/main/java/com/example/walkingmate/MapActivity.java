@@ -495,6 +495,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
 
                     //마커표시 즉시 지도에 반영
                     tmpm.setMap(naverMap);
+                    Toast.makeText(getApplicationContext(),"마커 등록 성공!",Toast.LENGTH_SHORT).show();
 
                     Log.d("백그라운드","마커등록, 좌표수: "+coordList.size());
                 }
