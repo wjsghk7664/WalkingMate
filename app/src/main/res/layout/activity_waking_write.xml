@@ -83,7 +83,7 @@
 
 
         <ImageView
-            android:id="@+id/pin"
+            android:id="@+id/pin_walk"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             app:layout_constraintStart_toStartOf="parent"
@@ -101,7 +101,7 @@
             android:background="@drawable/layout_divider"
             android:layout_marginTop="10dp"
             android:layout_marginLeft="5dp"
-            app:layout_constraintStart_toEndOf="@id/pin"
+            app:layout_constraintStart_toEndOf="@id/pin_walk"
             app:layout_constraintTop_toTopOf="parent" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -257,7 +257,7 @@
             android:textAlignment="center"/>
 
         <TextView
-            android:id="@+id/몇분"
+            android:id="@+id/time_tracking"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="분"

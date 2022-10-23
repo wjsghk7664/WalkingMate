@@ -6,11 +6,15 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.core.app.ActivityCompat;
 
 import android.Manifest;
+import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
+import android.location.LocationManager;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Looper;
 import android.provider.Settings;
 import android.text.Layout;
 import android.view.View;
@@ -46,7 +50,7 @@ public class MainActivity extends AppCompatActivity {
         findViewById(R.id.gotest).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                startActivity(new Intent(MainActivity.this, TestActivity.class));
+                startActivity(new Intent(MainActivity.this, TripwriteActivity.class));
             }
         });
 
@@ -68,6 +72,13 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 startActivity(new Intent(MainActivity.this,UitestingActivity.class));
+            }
+        });
+
+        findViewById(R.id.gowalkwrite).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                startActivity(new Intent(MainActivity.this,WalkWriteActivity.class));
             }
         });
 
@@ -118,8 +129,19 @@ public class MainActivity extends AppCompatActivity {
         tmploginbtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent GoMap =new Intent(MainActivity.this, MapActivity.class);
-                startActivity(GoMap);
+
+                //gps꺼져있으면 켜기
+                LocationManager LocMan = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+                if (!LocMan.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
+                    Toast.makeText(MainActivity.this, "GPS가 꺼져있습니다.", Toast.LENGTH_LONG).show();
+                    Intent gpsIntent = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
+                    startActivity(gpsIntent);
+                }
+                else{
+                    Intent GoMap =new Intent(MainActivity.this, MapActivity.class);
+                    startActivity(GoMap);
+                }
+
             }
         });
 
@@ -186,5 +208,9 @@ public class MainActivity extends AppCompatActivity {
             reqperm+="신체활동 권한: 허용으로 설정";
         }
         permlist.setText(reqperm);
+
+
+
     }
+
 }

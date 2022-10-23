@@ -155,7 +155,7 @@ public class FeedData extends Activity {
         return filenames;
     }
 
-    public void savefeed(FeedData data, Activity activity){
+    public String savefeed(FeedData data, Activity activity){
         String folder= activity.getFilesDir().getAbsolutePath() + "/walkingmate/";
         String filename=data.timecheck[0]+".txt";
 
@@ -179,6 +179,7 @@ public class FeedData extends Activity {
         }catch(Exception e){
             e.printStackTrace();
         }
+        return filename;
     }
 
     //여기서 fileName은 스캔 메소드로 구한 확장자명이 포함된 것

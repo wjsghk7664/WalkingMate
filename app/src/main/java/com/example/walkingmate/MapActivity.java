@@ -44,6 +44,9 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationCallback;
+import com.google.android.gms.location.LocationRequest;
+import com.google.android.gms.location.LocationResult;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.navigation.NavigationView;
@@ -61,6 +64,7 @@ import com.naver.maps.map.overlay.Marker;
 import com.naver.maps.map.overlay.PathOverlay;
 import com.naver.maps.map.util.FusedLocationSource;
 
+import java.nio.MappedByteBuffer;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -72,7 +76,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
     private FusedLocationProviderClient fusedLocationProviderClient;
 
     private static final int ACCESS_LOCATION_PERMISSION_REQUEST_CODE = 100;
-    LocationManager LocMan;
+
     private NaverMap naverMap;
     private double lat, lon;
     boolean[] IsTracking = new boolean[1]; //경로추적기능 실행중 여부 확인
@@ -91,20 +95,11 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
     String[] timecheck = new String[2];//시작과 종료 시간,0이 시작-1이 종료
 
 
-    Button stBtn, endBtn, trackBtn, markBtn, setmarkBtn, feedBtn;
-    ImageButton menuBtn;
-    TextView disTxt, walkTxt, timeTxt,runtimeTxt;
+    ImageButton backBtn, endBtn, markBtn;
+    TextView disTxt, walkTxt, runtimeTxt;
 
     LinearLayout MapLayout;
     PathOverlay pathOverlay;
-
-
-    boolean[] pathOn = {false};
-    boolean[] markbool = {false};
-
-    DrawerLayout drawerLayout;
-    NavigationView drawerView;
-
 
 
     @Override
@@ -113,153 +108,107 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         setContentView(R.layout.activity_map);
 
 
+        backBtn = findViewById(R.id.back_tracing);
+        endBtn = findViewById(R.id.endBtn);
 
-        drawerLayout=(DrawerLayout)findViewById(R.id.map_Layout);
-        drawerView=(NavigationView)findViewById(R.id.navigationView_map);
+        disTxt = findViewById(R.id.displacement_walk);
+        walkTxt = findViewById(R.id.walk_tracking);
+        runtimeTxt = findViewById(R.id.time_tracking);
 
-        drawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
-        drawerView.setNavigationItemSelectedListener(this);
+        IsTracking[0] = true;
 
-        menuBtn=findViewById(R.id.menu_map);
-        menuBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                drawerLayout.openDrawer(drawerView);
-            }
-        });
-
-
-
-
-
-        stBtn = findViewById(R.id.TrackingStartBtn);
-        endBtn = findViewById(R.id.TrackingEndBtn);
-
-        feedBtn = findViewById(R.id.gofeed);
-
-        timeTxt = findViewById(R.id.timeTxt);
-        walkTxt = findViewById(R.id.walkTxt);
-        runtimeTxt=findViewById(R.id.RuntimeTxt);
-
-        IsTracking[0] = false;
+        tmpcoord = new LatLng[2];
 
 
 
         //비 동기적으로 네이버 지도 정보 가져옴
         MapFragment mapFragment = (MapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
 
-        LocMan = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
-        if (!LocMan.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
-            Toast.makeText(MapActivity.this, "GPS가 꺼져있습니다.", Toast.LENGTH_LONG).show();
-            Intent gpsIntent = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
-            startActivity(gpsIntent);
-        }
-
         fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
+
+        Log.d("도보 기록-flpc체크",(fusedLocationProviderClient==null)+"");
+
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            Log.d("도보 기록","권한 체크 에러");
+            return;
+        }
         fusedLocationProviderClient.getLastLocation().addOnSuccessListener(this, new OnSuccessListener<Location>() {
             @Override
             public void onSuccess(Location location) {
                 if (location != null) {
+                    //시작위치부터 좌표모음 시작
                     startcoord[0] = location.getLatitude();
                     startcoord[1] = location.getLongitude();
+                    coordList.add(new LatLng(startcoord[0], startcoord[1]));
+                    tmpcoord[0] = coordList.get(0);
+                    Log.d("도보 기록", "시작좌표" + tmpcoord[0]);
                     mapFragment.getMapAsync(MapActivity.this);
+                }
+                else{
+                    mapFragment.getMapAsync(MapActivity.this);
+                    Log.d("도보 기록", "시작 null");
                 }
             }
         });
 
         locationSource = new FusedLocationSource(this, ACCESS_LOCATION_PERMISSION_REQUEST_CODE);//현재위치값 받아옴
 
-        stBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
+        //시작 세팅
+        coordList.clear();
+        markList.clear();
+        markMap.clear();
+        markerList.clear();
+        displacement = 0;
+        step = 0;
+        walkTxt.setText("0");
+        startStepCounterService();
+        startTimeCheckingService();
+        //시작 세팅
 
-                //경로 추적 시작 안한 상태일떄만 작동
-                if (!IsTracking[0]) {
-                    //경로표시가 켜져있는경우 끄면서 시작
-                    if (pathOn[0] == true) {
-                        pathOn[0] = false;
-                        pathOverlay.setMap(null);
-                        trackBtn.setBackgroundColor(Color.BLUE);
-                    }
-
-                    //마커표시가 켜져있는경우 끄면서 시작
-                    if (markbool[0]) {
-                        markbool[0] = false;
-                        for (int i = 0; i < markList.size(); i++) {
-                            markerList.get(i).setMap(null);
-                        }
-                        setmarkBtn.setBackgroundColor(Color.BLUE);
-                    }
-
-
-                    coordList.clear();
-                    markList.clear();
-                    markMap.clear();
-                    markerList.clear();
-                    displacement = 0;
-                    step = 0;
-
-                    walkTxt.setText("발걸음 수: 0");
-
-                    startStepCounterService();
-                    startTimeCheckingService();
-
-                    timecheck[0] = getTime();
-                    timeTxt.setText("시작시간: " + timecheck[0] + "\n종료시간:");
-
-                    stBtn.setBackgroundColor(Color.RED);
-                    endBtn.setBackgroundColor(Color.RED);
-                    IsTracking[0] = true;
-                    Toast.makeText(MapActivity.this, "경로추적 시작!", Toast.LENGTH_SHORT).show();
-                }
-            }
-        });
+        timecheck[0] = getTime();
+        Toast.makeText(MapActivity.this, "경로추적 시작!", Toast.LENGTH_SHORT).show();
 
         endBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                String sendfilename="";
                 //시작한 상태일때만 작동
                 if (coordList.size() < 2) {
                     return;
                 } else if (IsTracking[0]) {
 
-                    stBtn.setBackgroundColor(Color.BLUE);
-                    endBtn.setBackgroundColor(Color.BLUE);
-
                     timecheck[1] = getTime();
-                    timeTxt.setText("시작시간: " + timecheck[0] + "\n종료시간: " + timecheck[1]);
-
 
                     //피드데이터 내부저장소에 저장
                     FeedData feedData = new FeedData(coordList, markerList, timecheck, step, displacement);
-                    feedData.savefeed(feedData, MapActivity.this);
+                    sendfilename=feedData.savefeed(feedData, MapActivity.this);
 
                     IsTracking[0] = false;
 
                     stopStepCounterService();
                     stopTimeCheckingService();
 
-                    Toast.makeText(getApplicationContext(),"산책 기록이 종료되었습니다.",Toast.LENGTH_SHORT).show();
+                    Intent gofeed=new Intent(MapActivity.this, EndtrackingActivity.class);
+                    gofeed.putExtra("filename",sendfilename);
+                    startActivity(gofeed);
+                    finish();
+
                 }
             }
         });
 
-        feedBtn.setOnClickListener(new View.OnClickListener() {
+        backBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if(!IsTracking[0]){
-                    Intent feedIntent = new Intent(MapActivity.this, FeedActivity.class);
-                    startActivity(feedIntent);
+                if(IsTracking[0]){
+                    startActivity(new Intent(MapActivity.this, MainActivity.class));
                 }
                 else{
-                    Toast.makeText(MapActivity.this,"경로추적중엔 다른 페이지로 이동이 불가능 합니다.",Toast.LENGTH_SHORT).show();
+                    finish();
                 }
-
 
             }
         });
-
-
 
     }
 
@@ -268,7 +217,6 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
 
-        //
         switch (requestCode) {
             case ACCESS_LOCATION_PERMISSION_REQUEST_CODE:
                 locationSource.onRequestPermissionsResult(requestCode, permissions, grantResults);
@@ -281,14 +229,11 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
     @Override
     public void onMapReady(@NonNull NaverMap naverMap) {
 
+
         //실시간 이동거리 계산을 위한 위치 변수, idx0이 현재, idx1이 과거 위치
-        tmpcoord = new LatLng[2];
 
         this.naverMap = naverMap;
         locationSource.getLastLocation();
-
-        disTxt = findViewById(R.id.displaceTxt);
-        walkTxt = findViewById(R.id.walkTxt);
 
         pathOverlay = new PathOverlay();
         pathOverlay.setColor(Color.BLUE);
@@ -296,7 +241,6 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         pathOverlay.setWidth(5);
 
 
-        MapLayout = (LinearLayout) findViewById(R.id.MapLayout);//화면 캡쳐용
 
         CameraPosition cameraPosition=new CameraPosition(new LatLng(startcoord[0],startcoord[1]),17);
         naverMap.setCameraPosition(cameraPosition);
@@ -329,10 +273,10 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
                     if(coordList.size()>1){
                         displacement+=tmpcoord[0].distanceTo(tmpcoord[1])/1000;
                     }
-                    disTxt.setText("이동거리: "+Math.round((displacement*1000))/1000.0+"km");
+                    disTxt.setText(""+Math.round((displacement*1000))/1000.0);
 
-                    //경로표시 켜져있는 상태면 실시간 업데이트
-                    if(pathOn[0]){
+                    //경로 실시간 업데이트
+                    if(coordList.size()>1){
                         pathOverlay.setCoords(coordList);
                         pathOverlay.setMap(naverMap);
                     }
@@ -340,79 +284,13 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
             }
         });
 
-        trackBtn=findViewById(R.id.trackBtn);
-        markBtn=findViewById(R.id.markBtn);
-        setmarkBtn=findViewById(R.id.setmarker);
-
-        trackBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-
-                if(coordList.size()==0){
-                    return;
-                }
-                //경로표시를 위한 최소조건인 좌표 2개가 안되는경우 경로표시 하지말고
-                //켜져있단 코드만 On하면 ChangeListener에서 알아서 추가하니 아래처럼 pathOn만 건드림
-                if(coordList.size()<2){
-                    pathOn[0]=true;
-                    trackBtn.setBackgroundColor(Color.RED);
-                }
-                else{
-                    //경로 끄기
-                    if(pathOn[0]){
-                        pathOn[0] =false;
-                        pathOverlay.setMap(null);
-                        trackBtn.setBackgroundColor(Color.BLUE);
-                    }
-                    //경로 키기
-                    else{
-                        pathOn[0]=true;
-                        pathOverlay.setCoords(coordList);
-                        pathOverlay.setMap(naverMap);
-                        trackBtn.setBackgroundColor(Color.RED);
-
-                        /*MapLayout.buildDrawingCache();   // 캡처할 뷰를 지정하여 buildDrawingCache() 한다
-                        Bitmap captureView = MapLayout.getDrawingCache();   // 캡쳐할 뷰를 지정하여 getDrawingCache() 한다
-
-
-
-                        String storageName = getFilesDir().getAbsolutePath();
-                        String folder_name = "/walkingmate/";
-                        String fileName=System.currentTimeMillis()+".png";
-                        String strFolderPath=storageName+folder_name;
-
-                        File folder;
-                        try{
-                            folder= new File(strFolderPath);
-                            Log.d("파일 생성 처음",strFolderPath);
-                            if(!folder.exists()) {  // 해당 폴더 없으면 만들어라
-                                folder.mkdirs();
-                                Log.d("파일 생성",strFolderPath);
-                            }
-                            if(!folder.exists()) {  // 해당 폴더 없으면 만들어라
-
-                                Log.d("파일 생성 실패","ㅁㅁ");
-                            }
-
-                            FileOutputStream fos = new FileOutputStream(strFolderPath+fileName, false);
-                            captureView.compress(Bitmap.CompressFormat.PNG, 100, fos);
-                            fos.flush();
-                            fos.close();
-                        }catch (Exception e){
-                            e.printStackTrace();
-                        }*/
-
-                    }
-                }
-
-            }
-        });
+        markBtn=findViewById(R.id.markerBtn);
 
         markBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 if(IsTracking[0]!=true){
-                    Toast.makeText(MapActivity.this, "경로추적중이 아닙니다.",Toast.LENGTH_SHORT).show();
+                    return;
                 }
                 else if(coordList.size()<1){
                     return;
@@ -449,10 +327,8 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
                             markerList.add(tmp);
 
 
-                            //마커표시 켜져있는상태면 즉시 지도에 반영
-                            if(markbool[0]){
-                                tmp.setMap(naverMap);
-                            }
+                            //마커표시 즉시 지도에 반영
+                            tmp.setMap(naverMap);
                         }
                     }).setNegativeButton("취소", new DialogInterface.OnClickListener() {
                         @Override
@@ -472,27 +348,6 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
                             | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION);
                     alertDialog.getWindow().clearFlags(WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE);
                 }
-            }
-        });
-
-        setmarkBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if(markbool[0]==false){
-                    markbool[0]=true;
-                    for(int i=0; i<markList.size(); i++) {
-                        markerList.get(i).setMap(naverMap);
-                    }
-                    setmarkBtn.setBackgroundColor(Color.RED);
-                }
-                else{
-                    markbool[0]=false;
-                    for(int i=0; i<markList.size(); i++) {
-                        markerList.get(i).setMap(null);
-                    }
-                    setmarkBtn.setBackgroundColor(Color.BLUE);
-                }
-
             }
         });
 
@@ -600,11 +455,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
                     return;
                 } else if (IsTracking[0]) {
 
-                    stBtn.setBackgroundColor(Color.BLUE);
-                    endBtn.setBackgroundColor(Color.BLUE);
-
                     timecheck[1] = getTime();
-                    timeTxt.setText("시작시간: " + timecheck[0] + "\n종료시간: " + timecheck[1]);
 
 
                     //피드데이터 내부저장소에 저장
@@ -617,7 +468,6 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
                     //화면 초기화 시켜놓고 종료
                     startActivity(new Intent(getApplicationContext(),MapActivity.class));
                     finish();
-                    Toast.makeText(getApplicationContext(),"산책 기록이 종료되었습니다.",Toast.LENGTH_SHORT).show();
                 }
             }
             else if(resultCode==2){
@@ -643,11 +493,10 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
                     markerList.add(tmpm);
 
 
-                    //마커표시 켜져있는상태면 즉시 지도에 반영
-                    if(markbool[0]){
-                        tmpm.setMap(naverMap);
-                    }
+                    //마커표시 즉시 지도에 반영
+                    tmpm.setMap(naverMap);
                     Toast.makeText(getApplicationContext(),"마커 등록 성공!",Toast.LENGTH_SHORT).show();
+
                     Log.d("백그라운드","마커등록, 좌표수: "+coordList.size());
                 }
             }
@@ -713,8 +562,8 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
             super.onReceiveResult(resultCode, resultData);
             if(resultCode==10){
                 step=resultData.getInt("step");
-                walkTxt.setText("발걸음 수: "+step);
-                Log.d("만보기","종료 후 작동중 체크용-walk");
+                walkTxt.setText(""+step);
+                //Log.d("만보기","종료 후 작동중 체크용-walk");
             }
         }
     };
@@ -742,11 +591,12 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         protected void onReceiveResult(int resultCode, Bundle resultData) {
             super.onReceiveResult(resultCode, resultData);
             if(resultCode==15){
-                Log.d("걸은시간","종료 후 작동중 체크용-time");
+                //Log.d("걸은시간","종료 후 작동중 체크용-time");
                 runtime=resultData.getLong("time");
-                String m=String.valueOf(runtime/60000);
-                String s=String.format("%.1f",(float)(((runtime/100)%600))/10.0);
-                runtimeTxt.setText(m+"분 "+s+"초");
+                String h=String.format("%02d",runtime/(3600000));
+                String m=String.format("%02d",runtime/60000);
+                String s=String.format("%02d",(runtime/1000)%60);
+                runtimeTxt.setText(h+":"+m+":"+s);
             }
         }
     };
