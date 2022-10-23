@@ -68,6 +68,7 @@ public class SetLocationWalkActivity extends AppCompatActivity implements OnMapR
         setContentView(R.layout.activity_set_location_walk);
 
         mapFragmentFeed=(MapFragment)getSupportFragmentManager().findFragmentById(R.id.SetLocationMap);
+        marker=new Marker();
 
         locationSource = new FusedLocationSource(this, ACCESS_LOCATION_PERMISSION_REQUEST_CODE);
         fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
@@ -84,8 +85,19 @@ public class SetLocationWalkActivity extends AppCompatActivity implements OnMapR
                             requestName(cur);
                         }
                     }).start();
-
-                    marker=new Marker();
+                    marker.setPosition(cur);
+                    mapFragmentFeed.getMapAsync(SetLocationWalkActivity.this);
+                }
+                else{
+                    yval = 37.5666103;
+                    xval = 126.9783882;
+                    cur=new LatLng(yval,xval);
+                    new Thread(new Runnable() {
+                        @Override
+                        public void run() {
+                            requestName(cur);
+                        }
+                    }).start();
                     marker.setPosition(cur);
                     mapFragmentFeed.getMapAsync(SetLocationWalkActivity.this);
                 }
@@ -133,8 +145,10 @@ public class SetLocationWalkActivity extends AppCompatActivity implements OnMapR
 
         this.naverMap=naverMap;
 
+
         CameraPosition cameraPosition=new CameraPosition(cur,17);
         naverMap.setCameraPosition(cameraPosition);
+
 
         naverMap.setLocationSource(locationSource);
         UiSettings uiSettings = naverMap.getUiSettings();

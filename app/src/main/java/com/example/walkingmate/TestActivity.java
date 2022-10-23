@@ -140,6 +140,14 @@ public class TestActivity extends AppCompatActivity implements OnMapReadyCallbac
                     cur=new LatLng(yval,xval);
                     mapFragmentFeed.getMapAsync(TestActivity.this);
                 }
+                else{
+                    yval = 37.5666103;
+                    xval = 126.9783882;
+                    marker=new Marker();
+                    marker.setPosition(new LatLng(yval,xval));
+                    cur=new LatLng(yval,xval);
+                    mapFragmentFeed.getMapAsync(TestActivity.this);
+                }
             }
         });
 
@@ -405,7 +413,7 @@ public class TestActivity extends AppCompatActivity implements OnMapReadyCallbac
         }
 
         //2개이상 위치선택한 상태에서 이동버튼이 아닌 탐색으로 지도 갱신시 새로 경로 탐색 진행
-        if(locList.size()>1&&coordlist!=null&&(!searchmove)){
+        if(locList.size()>1&&coordlist!=null&&(!searchmove)&&coordlist.size()>1){
             pathOverlay=new PathOverlay();
             pathOverlay.setColor(Color.BLUE);
             pathOverlay.setOutlineColor(Color.BLUE);
