@@ -84,11 +84,24 @@
                             android:text="picture" />
 
                         <FrameLayout
-                            android:background="@drawable/plusbtn"
+                            android:id="@+id/image_feedwrite"
+                            android:background="@color/transparent"
                             android:layout_marginHorizontal="40dp"
                             android:layout_gravity="center"
                             android:layout_width="match_parent"
-                            android:layout_height="200dp">
+                            android:layout_height="250dp">
+
+                            <TextView
+                                android:id="@+id/imagebackground"
+                                android:background="@drawable/plusbtn"
+                                android:gravity="center"
+                                android:textColor="@color/white"
+                                android:textSize="15dp"
+                                android:textStyle="bold"
+                                android:layout_gravity="center"
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:text="+ 버튼을 눌러 사진 추가" />
 
                             <androidx.viewpager2.widget.ViewPager2
                                 android:id="@+id/viewpager"
@@ -97,16 +110,52 @@
                                 android:clipChildren="false"
                                 android:layout_width="match_parent"
                                 android:layout_height="match_parent"
-                                android:scaleType="fitXY"
-                                android:layout_marginBottom="10dp"/>
+                                android:scaleType="fitXY">
+                            </androidx.viewpager2.widget.ViewPager2>
 
-                            <me.relex.circleindicator.CircleIndicator3
-                                android:id="@+id/indicator"
-                                android:layout_width="match_parent"
-                                android:layout_height="48dp"
-                                android:layout_marginBottom="10dp"
-                                android:layout_gravity="bottom"/>
                         </FrameLayout>
+
+                        <TextView
+                            android:textStyle="bold"
+                            android:layout_marginTop="5dp"
+                            android:id="@+id/curpage"
+                            android:gravity="center"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="0 / 0" />
+
+                        <LinearLayout
+                            android:layout_marginTop="10dp"
+                            android:layout_width="match_parent"
+                            android:layout_height="50dp"
+                            android:orientation="horizontal">
+
+                            <LinearLayout
+                                android:gravity="center"
+                                android:layout_marginHorizontal="100dp"
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:orientation="horizontal">
+
+                                <Button
+                                    android:textColor="@color/white"
+                                    android:layout_marginHorizontal="20dp"
+                                    android:background="@drawable/plusbtn"
+                                    android:id="@+id/delimage"
+                                    android:layout_width="40dp"
+                                    android:layout_height="40dp"
+                                    android:text="x" />
+
+                                <Button
+                                    android:textColor="@color/white"
+                                    android:layout_marginHorizontal="20dp"
+                                    android:background="@drawable/plusbtn"
+                                    android:id="@+id/addimage"
+                                    android:layout_width="40dp"
+                                    android:layout_height="40dp"
+                                    android:text="+" />
+                            </LinearLayout>
+                        </LinearLayout>
 
 
                         <EditText
@@ -120,6 +169,7 @@
                             android:padding="10dp"
                             android:hint="기록을 남겨주세요"
                             android:textSize="15dp"/>
+
 
                         <ListView
                             android:layout_marginHorizontal="40dp"
@@ -135,13 +185,13 @@
                             android:layout_height="150dp"/>
 
                         <Button
+                            android:id="@+id/finish_feedwrtie"
                             android:textStyle="bold"
                             android:textColor="@color/white"
                             android:textSize="30dp"
                             android:layout_marginVertical="20dp"
                             android:layout_marginHorizontal="50dp"
                             android:background="@drawable/orangebtn"
-                            android:id="@+id/button6"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:text="완료" />

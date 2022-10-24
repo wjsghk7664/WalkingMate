@@ -1,6 +1,7 @@
 package com.example.walkingmate;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
@@ -12,6 +13,8 @@ import androidx.viewpager2.widget.ViewPager2;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.text.Layout;
@@ -28,6 +31,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.naver.maps.geometry.LatLng;
 import com.naver.maps.geometry.LatLngBounds;
@@ -41,9 +45,9 @@ import com.naver.maps.map.overlay.PathOverlay;
 import com.naver.maps.map.util.MarkerIcons;
 
 
+import java.io.InputStream;
 import java.util.ArrayList;
 
-import me.relex.circleindicator.CircleIndicator3;
 
 public class FeedWrite_Activity extends AppCompatActivity implements OnMapReadyCallback {
 
@@ -53,7 +57,7 @@ public class FeedWrite_Activity extends AppCompatActivity implements OnMapReadyC
 
     FeedData feedData;
 
-    TextView distxt,steptxt,timetxt, datetxt,pagetxt;
+    TextView distxt,steptxt,timetxt, datetxt,imageback, curpage;
     ListView listView;
     EditText record;
 
@@ -62,14 +66,15 @@ public class FeedWrite_Activity extends AppCompatActivity implements OnMapReadyC
     int selected=-1;
 
     MapFragment mapFragmentFeed;
+    ArrayList<imageFragment> fragments=new ArrayList<>();
 
 
     ViewPager2 viewPager2;
     FragmentStateAdapter fragmentStateAdapter;
-    int pagenum;
-    CircleIndicator3 circleIndicator3;
 
+    int curposition=0;
 
+    Bitmap bmp;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -91,6 +96,8 @@ public class FeedWrite_Activity extends AppCompatActivity implements OnMapReadyC
 
         record=findViewById(R.id.record_feedwrite);
 
+
+        imageback=findViewById(R.id.imagebackground);
 
         distxt=findViewById(R.id.distext_feed);
         steptxt=findViewById(R.id.feedstep);
@@ -119,6 +126,8 @@ public class FeedWrite_Activity extends AppCompatActivity implements OnMapReadyC
             }
         });
 
+        curpage=findViewById(R.id.curpage);
+
 
         listView=findViewById(R.id.loclist_feed);
         locAdapter locAdapter=new locAdapter(this);
@@ -127,48 +136,126 @@ public class FeedWrite_Activity extends AppCompatActivity implements OnMapReadyC
 
 
         viewPager2=findViewById(R.id.viewpager);
+        setviewpager();
+
+        findViewById(R.id.finish_feedwrtie).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+            }
+        });
+
+        findViewById(R.id.addimage).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                Intent galleryintent=new Intent();
+                                galleryintent.setType("image/*");
+                                galleryintent.setAction(Intent.ACTION_GET_CONTENT);
+                                startActivityForResult(galleryintent,1);
+
+                            }
+                        });
+                    }
+                }).start();
+            }
+        });
+        findViewById(R.id.delimage).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if(fragments.size()<1){
+                    return;
+                }
+                else{
+                    new Thread(new Runnable() {
+                        @Override
+                        public void run() {
+                            runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    fragments.remove(curposition);
+                                    setviewpager();
+                                    if(fragments.size()==0){
+                                        imageback.setVisibility(View.VISIBLE);
+                                        curpage.setText("0 / 0");
+                                    }
+                                    else{
+                                        curpage.setText(String.format("%d / %d",curposition+1,fragments.size()));
+                                    }
+                                    Log.d("피드기록 삭제", ""+fragments.size());
+                                }
+                            });
+                        }
+                    }).start();
+                }
+
+            }
+        });
+
+    }
+
+    public void setviewpager(){
+
+        viewPager2.setAdapter(null);
         fragmentStateAdapter=new MyAdapter(this);
         viewPager2.setAdapter(fragmentStateAdapter);
 
-        circleIndicator3=findViewById(R.id.indicator);
-        circleIndicator3.setViewPager(viewPager2);
-        circleIndicator3.createIndicators(2,0);
-
         viewPager2.setOrientation(ViewPager2.ORIENTATION_HORIZONTAL);
-        viewPager2.setCurrentItem(0);
+        viewPager2.setCurrentItem(curposition,false);
         viewPager2.registerOnPageChangeCallback(new ViewPager2.OnPageChangeCallback() {
-            @Override
-            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
-                super.onPageScrolled(position, positionOffset, positionOffsetPixels);
-                if (positionOffsetPixels == 0) {
-                    viewPager2.setCurrentItem(position);
-                }
-            }
 
             @Override
             public void onPageSelected(int position) {
                 super.onPageSelected(position);
-                circleIndicator3.animatePageSelected(position);
+                curposition=position;
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                curpage.setText(String.format("%d / %d",curposition+1,fragments.size()));
+                            }
+                        });
+                    }
+                }).start();
+                Log.d("피드기록 위치",""+position);
             }
         });
 
+    }
 
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if(resultCode==RESULT_OK){
+            try{
+                InputStream in=getContentResolver().openInputStream(data.getData());
+                bmp= BitmapFactory.decodeStream(in);
+                fragments.add(new imageFragment(fragments.size()+1,bmp));
+                curposition=fragments.size()-1;
+                setviewpager();
+                imageback.setVisibility(View.INVISIBLE);
+                curpage.setText(String.format("%d / %d",curposition+1,fragments.size()));
+                in.close();
+            }catch (Exception e){e.printStackTrace();}
+        }
     }
 
     public class MyAdapter extends FragmentStateAdapter {
 
-        ArrayList<Fragment> fragments;
 
         public MyAdapter(FragmentActivity fa) {
             super(fa);
-            fragments=new ArrayList<>();
-            fragments.add(new imageFragment());
-            fragments.add(new imageFragment());
         }
 
         @NonNull
         @Override
-        public Fragment createFragment(int position) {
+        public imageFragment createFragment(int position) {
             return fragments.get(position);
         }
 
@@ -176,6 +263,7 @@ public class FeedWrite_Activity extends AppCompatActivity implements OnMapReadyC
         public int getItemCount() {
             return fragments.size();
         }
+
 
     }
 

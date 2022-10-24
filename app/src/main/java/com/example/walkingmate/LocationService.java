@@ -12,6 +12,7 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.BitmapFactory;
+import android.graphics.Color;
 import android.media.MediaSession2Service;
 import android.os.Build;
 import android.os.Bundle;
@@ -81,6 +82,8 @@ public class LocationService extends Service {
         builder.setSmallIcon(R.mipmap.app_icon_asset);
         builder.setContentTitle("Walking Mate");
         builder.setDefaults(NotificationCompat.DEFAULT_ALL);
+        builder.setVisibility(NotificationCompat.VISIBILITY_PUBLIC);
+        builder.setOngoing(true);
         builder.setContentText("산책기록중...");
         builder.setContentIntent(pendingIntent);
         builder.setAutoCancel(false);

@@ -4,11 +4,11 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:id="@+id/fragment_layout"
     tools:context=".imageFragment">
 
     <ImageView
-        android:id="@+id/imageView"
+        android:id="@+id/imageview_feedfrag"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:src="@drawable/add_marker_icon" />
+        android:layout_height="match_parent"/>
 </FrameLayout>
