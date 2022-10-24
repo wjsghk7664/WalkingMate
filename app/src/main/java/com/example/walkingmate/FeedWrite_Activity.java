@@ -2,6 +2,13 @@ package com.example.walkingmate;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentActivity;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentPagerAdapter;
+import androidx.viewpager.widget.ViewPager;
+import androidx.viewpager2.adapter.FragmentStateAdapter;
+import androidx.viewpager2.widget.ViewPager2;
 
 import android.content.Context;
 import android.content.Intent;
@@ -12,7 +19,10 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.BaseAdapter;
+import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -33,6 +43,8 @@ import com.naver.maps.map.util.MarkerIcons;
 
 import java.util.ArrayList;
 
+import me.relex.circleindicator.CircleIndicator3;
+
 public class FeedWrite_Activity extends AppCompatActivity implements OnMapReadyCallback {
 
     private NaverMap naverMap;
@@ -41,8 +53,9 @@ public class FeedWrite_Activity extends AppCompatActivity implements OnMapReadyC
 
     FeedData feedData;
 
-    TextView distxt,steptxt,timetxt, datetxt;
+    TextView distxt,steptxt,timetxt, datetxt,pagetxt;
     ListView listView;
+    EditText record;
 
     ArrayList<Marker> markers;
 
@@ -50,10 +63,20 @@ public class FeedWrite_Activity extends AppCompatActivity implements OnMapReadyC
 
     MapFragment mapFragmentFeed;
 
+
+    ViewPager2 viewPager2;
+    FragmentStateAdapter fragmentStateAdapter;
+    int pagenum;
+    CircleIndicator3 circleIndicator3;
+
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_feed_write);
+
+        getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN);
 
         Intent getFeed=getIntent();
         String fileName=getFeed.getStringExtra("filename");
@@ -65,6 +88,9 @@ public class FeedWrite_Activity extends AppCompatActivity implements OnMapReadyC
 
         mapFragmentFeed=(MapFragment)getSupportFragmentManager().findFragmentById(R.id.feedmap);
         mapFragmentFeed.getMapAsync(this);
+
+        record=findViewById(R.id.record_feedwrite);
+
 
         distxt=findViewById(R.id.distext_feed);
         steptxt=findViewById(R.id.feedstep);
@@ -99,7 +125,60 @@ public class FeedWrite_Activity extends AppCompatActivity implements OnMapReadyC
         listView.setAdapter(locAdapter);
         setListViewHeightBasedOnItems(listView);
 
+
+        viewPager2=findViewById(R.id.viewpager);
+        fragmentStateAdapter=new MyAdapter(this);
+        viewPager2.setAdapter(fragmentStateAdapter);
+
+        circleIndicator3=findViewById(R.id.indicator);
+        circleIndicator3.setViewPager(viewPager2);
+        circleIndicator3.createIndicators(2,0);
+
+        viewPager2.setOrientation(ViewPager2.ORIENTATION_HORIZONTAL);
+        viewPager2.setCurrentItem(0);
+        viewPager2.registerOnPageChangeCallback(new ViewPager2.OnPageChangeCallback() {
+            @Override
+            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+                super.onPageScrolled(position, positionOffset, positionOffsetPixels);
+                if (positionOffsetPixels == 0) {
+                    viewPager2.setCurrentItem(position);
+                }
+            }
+
+            @Override
+            public void onPageSelected(int position) {
+                super.onPageSelected(position);
+                circleIndicator3.animatePageSelected(position);
+            }
+        });
+
+
     }
+
+    public class MyAdapter extends FragmentStateAdapter {
+
+        ArrayList<Fragment> fragments;
+
+        public MyAdapter(FragmentActivity fa) {
+            super(fa);
+            fragments=new ArrayList<>();
+            fragments.add(new imageFragment());
+            fragments.add(new imageFragment());
+        }
+
+        @NonNull
+        @Override
+        public Fragment createFragment(int position) {
+            return fragments.get(position);
+        }
+
+        @Override
+        public int getItemCount() {
+            return fragments.size();
+        }
+
+    }
+
 
     @Override
     public void onMapReady(@NonNull NaverMap naverMap) {
