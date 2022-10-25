@@ -19,6 +19,7 @@ import android.graphics.Color;
 import android.os.Bundle;
 import android.text.Layout;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -26,6 +27,7 @@ import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.BaseAdapter;
 import android.widget.EditText;
+import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -57,9 +59,12 @@ public class FeedWrite_Activity extends AppCompatActivity implements OnMapReadyC
 
     FeedData feedData;
 
-    TextView distxt,steptxt,timetxt, datetxt,imageback, curpage;
+    TextView distxt,steptxt,timetxt, datetxt, curpage;
+    ImageView imageback;
     ListView listView;
-    EditText record;
+    MbEditText record;
+
+    FrameLayout imagebacklayout;
 
     ArrayList<Marker> markers;
 
@@ -75,6 +80,10 @@ public class FeedWrite_Activity extends AppCompatActivity implements OnMapReadyC
     int curposition=0;
 
     Bitmap bmp;
+
+    String weather="sunny";
+    String emotion="smile";
+    ImageButton weatherbtn,emotionbtn;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -96,8 +105,25 @@ public class FeedWrite_Activity extends AppCompatActivity implements OnMapReadyC
 
         record=findViewById(R.id.record_feedwrite);
 
+        record.setOnKeyListener(new View.OnKeyListener() {
+            @Override
+            public boolean onKey(View v, int keyCode, KeyEvent event) {
+                if (event.getAction() == KeyEvent.ACTION_DOWN) {
+                    if (keyCode == KeyEvent.KEYCODE_BACK) {
+                        record.clearFocus();
+                        InputMethodManager imm =
+                                (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
+                        imm.hideSoftInputFromWindow(record.getWindowToken(), 0);
+                        return true;
+                    }
+                }
+                return false;
+            }
+        });
+
 
         imageback=findViewById(R.id.imagebackground);
+        imagebacklayout=findViewById(R.id.image_feedwrite);
 
         distxt=findViewById(R.id.distext_feed);
         steptxt=findViewById(R.id.feedstep);
@@ -112,12 +138,16 @@ public class FeedWrite_Activity extends AppCompatActivity implements OnMapReadyC
         String timestr=String.format("%s:%s ~ %s:%s",start[3].replace("시",""),
                 start[4].replace("분",""),end[3].replace("시",""),end[4].replace("분",""));
 
-        String datestr=String.format("%s %s %s",start[0],start[1],start[2]);
+        String datestr=feedData.timecheck[0].replace("_", " ");
 
         distxt.setText(diststr);
         steptxt.setText(stepstr);
         timetxt.setText(timestr);
         datetxt.setText(datestr);
+
+
+
+
 
         findViewById(R.id.back_feedwrite).setOnClickListener(new View.OnClickListener() {
             @Override
@@ -181,6 +211,7 @@ public class FeedWrite_Activity extends AppCompatActivity implements OnMapReadyC
                                     setviewpager();
                                     if(fragments.size()==0){
                                         imageback.setVisibility(View.VISIBLE);
+                                        imagebacklayout.setBackgroundResource(R.drawable.plusbtn);
                                         curpage.setText("0 / 0");
                                     }
                                     else{
@@ -196,7 +227,29 @@ public class FeedWrite_Activity extends AppCompatActivity implements OnMapReadyC
             }
         });
 
+        emotionbtn=findViewById(R.id.emotion);
+        weatherbtn=findViewById(R.id.weather);
+
+        emotionbtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent goemo=new Intent(FeedWrite_Activity.this, SelectFeedActivity.class);
+                goemo.putExtra("action",2);
+                startActivityForResult(goemo,2);
+            }
+        });
+        weatherbtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent goweath=new Intent(FeedWrite_Activity.this, SelectFeedActivity.class);
+                goweath.putExtra("action",3);
+                startActivityForResult(goweath,3);
+            }
+        });
+
     }
+
+
 
     public void setviewpager(){
 
@@ -233,16 +286,62 @@ public class FeedWrite_Activity extends AppCompatActivity implements OnMapReadyC
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if(resultCode==RESULT_OK){
-            try{
-                InputStream in=getContentResolver().openInputStream(data.getData());
-                bmp= BitmapFactory.decodeStream(in);
-                fragments.add(new imageFragment(fragments.size()+1,bmp));
-                curposition=fragments.size()-1;
-                setviewpager();
-                imageback.setVisibility(View.INVISIBLE);
-                curpage.setText(String.format("%d / %d",curposition+1,fragments.size()));
-                in.close();
-            }catch (Exception e){e.printStackTrace();}
+            if(requestCode==2){
+                int tmpemonum=data.getIntExtra("emotion",4);
+                switch(tmpemonum){
+                    case 0:
+                        emotion="angry"; emotionbtn.setImageResource(R.drawable.feeling_angry_xml); break;
+                    case 1:
+                        emotion="crying"; emotionbtn.setImageResource(R.drawable.feeling_crying_xml);break;
+                    case 2:
+                        emotion="heart"; emotionbtn.setImageResource(R.drawable.feeling_heart_xml);break;
+                    case 3:
+                        emotion="neutral"; emotionbtn.setImageResource(R.drawable.feeling_neutral_xml);break;
+                    case 4:
+                        emotion="smile"; emotionbtn.setImageResource(R.drawable.feeling_smiling_xml);break;
+                    case 5:
+                        emotion="tired"; emotionbtn.setImageResource(R.drawable.feeling_tired_xml);break;
+                    default:
+                        emotion="smile"; emotionbtn.setImageResource(R.drawable.feeling_smiling_xml);break;
+                }
+
+            }
+        else if(requestCode==3){
+                int tmpweathnum=data.getIntExtra("weather",6);
+                switch (tmpweathnum){
+                    case 0:
+                        weather="cloudy"; weatherbtn.setImageResource(R.drawable.weather_cloudy_xml);break;
+                    case 1:
+                        weather="fog";weatherbtn.setImageResource(R.drawable.weather_fog_xml);break;
+                    case 2:
+                        weather="moon";weatherbtn.setImageResource(R.drawable.weather_moon_xml);break;
+                    case 3:
+                        weather="rainbow";weatherbtn.setImageResource(R.drawable.weather_rainbow_xml);break;
+                    case 4:
+                        weather="rainy";weatherbtn.setImageResource(R.drawable.weather_rainy_xml);break;
+                    case 5:
+                        weather="snow";weatherbtn.setImageResource(R.drawable.weather_snow_xml);break;
+                    case 6:
+                        weather="sunny";weatherbtn.setImageResource(R.drawable.weather_sunny_xml);break;
+                    case 7:
+                        weather="windy";weatherbtn.setImageResource(R.drawable.weather_windy_xml);break;
+                    default:
+                        weather="sunny"; weatherbtn.setImageResource(R.drawable.weather_sunny_xml);break;
+                }
+            }
+            else{
+                try{
+                    InputStream in=getContentResolver().openInputStream(data.getData());
+                    bmp= BitmapFactory.decodeStream(in);
+                    fragments.add(new imageFragment(fragments.size()+1,bmp));
+                    curposition=fragments.size()-1;
+                    setviewpager();
+                    imageback.setVisibility(View.INVISIBLE);
+                    imagebacklayout.setBackgroundResource(R.color.transparent);
+                    curpage.setText(String.format("%d / %d",curposition+1,fragments.size()));
+                    in.close();
+                }catch (Exception e){e.printStackTrace();}
+            }
         }
     }
 

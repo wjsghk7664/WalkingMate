@@ -27,6 +27,14 @@
         android:usesCleartextTraffic="true"
         tools:targetApi="31">
         <activity
+            android:theme="@android:style/Theme.Dialog"
+            android:name=".SelectFeedActivity"
+            android:exported="false">
+            <meta-data
+                android:name="android.app.lib_name"
+                android:value="" />
+        </activity>
+        <activity
             android:name=".TripwriteActivity"
             android:exported="false">
             <meta-data
