@@ -21,6 +21,7 @@
                 android:layout_height="49dp"
                 android:orientation="horizontal"
                 android:background="@drawable/layout_divider">
+                
                 <ImageButton
                     android:background="@color/transparent"
                     android:id="@+id/back_feedwrite"
@@ -154,7 +155,7 @@
                         </LinearLayout>
 
 
-                        <com.example.walkingmate.MbEditText
+                        <EditText
                         android:background="@drawable/writebox_blur"
                         android:gravity="start"
                         android:id="@+id/record_feedwrite"
