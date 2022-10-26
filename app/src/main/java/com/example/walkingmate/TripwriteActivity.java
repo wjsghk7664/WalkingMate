@@ -53,6 +53,7 @@ public class TripwriteActivity extends AppCompatActivity implements OnMapReadyCa
 
     FirebaseFirestore fb=FirebaseFirestore.getInstance();
     CollectionReference tripwrite=fb.collection("tripdata");
+    CollectionReference triplist=fb.collection("tripdatalist");
 
     EditText title,montxt,daytxt,hourtxt,mintxt,takentxt;
     Spinner gender,age;
@@ -141,7 +142,7 @@ public class TripwriteActivity extends AppCompatActivity implements OnMapReadyCa
                     genderstr=gender.getSelectedItem().toString();
                     titlestr=title.getText().toString();
                     sendData();
-                    finish();
+                    //finish();
                 }
                 else{
                     Toast.makeText(TripwriteActivity.this,"입력값이 잘못되었습니다.",Toast.LENGTH_SHORT).show();
@@ -158,6 +159,7 @@ public class TripwriteActivity extends AppCompatActivity implements OnMapReadyCa
 
 
     }
+
 
     public void sendData(){
         HashMap<String, Object> data=new HashMap<>();
@@ -178,6 +180,9 @@ public class TripwriteActivity extends AppCompatActivity implements OnMapReadyCa
         data.put("minute", min);
         data.put("takentime", taken);
         data.put("locations_name",locnames);
+
+        triplist.document(documentID).set(data);
+
         data.put("locations_coordinate",loccoords);
         data.put("route",routecoords);
         tripwrite.document(documentID).set(data);
