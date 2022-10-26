@@ -55,6 +55,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
@@ -102,6 +103,8 @@ public class TestActivity extends AppCompatActivity implements OnMapReadyCallbac
 
     int selecteditem=7;//index 7은 존재할 수 없으므로 미클릭된 상태 값으로 사용
 
+    ArrayList<LatLng> Check=new ArrayList<>();
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -113,6 +116,8 @@ public class TestActivity extends AppCompatActivity implements OnMapReadyCallbac
         searchmove=true;
 
         nameList=new ArrayList<>();
+
+        coordlist=new ArrayList<>();
 
         destList=findViewById(R.id.destList);
 
@@ -196,7 +201,6 @@ public class TestActivity extends AppCompatActivity implements OnMapReadyCallbac
                                 requestName(cur);
                                 if(locList.size()>1){
                                     RequestTmap();
-
                                 }
                             }
                         }).start();
@@ -209,6 +213,9 @@ public class TestActivity extends AppCompatActivity implements OnMapReadyCallbac
         reqroute.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                if(coordlist==null||coordlist.size()==0){
+                    Toast.makeText(getApplicationContext(),"경로 탐색이 지원되지 않는 목적지가 포함되어 있습니다.",Toast.LENGTH_SHORT).show();
+                }
                 setmarkers=true;
                 for(int i=0; i<markers.size(); ++i){
                     markers.get(i).setMap(null);
@@ -226,6 +233,17 @@ public class TestActivity extends AppCompatActivity implements OnMapReadyCallbac
                     return;
                 }
                 else{
+                    while(coordlist.size()>5000){
+                        ArrayList<LatLng> tmp=new ArrayList();
+                        Log.d("여행루트",coordlist.size()+"");
+                        for(int i=0; i<coordlist.size(); ++i){
+                            if(i%4!=0){
+                                tmp.add(coordlist.get(i));
+                            }
+                        }
+                        coordlist=tmp;
+                    }
+                    Log.d("여행루트_최종",coordlist.size()+"");
                     Intent finintent=new Intent(TestActivity.this,TripwriteActivity.class);
                     finintent.putExtra("routecoords",coordlist);
                     finintent.putExtra("loccoords",locList);

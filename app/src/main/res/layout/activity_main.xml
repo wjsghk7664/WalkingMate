@@ -10,7 +10,7 @@
 
     <LinearLayout
         android:gravity="center"
-        android:layout_weight="3"
+        android:layout_weight="2"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:orientation="vertical">
@@ -76,6 +76,12 @@
             android:text="UI test"
 
             />
+
+        <Button
+            android:id="@+id/gofb"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Firebase Test" />
 
     </LinearLayout>
 

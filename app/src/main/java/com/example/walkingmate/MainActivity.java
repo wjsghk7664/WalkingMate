@@ -82,6 +82,13 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+        findViewById(R.id.gofb).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                startActivity(new Intent(MainActivity.this,firebasetestActivity.class));
+            }
+        });
+
 
 
 

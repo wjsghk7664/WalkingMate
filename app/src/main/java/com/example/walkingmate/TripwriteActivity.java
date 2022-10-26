@@ -11,6 +11,7 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.PointF;
 import android.os.Bundle;
+import android.os.SystemClock;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
@@ -28,6 +29,8 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.FirebaseFirestore;
 import com.naver.maps.geometry.LatLng;
 import com.naver.maps.geometry.LatLngBounds;
 import com.naver.maps.map.CameraUpdate;
@@ -44,8 +47,12 @@ import org.w3c.dom.Text;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 
 public class TripwriteActivity extends AppCompatActivity implements OnMapReadyCallback {
+
+    FirebaseFirestore fb=FirebaseFirestore.getInstance();
+    CollectionReference tripwrite=fb.collection("tripdata");
 
     EditText title,montxt,daytxt,hourtxt,mintxt,takentxt;
     Spinner gender,age;
@@ -133,8 +140,8 @@ public class TripwriteActivity extends AppCompatActivity implements OnMapReadyCa
                     agestr=age.getSelectedItem().toString();
                     genderstr=gender.getSelectedItem().toString();
                     titlestr=title.getText().toString();
-                    //입력값이 정상인 경우
-                    Log.d("여행 글쓰기","날짜"+String.format("%02d/%02d_%02d:%02d_이동시간:%d분_성별:%s_연령:%s_제목:%s",mon,day,hour,min,taken,genderstr,agestr,titlestr));
+                    sendData();
+                    finish();
                 }
                 else{
                     Toast.makeText(TripwriteActivity.this,"입력값이 잘못되었습니다.",Toast.LENGTH_SHORT).show();
@@ -150,6 +157,30 @@ public class TripwriteActivity extends AppCompatActivity implements OnMapReadyCa
 
 
 
+    }
+
+    public void sendData(){
+        HashMap<String, Object> data=new HashMap<>();
+
+        long now = System.currentTimeMillis();
+        Date date = new Date(now);
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmmss");
+
+        String documentID= sdf.format(date);//나중에 뒤에 유저아이디 추가
+        Log.d("테스트",documentID);
+        //data.put("userid, userid);
+        data.put("title",titlestr);
+        data.put("age",agestr);
+        data.put("gender",genderstr);
+        data.put("month", mon);
+        data.put("day", day);
+        data.put("hour", hour);
+        data.put("minute", min);
+        data.put("takentime", taken);
+        data.put("locations_name",locnames);
+        data.put("locations_coordinate",loccoords);
+        data.put("route",routecoords);
+        tripwrite.document(documentID).set(data);
     }
 
     //현재 시간을 힌트로 표시
@@ -257,16 +288,22 @@ public class TripwriteActivity extends AppCompatActivity implements OnMapReadyCa
         });
 
         if(routecoords!=null){
+            Log.d("여행게시물",routecoords.size()+"");
+            LatLng[] range;
             pathOverlay.setMap(null);
+            if(routecoords.size()>0){
+                pathOverlay=new PathOverlay();
+                pathOverlay.setColor(Color.BLUE);
+                pathOverlay.setOutlineColor(Color.BLUE);
+                pathOverlay.setWidth(5);
 
-            pathOverlay=new PathOverlay();
-            pathOverlay.setColor(Color.BLUE);
-            pathOverlay.setOutlineColor(Color.BLUE);
-            pathOverlay.setWidth(5);
-
-            pathOverlay.setCoords(routecoords);
-            pathOverlay.setMap(naverMap);
-            LatLng[] range=getMiddle(routecoords);
+                pathOverlay.setCoords(routecoords);
+                pathOverlay.setMap(naverMap);
+                range=getMiddle(routecoords);
+            }
+            else{
+                range=getMiddle(loccoords);
+            }
             CameraUpdate cameraUpdate =CameraUpdate.fitBounds(new LatLngBounds(range[0],range[1]),50,100,50,50);
             naverMap.moveCamera(cameraUpdate);
         }
