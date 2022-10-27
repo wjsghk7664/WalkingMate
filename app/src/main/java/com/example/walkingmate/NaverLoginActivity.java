@@ -198,6 +198,8 @@ public class NaverLoginActivity extends AppCompatActivity {
             user.put("gender",model.getGender());
             user.put("birthyear",model.getBirthyear());
 
+            Log.d(TAG, model.getId());
+
             db.collection("users").document(model.getId())
                     .set(user)
                     .addOnSuccessListener(new OnSuccessListener<Void>() {

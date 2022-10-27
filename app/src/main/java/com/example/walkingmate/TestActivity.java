@@ -220,10 +220,12 @@ public class TestActivity extends AppCompatActivity implements OnMapReadyCallbac
                 for(int i=0; i<markers.size(); ++i){
                     markers.get(i).setMap(null);
                 }
-
                 mapFragmentFeed.getMapAsync(TestActivity.this);
+
             }
         });
+
+
 
         findViewById(R.id.finish_setroute).setOnClickListener(new View.OnClickListener() {
             @Override

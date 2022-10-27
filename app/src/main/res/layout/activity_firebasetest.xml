@@ -44,9 +44,16 @@
                 android:text="go" />
         </LinearLayout>
 
+        <Button
+            android:id="@+id/delfirelist"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="선택항목 삭제" />
+
     </LinearLayout>
 
     <ListView
+        android:choiceMode="multipleChoice"
         android:id="@+id/doculist"
         android:layout_width="match_parent"
         android:layout_height="0dp"

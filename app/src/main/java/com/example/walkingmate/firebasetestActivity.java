@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.os.SystemClock;
 import android.text.Layout;
 import android.util.Log;
+import android.util.SparseBooleanArray;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
@@ -71,46 +72,68 @@ public class firebasetestActivity extends AppCompatActivity {
                     for(QueryDocumentSnapshot document: task.getResult()){
                         triplist.add(document.getId());
                     }
-                    ArrayAdapter arrayAdapter=new ArrayAdapter(firebasetestActivity.this, android.R.layout.simple_list_item_1,triplist);
+                    ArrayAdapter arrayAdapter=new ArrayAdapter(firebasetestActivity.this, android.R.layout.simple_list_item_multiple_choice,triplist);
                     doculist.setAdapter(arrayAdapter);
+
                     doculist.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                         @Override
                         public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                            editText.setText((String)adapterView.getItemAtPosition(i));
+                        }
+                    });
+
+                    findViewById(R.id.delfirelist).setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+
+                            SparseBooleanArray checkselected = doculist.getCheckedItemPositions();
+                            int count= arrayAdapter.getCount();
+                            String[] result={""};
+                            for(int i=count-1; i>=0; --i){
+                                if(checkselected.get(i)){
+                                    String selectedId=(String)doculist.getItemAtPosition(i);
+
+                                    cr.document(selectedId).delete().addOnSuccessListener(new OnSuccessListener<Void>() {
+                                        @Override
+                                        public void onSuccess(Void unused) {
+                                            result[0]+="tripdata에서 삭제완료";
+                                        }
+                                    });
+                                    crl.document(selectedId).delete().addOnSuccessListener(new OnSuccessListener<Void>() {
+                                        @Override
+                                        public void onSuccess(Void unused) {
+                                            result[0]+="\ntripdatalist에서 삭제완료";
+                                        }
+                                    });
+                                    triplist.remove(selectedId);
+                                    arrayAdapter.notifyDataSetChanged();
+                                }
+                            }
+                            state.setText(result[0]);
+                            doculist.clearChoices();
+                        }
+                    });
+
+                    findViewById(R.id.startTestbtn).setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            listtime[0]=SystemClock.currentThreadTimeMillis();
                             seldocument.setText("로딩중");
-                            String selectedId=(String)adapterView.getItemAtPosition(i);
+                            String selectedId=editText.getText().toString();
                             cr.document(selectedId).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
                                 @Override
                                 public void onComplete(@NonNull Task<DocumentSnapshot> task) {
                                     DocumentSnapshot documentSnapshot=task.getResult();
                                     if(documentSnapshot.exists()){
-                                        seldocument.setText(documentSnapshot.toString());
+                                        listtime[1]=SystemClock.currentThreadTimeMillis();
+                                        ArrayList<String> locations= (ArrayList<String>) documentSnapshot.get("locations_name");
+                                        seldocument.setText(locations.get(0)+"\n성공"+(listtime[1]-listtime[0])/1000.0);
+                                    }
+                                    else{
+                                        seldocument.setText("실패");
                                     }
                                 }
                             });
-                        }
-                    });
-
-                    doculist.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
-                        @Override
-                        public boolean onItemLongClick(AdapterView<?> adapterView, View view, int i, long l) {
-                            String selectedId=(String)adapterView.getItemAtPosition(i);
-                            String[] result={""};
-                            cr.document(selectedId).delete().addOnSuccessListener(new OnSuccessListener<Void>() {
-                                @Override
-                                public void onSuccess(Void unused) {
-                                    result[0]+="tripdata에서 삭제완료";
-                                }
-                            });
-                            crl.document(selectedId).delete().addOnSuccessListener(new OnSuccessListener<Void>() {
-                                @Override
-                                public void onSuccess(Void unused) {
-                                    result[0]+="\ntripdatalist에서 삭제완료";
-                                    state.setText(result[0]);
-                                }
-                            });
-                            triplist.remove(selectedId);
-                            arrayAdapter.notifyDataSetChanged();
-                            return false;
                         }
                     });
                 }
