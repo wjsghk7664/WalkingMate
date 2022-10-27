@@ -37,7 +37,10 @@ public class UserData {
     String gender;
     String birthyear;
 
-    public UserData(String userid, String profileImage, String appname, String nickname, String name, String age, String gender, String birthyear) {
+    //타이틀은 없으면 "없음"으로
+    String title;
+
+    public UserData(String userid, String profileImage, String appname, String nickname, String name, String age, String gender, String birthyear, String title) {
         this.userid = userid;
         this.profileImage = profileImage;
         this.appname = appname;
@@ -46,6 +49,7 @@ public class UserData {
         this.age = age;
         this.gender = gender;
         this.birthyear = birthyear;
+        this.title=title;
     }
 
     public static HashMap<String,Object> getHashmap(UserData userData){
@@ -57,6 +61,7 @@ public class UserData {
         user.put("birthyear",userData.birthyear);
         user.put("profileImage",userData.profileImage);
         user.put("appname",userData.appname);
+        user.put("title", userData.title);
         return user;
     }
 
@@ -161,13 +166,13 @@ public class UserData {
         result+=userData.userid+"_"+userData.profileImage+"_"+
                 userData.appname+"_"+userData.nickname+"_"+
                 userData.name+"_"+userData.age+"_"+
-                userData.gender+"_"+userData.birthyear;
+                userData.gender+"_"+userData.birthyear+"_"+userData.title;
         return result;
     }
 
     public static UserData decode(String userDataString){
         String[] result=userDataString.split("_");
-        return new UserData(result[0],result[1],result[2],result[3],result[4],result[5],result[6],result[7]);
+        return new UserData(result[0],result[1],result[2],result[3],result[4],result[5],result[6],result[7],result[8]);
     }
 
 

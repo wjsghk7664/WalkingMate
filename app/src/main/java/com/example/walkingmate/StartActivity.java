@@ -309,7 +309,7 @@ public class StartActivity extends AppCompatActivity {
                         permlist.setText("접속중...");
                         UserData userDatatmp=new UserData(task.getResult().getId(), (String) task.getResult().get("profileImage"),
                                 (String) task.getResult().get("appname"), model.getNickname(),model.getName(),model.getAge(),
-                                model.getGender(),model.getBirthyear());
+                                model.getGender(),model.getBirthyear(),(String) task.getResult().get("title"));
                         UserData.saveData(userDatatmp,StartActivity.this);
 
                         new Thread(new Runnable() {

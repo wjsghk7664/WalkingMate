@@ -191,12 +191,13 @@ public class SettingProfileActivity extends AppCompatActivity {
                             user.put("birthyear",birthyear);
                             user.put("appname",finalappname);
                             user.put("profileImage",profileImage);
+                            user.put("title","없음");
 
                             db.collection("users").document(userid).set(user).addOnSuccessListener(new OnSuccessListener<Void>() {
                                 @Override
                                 public void onSuccess(Void unused) {
                                     Toast.makeText(getApplicationContext(),"회원가입 성공.",Toast.LENGTH_SHORT).show();
-                                    UserData.saveData(new UserData(userid,profileImage,appname,nickname,name,age,gender,birthyear),SettingProfileActivity.this);
+                                    UserData.saveData(new UserData(userid,profileImage,appname,nickname,name,age,gender,birthyear,"없음"),SettingProfileActivity.this);
                                     UserData.saveBitmapToJpeg(bitmap,SettingProfileActivity.this);
                                     startActivity(new Intent(SettingProfileActivity.this, MainActivity.class));
                                     finish();
