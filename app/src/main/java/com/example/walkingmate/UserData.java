@@ -163,15 +163,15 @@ public class UserData {
 
     public static String encode(UserData userData){
         String result="";
-        result+=userData.userid+"_"+userData.profileImage+"_"+
-                userData.appname+"_"+userData.nickname+"_"+
-                userData.name+"_"+userData.age+"_"+
-                userData.gender+"_"+userData.birthyear+"_"+userData.title;
+        result+=userData.userid+"@"+userData.profileImage+"@"+
+                userData.appname+"@"+userData.nickname+"@"+
+                userData.name+"@"+userData.age+"@"+
+                userData.gender+"@"+userData.birthyear+"@"+userData.title;
         return result;
     }
 
     public static UserData decode(String userDataString){
-        String[] result=userDataString.split("_");
+        String[] result=userDataString.split("@");
         return new UserData(result[0],result[1],result[2],result[3],result[4],result[5],result[6],result[7],result[8]);
     }
 

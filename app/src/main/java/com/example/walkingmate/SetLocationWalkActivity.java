@@ -128,6 +128,7 @@ public class SetLocationWalkActivity extends AppCompatActivity implements OnMapR
         findViewById(R.id.finish_setloc).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                Log.d("산책_좌표전송",cur.toString());
                 Intent finintent=new Intent(SetLocationWalkActivity.this,WalkWriteActivity.class);
                 finintent.putExtra("lat",cur.latitude);
                 finintent.putExtra("lon",cur.longitude);

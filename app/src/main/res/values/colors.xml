@@ -24,6 +24,7 @@
     <color name="writegray">#FFF5F5F5</color>  <!--연 회색류. 글자쓰기용 박스-->
     <color name="feedgreen">#FF7AFF97</color>   <!--연초록류. 피드페이지 이동거리-->
     <color name="darkgray">#FF494949</color>
+    <color name="blurblack">#22000000</color> <!--연검정, 로딩창용-->
 
 
 </resources>

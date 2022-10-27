@@ -36,7 +36,7 @@ import java.util.Set;
 public class WalkWriteActivity extends AppCompatActivity {
 
     FirebaseFirestore fb=FirebaseFirestore.getInstance();
-    CollectionReference walkdata=fb.collection("tripdata");
+    CollectionReference walkdata=fb.collection("walkdata");
 
     Button searchbtn, finishbtn;
     TextView startloctxt;
@@ -99,7 +99,7 @@ public class WalkWriteActivity extends AppCompatActivity {
 
                 }catch (NumberFormatException e){
                     e.printStackTrace();
-                    Toast.makeText(WalkWriteActivity.this,"입력값이 잘못되었습니다.",Toast.LENGTH_SHORT).show();
+                    Toast.makeText(WalkWriteActivity.this,"입력값이 잘못되었습니다. 입력란을 다시 확인해주세요.",Toast.LENGTH_SHORT).show();
                 }catch (Exception ee){
                     ee.printStackTrace();
                 }
@@ -111,7 +111,7 @@ public class WalkWriteActivity extends AppCompatActivity {
 
                     }
                 else{
-                    Toast.makeText(WalkWriteActivity.this,"입력값이 잘못되었습니다.",Toast.LENGTH_SHORT).show();
+                    Toast.makeText(WalkWriteActivity.this,"입력값이 잘못되었습니다. 입력란을 다시 확인해주세요.",Toast.LENGTH_SHORT).show();
                 }
             }
         });
@@ -121,17 +121,28 @@ public class WalkWriteActivity extends AppCompatActivity {
     public void sendData(){
         HashMap<String, Object> data=new HashMap<>();
 
+        UserData userData=UserData.loadData(WalkWriteActivity.this);
+        String usergender;
+        if(userData.gender.equals("M")){
+            usergender="남성";
+        }
+        else{
+            usergender="여성";
+        }
+
         long now = System.currentTimeMillis();
         Date date = new Date(now);
         SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmmss");
         String writetime=sdf.format(date);
 
-        String documentID= writetime;//나중에 뒤에 유저아이디 추가
+        Log.d("산책 유저아이디",userData.toString());
+
+        String documentID= writetime+"@"+userData.userid;//나중에 뒤에 유저아이디 추가
         Log.d("테스트",documentID);
         //아래 정보는 보는 사람 입장에서 필터링을 위함.
-        //data.put("userid, userid);
-        //data.put("userage", userage);
-        //data.put("usergender, usergender);
+        data.put("userid", userData.userid);
+        data.put("userage", userData.age);
+        data.put("usergender",usergender);
 
         data.put("writetime",writetime);
         data.put("age",age);
@@ -142,7 +153,7 @@ public class WalkWriteActivity extends AppCompatActivity {
         data.put("minute", min);
         data.put("takentime", taken_time);
         data.put("location_name",location);
-        data.put("location_coord",location);
+        data.put("location_coord",loccoord);
         walkdata.document(documentID).set(data).addOnSuccessListener(new OnSuccessListener<Void>() {
             @Override
             public void onSuccess(Void unused) {
@@ -152,6 +163,7 @@ public class WalkWriteActivity extends AppCompatActivity {
             @Override
             public void onFailure(@NonNull Exception e) {
                 Toast.makeText(getApplicationContext(),"작성 실패하였습니다.",Toast.LENGTH_SHORT).show();
+                Log.d("산책",e.toString());
             }
         });
     }
@@ -161,8 +173,8 @@ public class WalkWriteActivity extends AppCompatActivity {
             result -> {
                 if(result.getResultCode() ==RESULT_OK){
                     if(result.getData()!=null){
-                        loccoord=new LatLng(result.getData().getFloatExtra("lat",0),
-                                result.getData().getFloatExtra("lat",0));
+                        loccoord=new LatLng(result.getData().getDoubleExtra("lat",0),
+                                result.getData().getDoubleExtra("lat",0));
                         location=result.getData().getStringExtra("location");
                         startloctxt.setVisibility(View.VISIBLE);
                         pin_walk.setVisibility(View.VISIBLE);

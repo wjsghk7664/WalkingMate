@@ -16,6 +16,7 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
+import android.net.Uri;
 import android.os.Bundle;
 import android.text.Layout;
 import android.util.Log;
@@ -35,6 +36,16 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.gms.tasks.Continuation;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
 import com.naver.maps.geometry.LatLng;
 import com.naver.maps.geometry.LatLngBounds;
 import com.naver.maps.map.CameraPosition;
@@ -47,11 +58,21 @@ import com.naver.maps.map.overlay.PathOverlay;
 import com.naver.maps.map.util.MarkerIcons;
 
 
+import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
 
 
 public class FeedWrite_Activity extends AppCompatActivity implements OnMapReadyCallback {
+
+    FirebaseFirestore fb=FirebaseFirestore.getInstance();
+    CollectionReference feeddata=fb.collection("feed");
+    CollectionReference feedlist=fb.collection("feedlist");
+    FirebaseStorage storage=FirebaseStorage.getInstance();
+    StorageReference storageReference=storage.getReference();
 
     private NaverMap naverMap;
     LinearLayout FeedMapLayout;
@@ -59,10 +80,10 @@ public class FeedWrite_Activity extends AppCompatActivity implements OnMapReadyC
 
     FeedData feedData;
 
-    TextView distxt,steptxt,timetxt, datetxt, curpage;
+    TextView distxt,steptxt,timetxt, datetxt, curpage, loading;
     ImageView imageback;
     ListView listView;
-    MbEditText record;
+    EditText record;
 
     FrameLayout imagebacklayout;
 
@@ -83,7 +104,10 @@ public class FeedWrite_Activity extends AppCompatActivity implements OnMapReadyC
 
     String weather="sunny";
     String emotion="smile";
+    String content="";
     ImageButton weatherbtn,emotionbtn;
+
+    ArrayList<String> imgurls=new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -97,6 +121,8 @@ public class FeedWrite_Activity extends AppCompatActivity implements OnMapReadyC
 
         FeedData fd=new FeedData();
         feedData=fd.loadfeed(fileName,this);
+
+        loading=findViewById(R.id.loading_feed);
 
         markers=feedData.markerList;
 
@@ -171,6 +197,15 @@ public class FeedWrite_Activity extends AppCompatActivity implements OnMapReadyC
         findViewById(R.id.finish_feedwrtie).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                content=record.getText().toString();
+                if(content.equals("")){
+                    Toast.makeText(getApplicationContext(),"내용을 입력해주세요.",Toast.LENGTH_SHORT).show();
+                    return;
+                }
+                else{
+                    loading.setVisibility(View.VISIBLE);
+                    sendData();
+                }
             }
         });
 
@@ -247,6 +282,115 @@ public class FeedWrite_Activity extends AppCompatActivity implements OnMapReadyC
             }
         });
 
+    }
+
+    public void sendData(){
+        HashMap<String,Object> data=new HashMap<>();
+
+
+        UserData userData=UserData.loadData(FeedWrite_Activity.this);
+
+        long now = System.currentTimeMillis();
+        Date date = new Date(now);
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmmss");
+        String writetime=sdf.format(date);
+
+        Log.d("산책 유저아이디",userData.toString());
+
+        String documentID= writetime+"@"+userData.userid;//나중에 뒤에 유저아이디 추가
+        Log.d("테스트",documentID);
+        //아래 정보는 보는 사람 입장에서 필터링을 위함.
+        data.put("userid", userData.userid);
+        data.put("title", feedData.timecheck[0]);
+        data.put("writetime",writetime);
+
+        feedlist.document(documentID).set(data);
+
+        data.put("feeddata",FeedData.encodeFeed(feedData));
+        data.put("content",content);
+        data.put("weather",weather);
+        data.put("emotion",emotion);
+        for(int i=0; i<fragments.size(); ++i){
+            Bitmap tmp=fragments.get(i).bmp;
+            uploadImage(tmp,documentID,i);
+        }
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                while(true){
+                    try{
+                        Thread.sleep(100);
+                    }catch (Exception e){}
+                    if(imgurls.size()==fragments.size()){
+                        data.put("images",imgurls);
+                        feeddata.document(documentID).set(data).addOnSuccessListener(new OnSuccessListener<Void>() {
+                            @Override
+                            public void onSuccess(Void unused) {
+                                Log.d("피드_완료",imgurls.toString());
+                                Toast.makeText(getApplicationContext(),"작성 완료되었습니다.",Toast.LENGTH_SHORT).show();
+                                finish();
+                            }
+                        }).addOnFailureListener(new OnFailureListener() {
+                            @Override
+                            public void onFailure(@NonNull Exception e) {
+                                loading.setVisibility(View.INVISIBLE);
+                                Toast.makeText(getApplicationContext(),"작성 실패하였습니다.",Toast.LENGTH_SHORT).show();
+                                Log.d("피드_실패",e.toString());
+                            }
+                        });
+                        break;
+                    }
+                }
+
+            }
+        }).start();
+    }
+
+    public void uploadImage(Bitmap bitmap, String id, int idx){
+
+        //id는 게시물 id
+        StorageReference uploadRef=storageReference.child(id+"_"+idx+".jpg");
+
+        ByteArrayOutputStream baos=new ByteArrayOutputStream();
+        bitmap.compress(Bitmap.CompressFormat.JPEG,100,baos);
+        byte[] datas=baos.toByteArray();
+
+        UploadTask uploadTask=uploadRef.putBytes(datas);
+        uploadTask.addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                Toast.makeText(getApplicationContext(),"이미지 업로드 실패",Toast.LENGTH_SHORT).show();
+                Log.d("로그인_이미지실패",e.toString());
+            }
+        }).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+            @Override
+            public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+
+                Task<Uri> urlTask = uploadTask.continueWithTask(new Continuation<UploadTask.TaskSnapshot, Task<Uri>>() {
+                    @Override
+                    public Task<Uri> then(@NonNull Task<UploadTask.TaskSnapshot> task) throws Exception {
+                        if (!task.isSuccessful()) {
+                            throw task.getException();
+                        }
+
+                        // Continue with the task to get the download URL
+                        return uploadRef.getDownloadUrl();
+                    }
+                }).addOnCompleteListener(new OnCompleteListener<Uri>() {
+                    @Override
+                    public void onComplete(@NonNull Task<Uri> task) {
+                        if (task.isSuccessful()) {
+                            Uri downloadUri = task.getResult();
+                            imgurls.add(downloadUri.toString());
+                        } else {
+                            Toast.makeText(getApplicationContext(),"다시 시도해 주세요.",Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                });
+
+
+            }
+        });
     }
 
 

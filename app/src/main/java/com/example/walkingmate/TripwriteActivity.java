@@ -168,14 +168,27 @@ public class TripwriteActivity extends AppCompatActivity implements OnMapReadyCa
     public void sendData(){
         HashMap<String, Object> data=new HashMap<>();
 
+        UserData userData=UserData.loadData(TripwriteActivity.this);
+
+        String usergender;
+        if(userData.gender.equals("M")){
+            usergender="남성";
+        }
+        else{
+            usergender="여성";
+        }
+
         long now = System.currentTimeMillis();
         Date date = new Date(now);
         SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmmss");
         String writetime=sdf.format(date);
 
-        String documentID= writetime;//나중에 뒤에 유저아이디 추가
+        String documentID= writetime+"@"+userData.userid;
         Log.d("테스트",documentID);
-        //data.put("userid, userid);
+        data.put("userid", userData.userid);
+        data.put("userage", userData.age);
+        data.put("usergender",usergender);
+
         data.put("writetime",writetime);
         data.put("title",titlestr);
         data.put("age",agestr);
