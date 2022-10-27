@@ -2,6 +2,7 @@ package com.example.walkingmate;
 
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.ListPopupWindow;
 
@@ -20,14 +21,22 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.FirebaseFirestore;
 import com.naver.maps.geometry.LatLng;
 
 import java.lang.reflect.Field;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Set;
 
 public class WalkWriteActivity extends AppCompatActivity {
+
+    FirebaseFirestore fb=FirebaseFirestore.getInstance();
+    CollectionReference walkdata=fb.collection("tripdata");
 
     Button searchbtn, finishbtn;
     TextView startloctxt;
@@ -97,15 +106,54 @@ public class WalkWriteActivity extends AppCompatActivity {
                 if(CheckValues(month,day,hour,min,taken_time)){
                     age=agespin.getSelectedItem().toString();
                     gender=sexspin.getSelectedItem().toString();
-                    //입력값이 정상인 경우
-                    Log.d("산책 글쓰기","날짜"+String.format("%02d/%02d_%02d:%02d_이동시간:%d분_성별:%s_연령:%s",month,day,hour,min,taken_time,gender,age));
-                }
+                    sendData();
+                    finish();
+
+                    }
                 else{
                     Toast.makeText(WalkWriteActivity.this,"입력값이 잘못되었습니다.",Toast.LENGTH_SHORT).show();
                 }
             }
         });
 
+    }
+
+    public void sendData(){
+        HashMap<String, Object> data=new HashMap<>();
+
+        long now = System.currentTimeMillis();
+        Date date = new Date(now);
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmmss");
+        String writetime=sdf.format(date);
+
+        String documentID= writetime;//나중에 뒤에 유저아이디 추가
+        Log.d("테스트",documentID);
+        //아래 정보는 보는 사람 입장에서 필터링을 위함.
+        //data.put("userid, userid);
+        //data.put("userage", userage);
+        //data.put("usergender, usergender);
+
+        data.put("writetime",writetime);
+        data.put("age",age);
+        data.put("gender",gender);
+        data.put("month", month);
+        data.put("day", day);
+        data.put("hour", hour);
+        data.put("minute", min);
+        data.put("takentime", taken_time);
+        data.put("location_name",location);
+        data.put("location_coord",location);
+        walkdata.document(documentID).set(data).addOnSuccessListener(new OnSuccessListener<Void>() {
+            @Override
+            public void onSuccess(Void unused) {
+                Toast.makeText(getApplicationContext(),"작성 완료되었습니다.",Toast.LENGTH_SHORT).show();
+            }
+        }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                Toast.makeText(getApplicationContext(),"작성 실패하였습니다.",Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 
     private final ActivityResultLauncher<Intent> getsearchResult= registerForActivityResult(

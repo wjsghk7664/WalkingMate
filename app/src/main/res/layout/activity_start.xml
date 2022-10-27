@@ -10,18 +10,68 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="@color/orange"
-        android:gravity="center"
         android:orientation="vertical">
 
-        <TextView
-            android:id="@+id/StartText"
+        <LinearLayout
+            android:gravity="bottom"
+            android:layout_weight="1"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="40dp"
-            android:gravity="start"
-            android:text="WALKING\nMATE"
-            android:textColor="@color/white"
-            android:textSize="40dp"
-            android:textStyle="bold" />
+            android:layout_height="0dp"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/StartText"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="40dp"
+                android:gravity="start"
+                android:text="WALKING\nMATE"
+                android:textColor="@color/white"
+                android:textSize="40dp"
+                android:textStyle="bold" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:gravity="center|bottom"
+            android:layout_weight="1"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:orientation="vertical">
+
+            <TextView
+                android:visibility="invisible"
+                android:textColor="@color/white"
+                android:textSize="15dp"
+                android:id="@+id/permlist"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="TextView" />
+            <Button
+                android:textColor="@color/white"
+                android:background="@drawable/plusbtn"
+                android:id="@+id/permission"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:text="권한설정이 필요합니다.(이동)"
+                android:visibility="invisible" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:gravity="center"
+            android:layout_weight="1"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:orientation="vertical">
+
+            <com.nhn.android.naverlogin.ui.view.OAuthLoginButton
+                android:id="@+id/buttonOAuthLoginImg"
+                android:layout_width="wrap_content"
+                android:layout_height="50dp"
+                android:visibility="invisible"/>
+
+        </LinearLayout>
+
     </LinearLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>

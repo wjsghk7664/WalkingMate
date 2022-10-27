@@ -29,6 +29,8 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.naver.maps.geometry.LatLng;
@@ -144,7 +146,7 @@ public class TripwriteActivity extends AppCompatActivity implements OnMapReadyCa
                     titlestr=title.getText().toString();
                     contentstr=contentstxt.getText().toString();
                     sendData();
-                    //finish();
+                    finish();
                 }
                 else{
                     Toast.makeText(TripwriteActivity.this,"입력값이 잘못되었습니다. 입력란을 다시 확인해주세요.",Toast.LENGTH_SHORT).show();
@@ -169,10 +171,12 @@ public class TripwriteActivity extends AppCompatActivity implements OnMapReadyCa
         long now = System.currentTimeMillis();
         Date date = new Date(now);
         SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmmss");
+        String writetime=sdf.format(date);
 
-        String documentID= sdf.format(date);//나중에 뒤에 유저아이디 추가
+        String documentID= writetime;//나중에 뒤에 유저아이디 추가
         Log.d("테스트",documentID);
         //data.put("userid, userid);
+        data.put("writetime",writetime);
         data.put("title",titlestr);
         data.put("age",agestr);
         data.put("gender",genderstr);
@@ -188,7 +192,17 @@ public class TripwriteActivity extends AppCompatActivity implements OnMapReadyCa
         data.put("content",contentstr);
         data.put("locations_coordinate",loccoords);
         data.put("route",routecoords);
-        tripwrite.document(documentID).set(data);
+        tripwrite.document(documentID).set(data).addOnSuccessListener(new OnSuccessListener<Void>() {
+            @Override
+            public void onSuccess(Void unused) {
+                Toast.makeText(getApplicationContext(),"작성 완료되었습니다.",Toast.LENGTH_SHORT).show();
+            }
+        }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                Toast.makeText(getApplicationContext(),"작성 실패하였습니다.",Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 
     //현재 시간을 힌트로 표시
