@@ -55,7 +55,7 @@ public class TripwriteActivity extends AppCompatActivity implements OnMapReadyCa
     CollectionReference tripwrite=fb.collection("tripdata");
     CollectionReference triplist=fb.collection("tripdatalist");
 
-    EditText title,montxt,daytxt,hourtxt,mintxt,takentxt;
+    EditText title,montxt,daytxt,hourtxt,mintxt,takentxt,contentstxt;
     Spinner gender,age;
     Button search,finish;
     ImageButton back;
@@ -63,7 +63,7 @@ public class TripwriteActivity extends AppCompatActivity implements OnMapReadyCa
     ScrollView scrollView;
 
     int mon,day,hour,min,taken;
-    String titlestr,genderstr,agestr;
+    String titlestr,genderstr,agestr,contentstr;
 
     ArrayList<LatLng> routecoords;
     ArrayList<LatLng> loccoords=new ArrayList<>();
@@ -91,6 +91,7 @@ public class TripwriteActivity extends AppCompatActivity implements OnMapReadyCa
         hourtxt=findViewById(R.id.hour_trip);
         mintxt=findViewById(R.id.min_trip);
         takentxt=findViewById(R.id.taken_time);
+        contentstxt=findViewById(R.id.contents_box);
 
         gender=findViewById(R.id.spinner_sex_trip);
         age=findViewById(R.id.spinner_age_trip);
@@ -141,11 +142,12 @@ public class TripwriteActivity extends AppCompatActivity implements OnMapReadyCa
                     agestr=age.getSelectedItem().toString();
                     genderstr=gender.getSelectedItem().toString();
                     titlestr=title.getText().toString();
+                    contentstr=contentstxt.getText().toString();
                     sendData();
                     //finish();
                 }
                 else{
-                    Toast.makeText(TripwriteActivity.this,"입력값이 잘못되었습니다.",Toast.LENGTH_SHORT).show();
+                    Toast.makeText(TripwriteActivity.this,"입력값이 잘못되었습니다. 입력란을 다시 확인해주세요.",Toast.LENGTH_SHORT).show();
                 }
             }
         });
@@ -183,6 +185,7 @@ public class TripwriteActivity extends AppCompatActivity implements OnMapReadyCa
 
         triplist.document(documentID).set(data);
 
+        data.put("content",contentstr);
         data.put("locations_coordinate",loccoords);
         data.put("route",routecoords);
         tripwrite.document(documentID).set(data);
@@ -245,6 +248,10 @@ public class TripwriteActivity extends AppCompatActivity implements OnMapReadyCa
             result=false;
         }
 
+        //제목, 게시글 입력 여부 체크
+        if(contentstxt.getText().toString().equals("")||title.getText().toString().equals("")){
+            result=false;
+        }
         return result;
     }
 
