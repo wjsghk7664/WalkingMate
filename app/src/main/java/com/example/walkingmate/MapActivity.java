@@ -473,7 +473,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
                     IsTracking[0] = false;
 
                     //화면 초기화 시켜놓고 종료
-                    startActivity(new Intent(getApplicationContext(),MapActivity.class));
+                    //startActivity(new Intent(getApplicationContext(),MapActivity.class));
                     finish();
                 }
             }

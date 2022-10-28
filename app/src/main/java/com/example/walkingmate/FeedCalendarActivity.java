@@ -34,8 +34,14 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.android.material.navigation.NavigationBarView;
 import com.google.android.material.navigation.NavigationView;
+import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QuerySnapshot;
 import com.prolificinteractive.materialcalendarview.CalendarDay;
 import com.prolificinteractive.materialcalendarview.DayViewDecorator;
 import com.prolificinteractive.materialcalendarview.DayViewFacade;
@@ -254,11 +260,13 @@ public class FeedCalendarActivity extends AppCompatActivity implements Navigatio
             }
         });
 
+        CheckWrittenDays(CalendarDay.today().getYear(),CalendarDay.today().getMonth());
+
         //달력로 목록 갱신
         calendarView.setOnMonthChangedListener(new OnMonthChangedListener() {
             @Override
             public void onMonthChanged(MaterialCalendarView widget, CalendarDay date) {
-
+                CheckWrittenDays(date.getYear(),date.getMonth());
             }
         });
 
@@ -325,10 +333,34 @@ public class FeedCalendarActivity extends AppCompatActivity implements Navigatio
         feedData=new FeedData();
         feedlist=feedData.scanFeedList(FeedCalendarActivity.this);
         calendarView.removeDecorators();
+        CheckWrittenDays(CalendarDay.today().getYear(),CalendarDay.today().getMonth());
         calendarView.addDecorators(new SaturdayDecorator(), new SundayDecorator(), new blurSatDecorator(),
                 new blurSunDecorator(), new blurDecorator(), new selDecorator(FeedCalendarActivity.this),
                 new DotDecorator(RED, findDays(feedlist)));
     }
+
+
+    public void CheckWrittenDays(int year, int month){
+        FirebaseFirestore fb=FirebaseFirestore.getInstance();
+        CollectionReference feeddata=fb.collection("feedlist");
+        ArrayList<CalendarDay> result=new ArrayList<>();
+
+        feeddata.whereEqualTo("year", year).whereEqualTo("month",month).get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                for(int i=0; i<task.getResult().size(); ++i){
+                    String tmp= (String) task.getResult().getDocuments().get(i).get("title");
+                    String[] tmps=tmp.split("_");
+                    CalendarDay tmpcal=CalendarDay.from(Integer.parseInt(tmps[0].replace("년","")),
+                            Integer.parseInt(tmps[1].replace("월","")),
+                            Integer.parseInt(tmps[2].replace("일","")));
+                    result.add(tmpcal);
+                }
+                calendarView.addDecorator(new WrittenDecorator(FeedCalendarActivity.this,result));
+            }
+        });
+    }
+
 
     public ArrayList<CalendarDay> findDays(ArrayList<String> feedlist){
         ArrayList<CalendarDay> result=new ArrayList<>();
@@ -508,5 +540,27 @@ class DotDecorator implements DayViewDecorator{
     @Override
     public void decorate(DayViewFacade view){
         view.addSpan(new DotSpan(7,color));
+    }
+}
+
+class WrittenDecorator implements DayViewDecorator{
+
+    private final Drawable drawablerec;
+    private final ArrayList<CalendarDay> wdays;
+
+
+    public WrittenDecorator(Activity activity,ArrayList<CalendarDay> wdays){
+        drawablerec=activity.getResources().getDrawable(R.drawable.written_selector);
+        this.wdays=wdays;
+    }
+
+    @Override
+    public boolean shouldDecorate(CalendarDay day){
+        return wdays.contains(day);
+    }
+
+    @Override
+    public void decorate(DayViewFacade view){
+        view.setSelectionDrawable(drawablerec);
     }
 }

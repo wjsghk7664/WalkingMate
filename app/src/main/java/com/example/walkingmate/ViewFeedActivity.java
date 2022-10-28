@@ -111,13 +111,6 @@ public class ViewFeedActivity extends AppCompatActivity implements OnMapReadyCal
 
         getData(fileName);
 
-        emotionbtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Toast.makeText(getApplicationContext(),"이미지크기"+fragments.size(),Toast.LENGTH_SHORT).show();
-            }
-        });
-
     }
 
     public void getData(String filename){

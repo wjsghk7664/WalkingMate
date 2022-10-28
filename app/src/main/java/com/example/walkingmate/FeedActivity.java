@@ -316,8 +316,8 @@ public class FeedActivity extends Activity {
 
             TextView writetime=view.findViewById(R.id.writedate);
             String wy=times.get(position).substring(0,4);
-            String wm=times.get(position).substring(5,7);
-            String wd=times.get(position).substring(7,9);
+            String wm=times.get(position).substring(4,6);
+            String wd=times.get(position).substring(6,8);
             writetime.setText("작성 날짜: "+wy+"-"+wm+"-"+wd);
 
 
