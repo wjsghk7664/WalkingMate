@@ -1,6 +1,7 @@
 package com.example.walkingmate;
 
 import static android.graphics.Color.*;
+import static com.example.walkingmate.R.drawable.bottom_navigation;
 import static com.example.walkingmate.R.drawable.selected_day;
 
 import androidx.annotation.NonNull;
@@ -8,6 +9,7 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
+import androidx.fragment.app.Fragment;
 
 
 import android.app.Activity;
@@ -17,18 +19,22 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
+import android.location.LocationManager;
 import android.os.Bundle;
+import android.provider.Settings;
 import android.text.style.ForegroundColorSpan;
 import android.text.style.StyleSpan;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.material.navigation.NavigationBarView;
 import com.google.android.material.navigation.NavigationView;
 import com.prolificinteractive.materialcalendarview.CalendarDay;
 import com.prolificinteractive.materialcalendarview.DayViewDecorator;
@@ -36,6 +42,7 @@ import com.prolificinteractive.materialcalendarview.DayViewFacade;
 import com.prolificinteractive.materialcalendarview.MaterialCalendarView;
 import com.prolificinteractive.materialcalendarview.OnDateLongClickListener;
 import com.prolificinteractive.materialcalendarview.OnDateSelectedListener;
+import com.prolificinteractive.materialcalendarview.OnMonthChangedListener;
 import com.prolificinteractive.materialcalendarview.OnRangeSelectedListener;
 import com.prolificinteractive.materialcalendarview.format.ArrayWeekDayFormatter;
 import com.prolificinteractive.materialcalendarview.format.CalendarWeekDayFormatter;
@@ -60,7 +67,7 @@ public class FeedCalendarActivity extends AppCompatActivity implements Navigatio
     private String TAG=this.getClass().getSimpleName();
 
 
-    TextView yearText;
+    TextView yearText, titletxt;
     CalendarDay selectedDay;
 
     FeedData feedData;
@@ -69,10 +76,98 @@ public class FeedCalendarActivity extends AppCompatActivity implements Navigatio
     DrawerLayout drawerLayout;
     NavigationView navigationView;
 
+    LinearLayout mainlayout;
+
+    boolean start=true;
+    FrameLayout frameLayout;
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_feed_calendar);
+
+        LocationManager LocMan = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+
+        titletxt=findViewById(R.id.fragtitle);
+
+        WalkFragment walkFragment=new WalkFragment();
+        TripFragment tripFragment=new TripFragment();
+        EmptyFragment emptyFragment=new EmptyFragment();
+        ChatFragment chatFragment=new ChatFragment(getApplicationContext());
+        mainlayout=findViewById(R.id.mainLayout_calendar);
+        frameLayout=findViewById(R.id.container);
+
+        final Fragment[] tmp = {null};
+
+        getSupportFragmentManager().beginTransaction().replace(R.id.container, walkFragment).commit();
+        tmp[0]=walkFragment;
+
+        NavigationBarView navigationBarView=findViewById(R.id.bottom_navigation);
+        View walkitem=navigationBarView.findViewById(R.id.walk);
+
+
+        navigationBarView.setOnItemSelectedListener(new NavigationBarView.OnItemSelectedListener() {
+            @Override
+            public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+                switch(item.getItemId()){
+                    case R.id.walk:
+
+                        titletxt.setText("Walking Map");
+                        frameLayout.removeView(mainlayout);
+                        tmp[0] =walkFragment;
+                        getSupportFragmentManager().beginTransaction().replace(R.id.container, walkFragment).commit();
+                        return true;
+                    case R.id.trip:
+
+                        titletxt.setText("여행 메이트 게시판");
+                        frameLayout.removeView(mainlayout);
+                        tmp[0]=tripFragment;
+                        getSupportFragmentManager().beginTransaction().replace(R.id.container, tripFragment).commit();
+                        return true;
+                    case R.id.trace:
+                        new Thread(new Runnable() {
+                            @Override
+                            public void run() {
+                                runOnUiThread(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        walkitem.performClick();
+                                    }
+                                });
+                            }
+                        }).start();
+                        if (!LocMan.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
+                            Toast.makeText(FeedCalendarActivity.this, "GPS가 꺼져있습니다.", Toast.LENGTH_LONG).show();
+                            Intent gpsIntent = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
+                            startActivity(gpsIntent);
+                        }
+                        else{
+                            Intent GoMap =new Intent(FeedCalendarActivity.this, MapActivity.class);
+                            startActivity(GoMap);
+                        }
+                        return true;
+                    case R.id.feed:
+
+                        titletxt.setText("피드 캘린더");
+                        getSupportFragmentManager().beginTransaction().replace(R.id.container, emptyFragment).commit();
+                        if(tmp[0]!=null){
+                            frameLayout.addView(mainlayout);
+                        }
+                        tmp[0]=null;
+                        return true;
+                    case R.id.chat:
+
+                        titletxt.setText("채팅");
+                        frameLayout.removeView(mainlayout);
+                        tmp[0]=chatFragment;
+                        getSupportFragmentManager().beginTransaction().replace(R.id.container, chatFragment).commit();
+                        return true;
+
+                }
+                return true;
+            }
+        });
 
         drawerLayout=findViewById(R.id.Calendar_Layout);
         navigationView=findViewById(R.id.navigationView_calendar);
@@ -159,17 +254,27 @@ public class FeedCalendarActivity extends AppCompatActivity implements Navigatio
             }
         });
 
+        //달력로 목록 갱신
+        calendarView.setOnMonthChangedListener(new OnMonthChangedListener() {
+            @Override
+            public void onMonthChanged(MaterialCalendarView widget, CalendarDay date) {
+
+            }
+        });
+
         plusBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Intent gofeed=new Intent(FeedCalendarActivity.this, FeedActivity.class);
                 if(selectedDay==null){
+                    gofeed.putExtra("iswrite",1);
                     startActivity(gofeed);
                 }
                 else{
                     gofeed.putExtra("year",selectedDay.getYear());
                     gofeed.putExtra("month",selectedDay.getMonth());
                     gofeed.putExtra("day",selectedDay.getDay());
+                    gofeed.putExtra("iswrite",1);
                     startActivity(gofeed);
                 }
             }
@@ -178,17 +283,40 @@ public class FeedCalendarActivity extends AppCompatActivity implements Navigatio
         feedBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                Intent gofeed=new Intent(FeedCalendarActivity.this, FeedActivity.class);
                 if(selectedDay==null){
-
+                    gofeed.putExtra("iswrite",2);
+                    startActivity(gofeed);
                 }
                 else{
-
+                    gofeed.putExtra("year",selectedDay.getYear());
+                    gofeed.putExtra("month",selectedDay.getMonth());
+                    gofeed.putExtra("day",selectedDay.getDay());
+                    gofeed.putExtra("iswrite",2);
+                    startActivity(gofeed);
                 }
             }
         });
 
 
 
+    }
+
+    //뒤로가기로 나갔을시 홈버튼으로 나간것처럼 만들음. 종료로 인한 오류 방지
+    @Override
+    public void onBackPressed() {
+        Intent intent=new Intent(Intent.ACTION_MAIN);
+        intent.addCategory(Intent.CATEGORY_HOME);
+        startActivity(intent);
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        if(start){
+            frameLayout.removeView(mainlayout);
+            start=false;
+        }
     }
 
     @Override

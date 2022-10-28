@@ -58,18 +58,6 @@
             android:text="여행게시물작성" />
 
         <Button
-            android:id="@+id/goLoginbtn"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="로그인" />
-
-        <Button
-            android:id="@+id/chatbtn"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="채팅" />
-
-        <Button
             android:id="@+id/uitest"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

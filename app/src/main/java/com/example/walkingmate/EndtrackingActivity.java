@@ -47,7 +47,7 @@ public class EndtrackingActivity extends Activity {
         findViewById(R.id.home_btn).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                startActivity(new Intent(EndtrackingActivity.this,MainActivity.class));
+                startActivity(new Intent(EndtrackingActivity.this,FeedCalendarActivity.class));
                 finish();
             }
         });

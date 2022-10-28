@@ -136,7 +136,7 @@ public class SettingProfileActivity extends AppCompatActivity {
                             @Override
                             public void onSuccess(Void unused) {
                                 Toast.makeText(getApplicationContext(),"회원가입 성공.",Toast.LENGTH_SHORT).show();
-                                startActivity(new Intent(SettingProfileActivity.this, MainActivity.class));
+                                startActivity(new Intent(SettingProfileActivity.this, FeedCalendarActivity.class));
                                 finish();
                             }
                         });
@@ -199,7 +199,7 @@ public class SettingProfileActivity extends AppCompatActivity {
                                     Toast.makeText(getApplicationContext(),"회원가입 성공.",Toast.LENGTH_SHORT).show();
                                     UserData.saveData(new UserData(userid,profileImage,appname,nickname,name,age,gender,birthyear,"없음"),SettingProfileActivity.this);
                                     UserData.saveBitmapToJpeg(bitmap,SettingProfileActivity.this);
-                                    startActivity(new Intent(SettingProfileActivity.this, MainActivity.class));
+                                    startActivity(new Intent(SettingProfileActivity.this, FeedCalendarActivity.class));
                                     finish();
                                 }
                             });

@@ -20,10 +20,10 @@
                 android:layout_height="49dp"
                 android:orientation="horizontal"
                 android:background="@drawable/layout_divider">
-                
+
                 <ImageButton
                     android:background="@color/transparent"
-                    android:id="@+id/back_feedwrite"
+                    android:id="@+id/back_feedview"
                     android:layout_marginStart="10dp"
                     android:layout_gravity="center|start"
                     android:layout_width="wrap_content"
@@ -32,7 +32,7 @@
                     app:srcCompat="@drawable/arrowback" />
 
                 <TextView
-                    android:id="@+id/feed_date"
+                    android:id="@+id/feedview_date"
                     android:gravity="center|start"
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
@@ -46,13 +46,13 @@
 
 
             <LinearLayout
-                android:id="@+id/FeedMapLayout"
+                android:id="@+id/FeedviewMapLayout"
                 android:layout_width="match_parent"
                 android:layout_height="240dp"
                 android:orientation="vertical">
 
                 <fragment
-                    android:id="@+id/feedmap"
+                    android:id="@+id/feedviewmap"
                     android:name="com.naver.maps.map.MapFragment"
                     android:layout_width="match_parent"
                     android:layout_height="240dp"
@@ -75,32 +75,24 @@
 
                         <TextView
                             android:textColor="@color/brightgray"
-                            android:id="@+id/textView4"
+                            android:id="@+id/textViewfeedview"
                             android:layout_marginHorizontal="30dp"
                             android:layout_marginTop="100dp"
                             android:layout_marginBottom="5dp"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:text="picture" />
+                            android:text="" />
 
                         <FrameLayout
-                            android:id="@+id/image_feedwrite"
+                            android:id="@+id/image_feedview"
                             android:background="@drawable/plusbtn"
                             android:layout_marginHorizontal="40dp"
                             android:layout_gravity="center"
                             android:layout_width="match_parent"
                             android:layout_height="250dp">
 
-                            <ImageView
-                                android:id="@+id/imagebackground"
-                                android:background="@color/transparent"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_gravity="center"
-                                app:srcCompat="@drawable/addphoto_feedwrite" />
-
                             <androidx.viewpager2.widget.ViewPager2
-                                android:id="@+id/viewpager"
+                                android:id="@+id/feedviewpager"
                                 android:layout_gravity="center"
                                 android:clipToPadding="false"
                                 android:clipChildren="false"
@@ -114,55 +106,22 @@
                         <TextView
                             android:textStyle="bold"
                             android:layout_marginTop="5dp"
-                            android:id="@+id/curpage"
+                            android:id="@+id/curpage_feedview"
                             android:gravity="center"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:text="0 / 0" />
 
-                        <LinearLayout
-                            android:layout_marginTop="10dp"
-                            android:layout_width="match_parent"
-                            android:layout_height="50dp"
-                            android:orientation="horizontal">
 
-                            <LinearLayout
-                                android:gravity="center"
-                                android:layout_marginHorizontal="100dp"
-                                android:layout_width="match_parent"
-                                android:layout_height="match_parent"
-                                android:orientation="horizontal">
-
-                                <ImageButton
-                                    android:id="@+id/delimage"
-                                    android:layout_marginHorizontal="15dp"
-                                    android:background="@drawable/orangebtn"
-                                    android:layout_width="50dp"
-                                    android:layout_height="50dp"
-                                    android:src="@drawable/trash_can_xml"
-                                    />
-
-                                <ImageButton
-                                    android:layout_marginHorizontal="15dp"
-                                    android:background="@drawable/orangebtn"
-                                    android:id="@+id/addimage"
-                                    android:layout_width="50dp"
-                                    android:layout_height="50dp"
-                                    android:src="@drawable/addphoto_feedwrite_btn"
-                                    />
-                            </LinearLayout>
-                        </LinearLayout>
-
-
-                        <EditText
-                            android:id="@+id/record_feedwrite"
+                        <TextView
+                            android:id="@+id/record_feedview"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:layout_marginHorizontal="30dp"
                             android:layout_marginVertical="20dp"
                             android:background="@drawable/writebox_blur"
                             android:gravity="start"
-                            android:hint="기록을 남겨주세요"
+                            android:text="내용"
                             android:padding="10dp"
                             android:textColor="@color/black"
                             android:textSize="15dp" />
@@ -171,27 +130,14 @@
                             android:layout_marginHorizontal="40dp"
                             android:dividerHeight="0dp"
                             android:divider="@color/transparent"
-                            android:id="@+id/loclist_feed"
+                            android:id="@+id/loclist_feedview"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content" />
 
                         <View
-                            android:background="@color/transparent"
                             android:layout_width="match_parent"
-                            android:layout_height="150dp"/>
-
-                        <Button
-                            android:id="@+id/finish_feedwrtie"
-                            android:textStyle="bold"
-                            android:textColor="@color/white"
-                            android:textSize="30dp"
-                            android:layout_marginVertical="20dp"
-                            android:layout_marginHorizontal="50dp"
-                            android:background="@drawable/orangebtn"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:text="완료" />
-
+                            android:layout_height="100dp"
+                            android:background="@color/transparent"/>
 
                     </LinearLayout>
                 </LinearLayout>
@@ -303,16 +249,17 @@
         </LinearLayout>
 
         <TextView
-            android:visibility="invisible"
             android:background="@color/blurblack"
             android:gravity="center"
             android:textSize="30dp"
             android:textColor="@color/white"
             android:textStyle="bold"
-            android:id="@+id/loading_feed"
+            android:id="@+id/loading_feedview"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:text="업로드중..." />
+            android:text="로딩중..." />
+
+
     </FrameLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

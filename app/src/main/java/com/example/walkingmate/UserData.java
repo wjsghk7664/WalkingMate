@@ -196,6 +196,7 @@ public class UserData {
                 connection.disconnect();
             }
         }
+        Log.d("이미지","로드완료");
         return retBitmap;
     }
 

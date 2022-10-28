@@ -3,6 +3,7 @@ package com.example.walkingmate;
 import static com.example.walkingmate.R.id.feedListView;
 
 import androidx.activity.result.contract.ActivityResultContracts;
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.app.Activity;
@@ -32,6 +33,14 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QuerySnapshot;
+import com.google.firebase.firestore.auth.User;
+
+import org.checkerframework.checker.units.qual.A;
 
 import java.util.ArrayList;
 
@@ -43,6 +52,13 @@ public class FeedActivity extends Activity {
 
     String date;
 
+    int iswrite;
+
+    UserData userData;
+
+    BtnAdapter btnAdapter;
+    FeedAdapter feedAdapter;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -51,11 +67,19 @@ public class FeedActivity extends Activity {
 
         getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
 
+        userData=UserData.loadData(this);
+
         feedListView=findViewById(R.id.feedListView);
 
         isFeedexist=false;
 
         Intent getIntent=getIntent();
+
+        //미작성인지 작성인지 체크, true면 미작성
+        iswrite=getIntent.getIntExtra("iswrite",1);
+        Log.d("피드_종류",iswrite+"");
+
+
         int y,m,d; String ys,ms,ds;
         y=getIntent.getIntExtra("year",9999);
         m=getIntent.getIntExtra("month",0);
@@ -76,38 +100,93 @@ public class FeedActivity extends Activity {
 
         date=ys+"년_"+ms+"월_"+ds+"일_";
 
+        Log.d("피드_종류",iswrite+"/"+date);
+
 
         Log.d("checkDate",date);
 
-        FeedData fd=new FeedData();
+
         ArrayList<String> feedList=new ArrayList<>();
+        if(iswrite==1){
+            FeedData fd=new FeedData();
 
-        if(fd.scanFeedList(this)!=null){
-            feedList=fd.scanFeedList(this);
-            isFeedexist=true;
-        }
-
-        ArrayList<String> tmp=new ArrayList<>();
-        for(int i=0; i<feedList.size(); ++i){
-            if(feedList.get(i).contains(date)){
-                tmp.add(feedList.get(i));
+            if(fd.scanFeedList(this)!=null){
+                feedList=fd.scanFeedList(this);
+                isFeedexist=true;
             }
+            ArrayList<String> tmp=new ArrayList<>();
+            for(int i=0; i<feedList.size(); ++i){
+                if(feedList.get(i).contains(date)){
+                    tmp.add(feedList.get(i));
+                }
+            }
+            //MapActivity체크용-default로 intent받으면 모든 목록 체크 가능하도록 함
+            if(!date.contains("9999년")){
+                feedList=tmp;
+            }
+
+            if(feedList.size()==0){
+                feedList.add("기록된 피드가 존재하지 않습니다.");
+            }
+
+            btnAdapter=new BtnAdapter(getApplicationContext(),feedList, isFeedexist);
+            feedListView.setAdapter(btnAdapter);
+
+        }
+        else{
+            receiveData(y,m,d);
         }
 
-        //MapActivity체크용-default로 intent받으면 모든 목록 체크 가능하도록 함
-        if(!date.contains("9999년")){
-            feedList=tmp;
+
+
+    }
+
+    public void receiveData(int year,int month,int day){
+        FirebaseFirestore fb=FirebaseFirestore.getInstance();
+        CollectionReference walklist=fb.collection("feedlist");
+        final boolean[] isFeedexist = {true};
+
+        ArrayList<String> result=new ArrayList<>();
+        ArrayList<String> resulttime=new ArrayList<>();
+        ArrayList<String> docuid=new ArrayList<>();
+
+        if(year==9999){
+            walklist.whereEqualTo("userid",userData.userid).get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                        @Override
+                        public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                            for(int i=0; i<task.getResult().size(); ++i){
+                                result.add((String) task.getResult().getDocuments().get(i).get("title"));
+                                resulttime.add((String) task.getResult().getDocuments().get(i).get("writetime"));
+                                docuid.add((String) task.getResult().getDocuments().get(i).getId());
+                            }
+                            if(result.size()==0){
+                                isFeedexist[0] =false;
+                                result.add("기록된 피드가 존재하지 않습니다.");
+                            }
+                            feedAdapter=new FeedAdapter(getApplicationContext(),result, isFeedexist[0],resulttime,docuid);
+                            feedListView.setAdapter(feedAdapter);
+                        }
+                    });
         }
-
-
-
-        if(feedList.size()==0){
-            feedList.add("기록된 피드가 존재하지 않습니다.");
+        else{
+            walklist.whereEqualTo("userid",userData.userid).whereEqualTo("month",month).
+                    whereEqualTo("year",year).get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                        @Override
+                        public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                            for(int i=0; i<task.getResult().size(); ++i){
+                                result.add((String) task.getResult().getDocuments().get(i).get("title"));
+                                resulttime.add((String) task.getResult().getDocuments().get(i).get("writetime"));
+                                docuid.add((String) task.getResult().getDocuments().get(i).getId());
+                            }
+                            if(result.size()==0){
+                                isFeedexist[0] =false;
+                                result.add("기록된 피드가 존재하지 않습니다.");
+                            }
+                            feedAdapter=new FeedAdapter(getApplicationContext(),result, isFeedexist[0],resulttime,docuid);
+                            feedListView.setAdapter(feedAdapter);
+                        }
+                    });
         }
-
-        BtnAdapter btnAdapter=new BtnAdapter(getApplicationContext(),feedList, isFeedexist);
-        feedListView.setAdapter(btnAdapter);
-
     }
 
 
@@ -187,6 +266,77 @@ public class FeedActivity extends Activity {
 
                 }
             });
+
+            return view;
+
+        }
+    }
+
+    public class FeedAdapter extends BaseAdapter{
+        Context context;
+        LayoutInflater layoutInflater;
+        ArrayList<String> data;
+        boolean isFeedexist;
+        ArrayList<String> times;
+        ArrayList<String> docuid;
+
+        public FeedAdapter(Context context, ArrayList<String> data, boolean isFeedexist, ArrayList<String> times,ArrayList<String> docuid){
+            this.context = context;
+            this.layoutInflater = LayoutInflater.from(context);
+            this.data = data;
+            this.isFeedexist=isFeedexist;
+            this.times=times;
+            this.docuid=docuid;
+        }
+        @Override
+        public int getCount() {
+            return data.size();
+        }
+
+        @Override
+        public Object getItem(int position) {
+            return data.get(position);
+        }
+
+        @Override
+        public long getItemId(int position) {
+            return position;
+        }
+
+        @Override
+        public View getView(int position, View convertView, ViewGroup parent) {
+            View view = layoutInflater.inflate(R.layout.feedlist_layout,null);
+            View emptyview=layoutInflater.inflate(R.layout.list_layout_empty,null);
+            if(data.get(0).equals("기록된 피드가 존재하지 않습니다.")){
+                return emptyview;
+            }
+
+            TextView textView = view.findViewById(R.id.datelistfeed);
+            textView.setText(convertDateText(data.get(position)));
+
+            TextView writetime=view.findViewById(R.id.writedate);
+            String wy=times.get(position).substring(0,4);
+            String wm=times.get(position).substring(5,7);
+            String wd=times.get(position).substring(7,9);
+            writetime.setText("작성 날짜: "+wy+"-"+wm+"-"+wd);
+
+
+
+            View bodyView = view.findViewById(R.id.bodyfeed);
+
+            bodyView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    if(!isFeedexist){
+                        return;
+                    }
+                    String filename=docuid.get(position);
+                    Intent goFeedwrite=new Intent(FeedActivity.this, ViewFeedActivity.class);
+                    goFeedwrite.putExtra("filename",filename);
+                    startActivity(goFeedwrite);
+                }
+            });
+
 
             return view;
 

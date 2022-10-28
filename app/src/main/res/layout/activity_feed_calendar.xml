@@ -8,12 +8,13 @@
     tools:context=".FeedCalendarActivity">
 
     <LinearLayout
+        android:weightSum="15"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:weightSum="11"
         android:orientation="vertical">
 
         <LinearLayout
+            android:layout_gravity="top"
             android:layout_weight="1"
             android:layout_width="match_parent"
             android:layout_height="0dp"
@@ -28,6 +29,7 @@
                 app:srcCompat="@drawable/menu_icon" />
 
             <TextView
+                android:id="@+id/fragtitle"
                 android:gravity="center|start"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
@@ -35,97 +37,125 @@
                 android:textSize="25dp"
                 android:textStyle="bold"
                 android:textColor="@color/black"
-                android:text="" />
+                android:text="Walking Map" />
 
         </LinearLayout>
 
-        <LinearLayout
-            android:layout_weight="1"
+        <FrameLayout
+            android:id="@+id/container"
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:orientation="vertical">
+            android:layout_weight="14">
 
-
-            <TextView
-                android:id="@+id/year"
+            <LinearLayout
+                android:id="@+id/mainLayout_calendar"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:gravity="bottom|center_horizontal"
-                android:text="년도"
-                android:textColor="@color/black"
-                android:textSize="20dp"
-                android:textStyle="bold" />
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_weight="6"
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:orientation="vertical">
-
-
-            <com.prolificinteractive.materialcalendarview.MaterialCalendarView
-                android:id="@+id/calendarView"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:theme="@style/CalenderViewCustom"
-                app:mcv_dateTextAppearance="@style/CalenderViewDateCustomText"
-                app:mcv_selectionMode="single"
-                app:mcv_weekDayTextAppearance="@style/CalenderViewWeekCustomText" />
-
-
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_weight="3"
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:orientation="horizontal">
-
-            <androidx.constraintlayout.widget.ConstraintLayout
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_gravity="center"
-                android:layout_weight="1">
+                android:orientation="vertical"
+                android:weightSum="10">
 
 
                 <LinearLayout
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal"
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    android:layout_weight="1"
+                    android:orientation="vertical">
 
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent">
 
-                    <Button
-                        android:id="@+id/feedbtn"
-                        android:layout_width="40dp"
-                        android:layout_height="40dp"
-                        android:background="@drawable/plusbtn"
-                        android:layout_marginRight="10dp"
-                        android:layout_marginBottom="10dp"
-                        android:elevation="30dp"
-                        android:text="F"
-                        android:textColor="@color/white"
-                        android:textSize="20dp" />
-
-                    <Button
-                        android:id="@+id/plusbtn"
-                        android:layout_width="40dp"
-                        android:layout_height="40dp"
-                        android:background="@drawable/plusbtn"
-                        android:elevation="30dp"
-                        android:text="+"
-                        android:layout_marginLeft="10dp"
-                        android:layout_marginBottom="10dp"
-                        android:textColor="@color/white"
-                        android:textSize="20dp" />
+                    <TextView
+                        android:id="@+id/year"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:gravity="bottom|center_horizontal"
+                        android:text="년도"
+                        android:textColor="@color/black"
+                        android:textSize="20dp"
+                        android:textStyle="bold" />
                 </LinearLayout>
 
-            </androidx.constraintlayout.widget.ConstraintLayout>
-        </LinearLayout>
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    android:layout_weight="6"
+                    android:orientation="vertical">
+
+
+                    <com.prolificinteractive.materialcalendarview.MaterialCalendarView
+                        android:id="@+id/calendarView"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:theme="@style/CalenderViewCustom"
+                        app:mcv_dateTextAppearance="@style/CalenderViewDateCustomText"
+                        app:mcv_selectionMode="single"
+                        app:mcv_weekDayTextAppearance="@style/CalenderViewWeekCustomText" />
+
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    android:layout_weight="3"
+                    android:orientation="horizontal">
+
+                    <androidx.constraintlayout.widget.ConstraintLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_gravity="center"
+                        android:layout_weight="1">
+
+
+                        <LinearLayout
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal"
+
+                            app:layout_constraintBottom_toBottomOf="parent"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toTopOf="parent">
+
+                            <Button
+                                android:id="@+id/feedbtn"
+                                android:layout_width="40dp"
+                                android:layout_height="40dp"
+                                android:layout_marginRight="10dp"
+                                android:layout_marginBottom="10dp"
+                                android:background="@drawable/plusbtn"
+                                android:elevation="30dp"
+                                android:text="F"
+                                android:textColor="@color/white"
+                                android:textSize="20dp" />
+
+                            <Button
+                                android:id="@+id/plusbtn"
+                                android:layout_width="40dp"
+                                android:layout_height="40dp"
+                                android:layout_marginLeft="10dp"
+                                android:layout_marginBottom="10dp"
+                                android:background="@drawable/plusbtn"
+                                android:elevation="30dp"
+                                android:text="+"
+                                android:textColor="@color/white"
+                                android:textSize="20dp" />
+                        </LinearLayout>
+
+                    </androidx.constraintlayout.widget.ConstraintLayout>
+                </LinearLayout>
+            </LinearLayout>
+
+            <com.google.android.material.bottomnavigation.BottomNavigationView
+                android:id="@+id/bottom_navigation"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="bottom"
+                app:itemBackground="@color/orange"
+                app:itemIconTint="@color/bottom_nav_color"
+                app:itemTextColor="@color/bottom_nav_color"
+                app:labelVisibilityMode="labeled"
+                app:menu="@menu/bottom_menu" />
+
+        </FrameLayout>
     </LinearLayout>
 
 
@@ -142,6 +172,8 @@
         app:itemVerticalPadding="10dp"
         android:theme="@style/NavigationDrawerStyle"
         app:itemTextAppearance="@style/itemDrawerTextStyle"
-        android:layout_gravity="start"/>
+        android:layout_gravity="left"/>
+
+
 
 </androidx.drawerlayout.widget.DrawerLayout>

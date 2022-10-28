@@ -3,11 +3,7 @@ package com.example.walkingmate;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
-import androidx.fragment.app.FragmentManager;
-import androidx.fragment.app.FragmentPagerAdapter;
-import androidx.viewpager.widget.ViewPager;
 import androidx.viewpager2.adapter.FragmentStateAdapter;
 import androidx.viewpager2.widget.ViewPager2;
 
@@ -18,7 +14,6 @@ import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
-import android.text.Layout;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
@@ -48,7 +43,6 @@ import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 import com.naver.maps.geometry.LatLng;
 import com.naver.maps.geometry.LatLngBounds;
-import com.naver.maps.map.CameraPosition;
 import com.naver.maps.map.CameraUpdate;
 import com.naver.maps.map.MapFragment;
 import com.naver.maps.map.NaverMap;
@@ -151,9 +145,9 @@ public class FeedWrite_Activity extends AppCompatActivity implements OnMapReadyC
         imageback=findViewById(R.id.imagebackground);
         imagebacklayout=findViewById(R.id.image_feedwrite);
 
-        distxt=findViewById(R.id.distext_feed);
-        steptxt=findViewById(R.id.feedstep);
-        timetxt=findViewById(R.id.feed_time);
+        distxt=findViewById(R.id.distext_feedview);
+        steptxt=findViewById(R.id.feedviewstep);
+        timetxt=findViewById(R.id.feedview_time);
         datetxt=findViewById(R.id.feed_date);
 
         String diststr=String.format("%.3f km",feedData.displacement);
@@ -262,8 +256,8 @@ public class FeedWrite_Activity extends AppCompatActivity implements OnMapReadyC
             }
         });
 
-        emotionbtn=findViewById(R.id.emotion);
-        weatherbtn=findViewById(R.id.weather);
+        emotionbtn=findViewById(R.id.emotion_feedview);
+        weatherbtn=findViewById(R.id.weather_feedview);
 
         emotionbtn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -303,6 +297,14 @@ public class FeedWrite_Activity extends AppCompatActivity implements OnMapReadyC
         data.put("userid", userData.userid);
         data.put("title", feedData.timecheck[0]);
         data.put("writetime",writetime);
+
+        int year= Integer.parseInt(feedData.timecheck[0].split("_")[0].replace("년",""));
+        int month=Integer.parseInt(feedData.timecheck[0].split("_")[1].replace("월",""));
+        int day=Integer.parseInt(feedData.timecheck[0].split("_")[2].replace("일",""));
+
+        data.put("year",year);
+        data.put("month",month);
+        data.put("day",day);
 
         feedlist.document(documentID).set(data);
 

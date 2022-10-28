@@ -101,6 +101,8 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
     LinearLayout MapLayout;
     PathOverlay pathOverlay;
 
+    int selecteditem;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -201,7 +203,9 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
             @Override
             public void onClick(View view) {
                 if(IsTracking[0]){
-                    startActivity(new Intent(MapActivity.this, MainActivity.class));
+                    Intent backfeed=new Intent(MapActivity.this, FeedCalendarActivity.class);
+
+                    startActivity(backfeed);
                 }
                 else{
                     finish();
@@ -239,6 +243,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         pathOverlay.setColor(Color.BLUE);
         pathOverlay.setOutlineColor(Color.BLUE);
         pathOverlay.setWidth(5);
+
 
 
 
@@ -407,7 +412,9 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
     @Override
     public void onBackPressed() {
         if(IsTracking[0]){
-            startActivity(new Intent(MapActivity.this, MainActivity.class));
+            Intent backfeed=new Intent(MapActivity.this, FeedCalendarActivity.class);
+
+            startActivity(backfeed);
         }
         else{
             finish();

@@ -322,7 +322,7 @@ public class StartActivity extends AppCompatActivity {
                         db.collection("users").document(userDatatmp.userid).set(UserData.getHashmap(userDatatmp)).addOnCompleteListener(new OnCompleteListener<Void>() {
                             @Override
                             public void onComplete(@NonNull Task<Void> task) {
-                                startActivity(new Intent(StartActivity.this,MainActivity.class));
+                                startActivity(new Intent(StartActivity.this,FeedCalendarActivity.class));
                                 finish();
                             }
                         });
