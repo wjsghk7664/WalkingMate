@@ -17,7 +17,7 @@
         android:id="@+id/trace"
         android:enabled="true"
         android:title="기록"
-        android:icon="@drawable/icon_walk_xml"
+        android:icon="@drawable/start_icon_bottom"
         app:showAsAction="always"/>
     <item
         android:id="@+id/feed"

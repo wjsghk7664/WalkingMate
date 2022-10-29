@@ -14,8 +14,7 @@
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:orientation="horizontal"
-        android:layout_weight="1"
-        android:background="@drawable/layout_divider">
+        android:layout_weight="1">
 
 
         <ImageButton
@@ -151,7 +150,8 @@
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_weight="1"
             android:layout_width="0dp"
-            android:layout_height="match_parent">
+            android:layout_height="match_parent"
+            android:background="@drawable/layout_divider">
 
             <TextView
                 android:id="@+id/시간"
@@ -228,7 +228,7 @@
             app:layout_constraintStart_toEndOf="@+id/markerBtn"
             app:layout_constraintTop_toTopOf="parent"
             android:layout_marginEnd="110dp"
-            app:srcCompat="@drawable/start_icon" />
+            app:srcCompat="@drawable/stop_icon" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
