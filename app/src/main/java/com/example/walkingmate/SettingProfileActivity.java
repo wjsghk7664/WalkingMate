@@ -74,7 +74,7 @@ public class SettingProfileActivity extends AppCompatActivity {
 
         profile=findViewById(R.id.profileImage);
 
-        profile.setOnClickListener(new View.OnClickListener() {
+        findViewById(R.id.profileEdit).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Intent galleryintent=new Intent();

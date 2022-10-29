@@ -98,7 +98,13 @@ public class StartActivity extends AppCompatActivity {
             permlist.setVisibility(View.VISIBLE);
         }
         else{
-            String useridcheck= UserData.scanUserData(this).replace(".txt","");
+            String useridcheck= UserData.scanUserData(this);
+            if(useridcheck==null){
+                useridcheck="없음";
+            }
+            else{
+                useridcheck=useridcheck.replace(".txt","");
+            }
             db.collection("users").document(useridcheck).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
                 @Override
                 public void onComplete(@NonNull Task<DocumentSnapshot> task) {
