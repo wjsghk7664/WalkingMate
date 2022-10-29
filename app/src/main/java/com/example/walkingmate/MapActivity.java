@@ -181,6 +181,18 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
 
                     timecheck[1] = getTime();
 
+                    //좌표가 너무 많으면 줄이기
+                    while(coordList.size()>5000){
+                        ArrayList<LatLng> tmp=new ArrayList();
+                        Log.d("여행루트",coordList.size()+"");
+                        for(int i=0; i<coordList.size(); ++i){
+                            if(i%4!=0){
+                                tmp.add(coordList.get(i));
+                            }
+                        }
+                        coordList=tmp;
+                    }
+
                     //피드데이터 내부저장소에 저장
                     FeedData feedData = new FeedData(coordList, markerList, timecheck, step, displacement);
                     sendfilename=feedData.savefeed(feedData, MapActivity.this);
@@ -463,6 +475,17 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
                 } else if (IsTracking[0]) {
 
                     timecheck[1] = getTime();
+
+                    while(coordList.size()>5000){
+                        ArrayList<LatLng> tmp=new ArrayList();
+                        Log.d("여행루트",coordList.size()+"");
+                        for(int i=0; i<coordList.size(); ++i){
+                            if(i%4!=0){
+                                tmp.add(coordList.get(i));
+                            }
+                        }
+                        coordList=tmp;
+                    }
 
 
                     //피드데이터 내부저장소에 저장
