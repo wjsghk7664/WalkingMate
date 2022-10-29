@@ -189,7 +189,7 @@
                 <Button
                     android:layout_gravity="center"
                     android:id="@+id/close_profile"
-                    android:background="@drawable/plusbtn"
+                    android:background="@drawable/orangebtn"
                     android:layout_width="40dp"
                     android:layout_height="40dp"
                     android:text="x"
@@ -211,19 +211,17 @@
                     android:textSize="20dp"
                     android:background="@drawable/plusbtn"
                     android:id="@+id/seemy_walkview"
-                    android:layout_width="40dp"
-                    android:layout_height="40dp"
+                    android:layout_width="50dp"
+                    android:layout_height="50dp"
                     android:text="MY"/>
 
-                <Button
-                    android:layout_marginHorizontal="20dp"
-                    android:textColor="@color/white"
-                    android:textSize="20dp"
+                <ImageButton
                     android:background="@drawable/plusbtn"
+                    android:layout_marginHorizontal="20dp"
                     android:id="@+id/add_walkview"
-                    android:layout_width="40dp"
-                    android:layout_height="40dp"
-                    android:text="+" />
+                    android:layout_width="50dp"
+                    android:layout_height="50dp"
+                    android:src="@drawable/icon_pencil_xml"/>
             </LinearLayout>
 
         </FrameLayout>

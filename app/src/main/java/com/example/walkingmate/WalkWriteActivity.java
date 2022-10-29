@@ -37,6 +37,7 @@ public class WalkWriteActivity extends AppCompatActivity {
 
     FirebaseFirestore fb=FirebaseFirestore.getInstance();
     CollectionReference walkdata=fb.collection("walkdata");
+    CollectionReference walkuser=fb.collection("walkuser");
 
     Button searchbtn, finishbtn;
     TextView startloctxt;
@@ -45,10 +46,10 @@ public class WalkWriteActivity extends AppCompatActivity {
 
     String location;
     LatLng loccoord;
-    int month, day, hour, min, taken_time;
+    int year, month, day, hour, min, taken_time;
     String gender,age;
 
-    EditText montxt,daytxt,hourtxt,mintxt, taken_timetxt;
+    EditText yeartxt, montxt,daytxt,hourtxt,mintxt, taken_timetxt;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -64,6 +65,7 @@ public class WalkWriteActivity extends AppCompatActivity {
         sexspin=findViewById(R.id.spinner_sex);
 
 
+        yeartxt=findViewById(R.id.year_walk);
         montxt=findViewById(R.id.month_walk);
         daytxt=findViewById(R.id.day_walk);
         hourtxt=findViewById(R.id.hour_walk);
@@ -90,6 +92,7 @@ public class WalkWriteActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 try{
+                    year=Integer.parseInt(yeartxt.getText().toString());
                     month=Integer.parseInt(montxt.getText().toString());
                     day=Integer.parseInt(daytxt.getText().toString());
                     hour=Integer.parseInt(hourtxt.getText().toString());
@@ -103,7 +106,7 @@ public class WalkWriteActivity extends AppCompatActivity {
                 }catch (Exception ee){
                     ee.printStackTrace();
                 }
-                if(CheckValues(month,day,hour,min,taken_time)){
+                if(CheckValues(year,month,day,hour,min,taken_time)){
                     age=agespin.getSelectedItem().toString();
                     gender=sexspin.getSelectedItem().toString();
                     sendData();
@@ -141,12 +144,15 @@ public class WalkWriteActivity extends AppCompatActivity {
         Log.d("테스트",documentID);
         //아래 정보는 보는 사람 입장에서 필터링을 위함.
         data.put("userid", userData.userid);
+        walkuser.document(documentID).set(data);
+
         data.put("userage", userData.age);
         data.put("usergender",usergender);
 
         data.put("writetime",writetime);
         data.put("age",age);
         data.put("gender",gender);
+        data.put("year",year);
         data.put("month", month);
         data.put("day", day);
         data.put("hour", hour);
@@ -166,6 +172,8 @@ public class WalkWriteActivity extends AppCompatActivity {
                 Log.d("산책",e.toString());
             }
         });
+
+
     }
 
     private final ActivityResultLauncher<Intent> getsearchResult= registerForActivityResult(
@@ -186,43 +194,51 @@ public class WalkWriteActivity extends AppCompatActivity {
     //현재 시간을 힌트로 표시
     //월 일은 세팅
     public void setHintTime(){
-        SimpleDateFormat format=new SimpleDateFormat("MM dd HH mm");
+        SimpleDateFormat format=new SimpleDateFormat("yyyy MM dd HH mm");
         long now=System.currentTimeMillis();
         Date date=new Date(now);
         String[] getTime=format.format(date).split(" ");
-        montxt.setHint(getTime[0]);
-        daytxt.setHint(getTime[1]);
-        hourtxt.setHint(getTime[2]);
-        mintxt.setHint(getTime[3]);
+        yeartxt.setHint(getTime[0]);
+        montxt.setHint(getTime[1]);
+        daytxt.setHint(getTime[2]);
+        hourtxt.setHint(getTime[3]);
+        mintxt.setHint(getTime[4]);
 
-        montxt.setText(getTime[0]);
-        daytxt.setText(getTime[1]);
+        yeartxt.setText(getTime[0]);
+        montxt.setText(getTime[1]);
+        daytxt.setText(getTime[2]);
 
     }
 
     //입력값 오류체크
-    public boolean CheckValues(int mon, int day, int hour, int min, int taken_time){
+    public boolean CheckValues(int year,int mon, int day, int hour, int min, int taken_time){
         boolean result=true;
 
         //현재 시간 이전값인지 체크
-        if(mon<Integer.parseInt(montxt.getHint().toString())){
+        if(year<Integer.parseInt(yeartxt.getHint().toString())){
             result=false;
         }
-        else if(mon==Integer.parseInt(montxt.getHint().toString())){
-            if(day<Integer.parseInt(daytxt.getHint().toString())){
+        else if(year==Integer.parseInt(yeartxt.getHint().toString())){
+            if(mon<Integer.parseInt(montxt.getHint().toString())){
                 result=false;
             }
-            else if(day==Integer.parseInt(daytxt.getHint().toString())){
-                if(hour<Integer.parseInt(hourtxt.getHint().toString())){
+            else if(mon==Integer.parseInt(montxt.getHint().toString())){
+                if(day<Integer.parseInt(daytxt.getHint().toString())){
                     result=false;
                 }
-                else if(hour==Integer.parseInt(hourtxt.getHint().toString())){
-                    if(min<Integer.parseInt(mintxt.getHint().toString())){
+                else if(day==Integer.parseInt(daytxt.getHint().toString())){
+                    if(hour<Integer.parseInt(hourtxt.getHint().toString())){
                         result=false;
+                    }
+                    else if(hour==Integer.parseInt(hourtxt.getHint().toString())){
+                        if(min<Integer.parseInt(mintxt.getHint().toString())){
+                            result=false;
+                        }
                     }
                 }
             }
         }
+
 
         //잘못된 날짜값인지 체크
         try{

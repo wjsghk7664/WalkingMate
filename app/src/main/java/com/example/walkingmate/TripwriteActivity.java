@@ -57,14 +57,14 @@ public class TripwriteActivity extends AppCompatActivity implements OnMapReadyCa
     CollectionReference tripwrite=fb.collection("tripdata");
     CollectionReference triplist=fb.collection("tripdatalist");
 
-    EditText title,montxt,daytxt,hourtxt,mintxt,takentxt,contentstxt;
+    EditText title,yeartxt,montxt,daytxt,hourtxt,mintxt,takentxt,contentstxt;
     Spinner gender,age;
     Button search,finish;
     ImageButton back;
     ListView loclist;
     ScrollView scrollView;
 
-    int mon,day,hour,min,taken;
+    int year,mon,day,hour,min,taken;
     String titlestr,genderstr,agestr,contentstr;
 
     ArrayList<LatLng> routecoords;
@@ -88,6 +88,7 @@ public class TripwriteActivity extends AppCompatActivity implements OnMapReadyCa
 
 
         title=findViewById(R.id.title_trip);
+        yeartxt=findViewById(R.id.year_trip);
         montxt=findViewById(R.id.month_trip);
         daytxt=findViewById(R.id.day_trip);
         hourtxt=findViewById(R.id.hour_trip);
@@ -127,6 +128,7 @@ public class TripwriteActivity extends AppCompatActivity implements OnMapReadyCa
             @Override
             public void onClick(View view) {
                 try{
+                    year=Integer.parseInt(yeartxt.getText().toString());
                     mon=Integer.parseInt(montxt.getText().toString());
                     day=Integer.parseInt(daytxt.getText().toString());
                     hour=Integer.parseInt(hourtxt.getText().toString());
@@ -140,7 +142,7 @@ public class TripwriteActivity extends AppCompatActivity implements OnMapReadyCa
                 }catch (Exception ee){
                     ee.printStackTrace();
                 }
-                if(CheckValues(mon,day,hour,min,taken)){
+                if(CheckValues(year,mon,day,hour,min,taken)){
                     agestr=age.getSelectedItem().toString();
                     genderstr=gender.getSelectedItem().toString();
                     titlestr=title.getText().toString();
@@ -193,6 +195,7 @@ public class TripwriteActivity extends AppCompatActivity implements OnMapReadyCa
         data.put("title",titlestr);
         data.put("age",agestr);
         data.put("gender",genderstr);
+        data.put("year",year);
         data.put("month", mon);
         data.put("day", day);
         data.put("hour", hour);
@@ -220,40 +223,49 @@ public class TripwriteActivity extends AppCompatActivity implements OnMapReadyCa
 
     //현재 시간을 힌트로 표시
     public void setHintTime(){
-        SimpleDateFormat format=new SimpleDateFormat("MM dd HH mm");
+        SimpleDateFormat format=new SimpleDateFormat("yyyy MM dd HH mm");
         long now=System.currentTimeMillis();
         Date date=new Date(now);
         String[] getTime=format.format(date).split(" ");
-        montxt.setHint(getTime[0]);
-        daytxt.setHint(getTime[1]);
-        hourtxt.setHint(getTime[2]);
-        mintxt.setHint(getTime[3]);
+        yeartxt.setHint(getTime[0]);
+        montxt.setHint(getTime[1]);
+        daytxt.setHint(getTime[2]);
+        hourtxt.setHint(getTime[3]);
+        mintxt.setHint(getTime[4]);
+
+        yeartxt.setText(getTime[0]);
 
     }
 
     //입력값 오류체크
-    public boolean CheckValues(int mon, int day, int hour, int min, int taken_time){
+    public boolean CheckValues(int year,int mon, int day, int hour, int min, int taken_time){
         boolean result=true;
 
         //현재 시간 이전값인지 체크
-        if(mon<Integer.parseInt(montxt.getHint().toString())){
+        if(year<Integer.parseInt(yeartxt.getHint().toString())){
             result=false;
         }
-        else if(mon==Integer.parseInt(montxt.getHint().toString())){
-            if(day<Integer.parseInt(daytxt.getHint().toString())){
+        else if(year==Integer.parseInt(yeartxt.getHint().toString())){
+            if(mon<Integer.parseInt(montxt.getHint().toString())){
                 result=false;
             }
-            else if(day==Integer.parseInt(daytxt.getHint().toString())){
-                if(hour<Integer.parseInt(hourtxt.getHint().toString())){
+            else if(mon==Integer.parseInt(montxt.getHint().toString())){
+                if(day<Integer.parseInt(daytxt.getHint().toString())){
                     result=false;
                 }
-                else if(hour==Integer.parseInt(hourtxt.getHint().toString())){
-                    if(min<Integer.parseInt(mintxt.getHint().toString())){
+                else if(day==Integer.parseInt(daytxt.getHint().toString())){
+                    if(hour<Integer.parseInt(hourtxt.getHint().toString())){
                         result=false;
+                    }
+                    else if(hour==Integer.parseInt(hourtxt.getHint().toString())){
+                        if(min<Integer.parseInt(mintxt.getHint().toString())){
+                            result=false;
+                        }
                     }
                 }
             }
         }
+
 
         //잘못된 날짜값인지 체크
         try{

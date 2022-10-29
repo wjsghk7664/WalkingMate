@@ -47,6 +47,7 @@ import com.google.firebase.firestore.GeoPoint;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
+import com.google.firebase.firestore.SetOptions;
 import com.naver.maps.geometry.LatLng;
 import com.naver.maps.map.CameraPosition;
 import com.naver.maps.map.LocationTrackingMode;
@@ -68,7 +69,9 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Map;
 
 import de.hdodenhof.circleimageview.CircleImageView;
@@ -79,6 +82,8 @@ public class WalkFragment extends Fragment implements OnMapReadyCallback{
     FirebaseFirestore fb=FirebaseFirestore.getInstance();
     CollectionReference walkdata=fb.collection("walkdata");
     CollectionReference udata=fb.collection("users");
+    CollectionReference walkuser=fb.collection("walkuser");
+    CollectionReference walkreq=fb.collection("walkrequest");
 
     private FusedLocationSource locationSource;
     private FusedLocationProviderClient fusedLocationProviderClient;
@@ -88,10 +93,10 @@ public class WalkFragment extends Fragment implements OnMapReadyCallback{
     UserData userData;
     LatLng setLocation;
 
-    ImageButton refresh;
+    ImageButton refresh,addwalk;
     Spinner gender, age;
 
-    Button mywalk,addwalk, mate, close;
+    Button mywalk, mate, close;
 
     CircleImageView userImage;
     TextView title,usertxt,time;
@@ -112,11 +117,13 @@ public class WalkFragment extends Fragment implements OnMapReadyCallback{
     ArrayList<String> mytimelist=new ArrayList<>();
     ArrayList<String> mydocuidlist=new ArrayList<>();
 
+    Map<String,Long> myreqlist=new HashMap<>();
 
     boolean firstsync=true;
-    boolean mywalkcheck=false;
+    int mywalkcheck=0; //0내글 제외, 1 내글만, 2 신청한 글, 3 전체
 
     Bitmap retBitmap = null;//프로필에 띄울 이미지
+    String curdocu=""; //현재 클릭한 게시물 문서아이디
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -156,6 +163,7 @@ public class WalkFragment extends Fragment implements OnMapReadyCallback{
 
         getdata();
         getmydata();
+        myreq();
 
         age=root.findViewById(R.id.spinner_age_walkmap);
         gender=root.findViewById(R.id.spinner_sex_walkmap);
@@ -174,20 +182,33 @@ public class WalkFragment extends Fragment implements OnMapReadyCallback{
                 Log.d("산책_버튼","테스트:"+agestr+"_"+genderstr);
                 getdata();
                 getmydata();
+                myreq();
             }
         });
 
         mywalk.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if(!mywalkcheck){
+                //처음(0):내글 제외
+                //1:내글만
+                if(mywalkcheck==0){
                     mywalk.setTextColor(Color.BLUE);
-                    mywalkcheck=true;
+                    mywalkcheck=1;
                     mapsync();
                 }
-                else {
+                else if(mywalkcheck==1){
+                    mywalk.setTextColor(Color.RED);
+                    mywalkcheck=2;
+                    mapsync();
+                }
+                else if(mywalkcheck==2){
+                    mywalk.setTextColor(Color.MAGENTA);
+                    mywalkcheck=3;
+                    mapsync();
+                }
+                else if(mywalkcheck==3){
                     mywalk.setTextColor(Color.WHITE);
-                    mywalkcheck=false;
+                    mywalkcheck=0;
                     mapsync();
                 }
             }
@@ -203,7 +224,16 @@ public class WalkFragment extends Fragment implements OnMapReadyCallback{
         close.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                curdocu="";
                 userprofile.setVisibility(View.INVISIBLE);
+            }
+        });
+
+        mate.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                checkandsendreq();
+                myreq();
             }
         });
 
@@ -239,7 +269,7 @@ public class WalkFragment extends Fragment implements OnMapReadyCallback{
         }
         markers.clear();
 
-        if(coordlist.size()!=0){
+        if(coordlist.size()!=0&&(mywalkcheck==0||mywalkcheck==2||mywalkcheck==3)){
             Log.d("산책", "마커세팅 진입");
             for(int i=0; i<coordlist.size(); ++i){
                 Marker tmpmarker=new Marker();
@@ -248,16 +278,40 @@ public class WalkFragment extends Fragment implements OnMapReadyCallback{
                 TextView markertxt_day=linearLayout.findViewById(R.id.markerText_day);
                 TextView markertxt_time=linearLayout.findViewById(R.id.markerText_time);
                 String[] timedata=timelist.get(i).split("_");
-                markertxt_day.setText(String.format("%s월 %s일",timedata[0],timedata[1]));
-                markertxt_time.setText(String.format("%s : %s",timedata[2],timedata[3]));
+                markertxt_day.setText(String.format("%s년 %s월 %s일",timedata[0],timedata[1],timedata[2]));
+                markertxt_time.setText(String.format("%s : %s",timedata[3],timedata[4]));
                 tmpmarker.setIcon(OverlayImage.fromView(linearLayout));
+
+                if(myreqlist.containsKey(docuidlist.get(i))){
+                    String state="";
+                    if(myreqlist.get(docuidlist.get(i))==0){
+                        state="수락대기중";
+                    }
+                    else if(myreqlist.get(docuidlist.get(i))==1){
+                        state="수락 됨";
+                    }
+                    else{
+                        state="거절됨";
+                    }
+                    Log.d("산책 캡션",state);
+                    tmpmarker.setCaptionText(state);
+                    tmpmarker.setCaptionAligns(Align.Top);
+                }
+
                 tmpmarker.setMap(naverMap);
+
+                if(mywalkcheck==2){
+                    if(!myreqlist.containsKey(docuidlist.get(i))){
+                        tmpmarker.setMap(null);
+                    }
+                }
 
                 tmpmarker.setOnClickListener(new Overlay.OnClickListener() {
                     @Override
                     public boolean onClick(@NonNull Overlay overlay) {
                         int idx=markers.indexOf(tmpmarker);
-                        getuserdata(idlist.get(idx),String.format("%s월 %s일 %s시 %s분",timedata[0],timedata[1],timedata[2],timedata[3]));
+                        curdocu=docuidlist.get(idx);
+                        getuserdata(idlist.get(idx),String.format("%s년 %s월 %s일 %s시 %s분",timedata[0],timedata[1],timedata[2],timedata[3],timedata[4]));
                         return false;
                     }
                 });
@@ -272,12 +326,13 @@ public class WalkFragment extends Fragment implements OnMapReadyCallback{
         }
         mymarker.clear();
 
-        if(mycoordlist.size()!=0&&mywalkcheck){
+        if(mycoordlist.size()!=0&&(mywalkcheck==1||mywalkcheck==3)){
             for(int i=0; i<mycoordlist.size(); ++i){
                 Marker marker=new Marker();
                 marker.setPosition(mycoordlist.get(i));
                 marker.setCaptionAligns(Align.Top);
                 marker.setCaptionText("MY");
+                marker.setCaptionColor(Color.BLUE);
 
                 final LinearLayout linearLayout=(LinearLayout) View.inflate(getActivity(),R.layout.marker_view,null);
                 TextView markertxt_day=linearLayout.findViewById(R.id.markerText_day);
@@ -290,7 +345,9 @@ public class WalkFragment extends Fragment implements OnMapReadyCallback{
                     @Override
                     public boolean onClick(@NonNull Overlay overlay) {
                         int idx=mymarker.indexOf(marker);
-                        getuserdata(userData.userid,mydaylist.get(idx)+" "+mytimelist.get(idx));
+                        Intent intent=new Intent(getActivity(),WalkUserListActivity.class);
+                        intent.putExtra("mydocu",mydocuidlist.get(idx));
+                        startActivity(intent);
                         return false;
                     }
                 });
@@ -299,6 +356,72 @@ public class WalkFragment extends Fragment implements OnMapReadyCallback{
             }
         }
 
+
+    }
+
+    public void myreq(){
+        myreqlist.clear();
+        walkreq.document(userData.userid).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                DocumentSnapshot document=task.getResult();
+                ArrayList<String> docuids= (ArrayList<String>) document.get("requestlist");
+                if(docuids.size()>0){
+                    for(String s:docuids){
+                        walkuser.document(s).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                            @Override
+                            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                                DocumentSnapshot documentSnapshot=task.getResult();
+                                Map<String,Long> datas= (Map<String, Long>) documentSnapshot.get("userlist");
+                                myreqlist.put(s,datas.get(userData.userid));
+                                mapsync();
+                            }
+                        });
+                    }
+                }
+            }
+        });
+    }
+
+    public void checkandsendreq(){
+        walkreq.document(userData.userid).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                ArrayList<String> tmps= (ArrayList<String>) task.getResult().get("requestlist");
+                if(!tmps.contains(curdocu)){
+                    sendreq();
+                }
+                else{
+                    Toast.makeText(getActivity(),"이미 요청을 보낸 게시물입니다.",Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
+    }
+
+
+    public void sendreq(){
+        HashMap<String,Object> data=new HashMap<>();
+
+        HashMap<String, Integer> myreq=new HashMap<>();
+        myreq.put(userData.userid,0);
+
+        data.put("userlist",myreq);
+        walkuser.document(curdocu).set(data, SetOptions.merge()).addOnSuccessListener(new OnSuccessListener<Void>() {
+            @Override
+            public void onSuccess(Void unused) {
+                Log.d("산책 메이트 신청","성공");
+            }
+        });
+
+        data.clear();
+        data.put("requestlist", Arrays.asList(curdocu));
+
+        walkreq.document(userData.userid).set(data,SetOptions.merge()).addOnCompleteListener(new OnCompleteListener<Void>() {
+            @Override
+            public void onComplete(@NonNull Task<Void> task) {
+                Log.d("산책 메이트 신청","신청리스트 갱신");
+            }
+        });
 
     }
 
@@ -379,11 +502,11 @@ public class WalkFragment extends Fragment implements OnMapReadyCallback{
         //내 게시물은 제외
         query=query.whereNotEqualTo("userid",userData.userid);
 
-        SimpleDateFormat format=new SimpleDateFormat("MM dd HH mm");
+        SimpleDateFormat format=new SimpleDateFormat("yyyy MM dd HH mm");
         long now=System.currentTimeMillis();
         Date date=new Date(now);
         String[] getTime=format.format(date).split(" ");
-        int[] times=new int[4];
+        int[] times=new int[5];
         for(int i=0; i<getTime.length; ++i){
             times[i]=Integer.parseInt(getTime[i]);
         }
@@ -418,28 +541,35 @@ public class WalkFragment extends Fragment implements OnMapReadyCallback{
                             }
                         }
                         //날짜 지났으면 제외
-                        if((Long)document.get("month")<times[0]){
+                        if((Long)document.get("year")<times[0]){
                             req=false;
-                            Log.d("산책 맵3","결과"+req);
+                            Log.d("산책 맵3-0","결과"+req);
                         }
-                        else if((Long)document.get("month")==times[0]){
-                            if((Long)document.get("day")<times[1]){
+                        else if((Long)document.get("year")==times[0]){
+                            if((Long)document.get("month")<times[1]){
                                 req=false;
-                                Log.d("산책 맵4","결과"+req);
+                                Log.d("산책 맵3","결과"+req);
                             }
-                            else if((Long)document.get("day")==times[1]){
-                                if((Long)document.get("hour")<times[2]){
+                            else if((Long)document.get("month")==times[1]){
+                                if((Long)document.get("day")<times[2]){
                                     req=false;
-                                    Log.d("산책 맵5","결과"+req);
+                                    Log.d("산책 맵4","결과"+req);
                                 }
-                                else if((Long)document.get("hour")==times[2]){
-                                    if((Long)document.get("minute")<times[3]){
+                                else if((Long)document.get("day")==times[2]){
+                                    if((Long)document.get("hour")<times[3]){
                                         req=false;
-                                        Log.d("산책 맵6","결과"+req);
+                                        Log.d("산책 맵5","결과"+req);
+                                    }
+                                    else if((Long)document.get("hour")==times[3]){
+                                        if((Long)document.get("minute")<times[4]){
+                                            req=false;
+                                            Log.d("산책 맵6","결과"+req);
+                                        }
                                     }
                                 }
                             }
                         }
+
 
 
                         Log.d("산책 맵7","결과"+req);
@@ -456,7 +586,7 @@ public class WalkFragment extends Fragment implements OnMapReadyCallback{
 
 
 
-                            String timetmp=String.format("%02d_%02d_%02d_%02d",(Long)document.get("month"),(Long)document.get("day"),(Long)document.get("hour"),(Long)document.get("minute"));
+                            String timetmp=String.format("%04d_%02d_%02d_%02d_%02d",(Long)document.get("year"),(Long)document.get("month"),(Long)document.get("day"),(Long)document.get("hour"),(Long)document.get("minute"));
                             timelist.add(timetmp);
                         }
 
@@ -491,7 +621,7 @@ public class WalkFragment extends Fragment implements OnMapReadyCallback{
                     LatLng tmplatlng=new LatLng((Double) tmpmap.get("latitude"), (Double) tmpmap.get("longitude"));
                     mycoordlist.add(tmplatlng);
                     mydocuidlist.add(document.getId());
-                    mydaylist.add(String.format("%02d월 %02d일",document.get("month"),document.get("day")));
+                    mydaylist.add(String.format("%04d년 %02d월 %02d일",document.get("year"),document.get("month"),document.get("day")));
                     mytimelist.add(String.format("%02d : %02d",document.get("hour"),document.get("minute")));
                 }
                 mapsync();
