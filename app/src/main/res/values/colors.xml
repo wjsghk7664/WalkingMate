@@ -25,6 +25,8 @@
     <color name="feedgreen">#FF7AFF97</color>   <!--연초록류. 피드페이지 이동거리-->
     <color name="darkgray">#FF494949</color>
     <color name="blurblack">#22000000</color> <!--연검정, 로딩창용-->
+    <color name="greenboxline">#FFF3F0D7</color>  <!--산책창 박스-->
+
 
 
 </resources>

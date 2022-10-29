@@ -10,6 +10,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
 
 
 import android.app.Activity;
@@ -73,6 +74,7 @@ public class FeedCalendarActivity extends AppCompatActivity implements Navigatio
     private String TAG=this.getClass().getSimpleName();
 
 
+
     TextView yearText, titletxt;
     CalendarDay selectedDay;
 
@@ -87,51 +89,91 @@ public class FeedCalendarActivity extends AppCompatActivity implements Navigatio
     boolean start=true;
     FrameLayout frameLayout;
 
+    private FragmentManager fragmentManager;
+
+    int selected=1;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_feed_calendar);
 
+        fragmentManager=getSupportFragmentManager();
+
         LocationManager LocMan = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
 
         titletxt=findViewById(R.id.fragtitle);
 
-        WalkFragment walkFragment=new WalkFragment();
-        TripFragment tripFragment=new TripFragment();
-        EmptyFragment emptyFragment=new EmptyFragment();
-        ChatFragment chatFragment=new ChatFragment(getApplicationContext());
+
+
         mainlayout=findViewById(R.id.mainLayout_calendar);
         frameLayout=findViewById(R.id.container);
 
-        final Fragment[] tmp = {null};
 
-        getSupportFragmentManager().beginTransaction().replace(R.id.container, walkFragment).commit();
-        tmp[0]=walkFragment;
+
+
+
+        WalkFragment walkFragment=new WalkFragment();
+        fragmentManager.beginTransaction().replace(R.id.container, walkFragment,"walk").commitAllowingStateLoss();
+
 
         NavigationBarView navigationBarView=findViewById(R.id.bottom_navigation);
         View walkitem=navigationBarView.findViewById(R.id.walk);
 
 
         navigationBarView.setOnItemSelectedListener(new NavigationBarView.OnItemSelectedListener() {
+
+
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+
+                FragmentManager fragmentManager=getSupportFragmentManager();
+
                 switch(item.getItemId()){
                     case R.id.walk:
+                        selected=1;
 
                         titletxt.setText("Walking Map");
                         frameLayout.removeView(mainlayout);
-                        tmp[0] =walkFragment;
-                        getSupportFragmentManager().beginTransaction().replace(R.id.container, walkFragment).commit();
+
+                        if(fragmentManager.findFragmentByTag("walk")!=null){
+                            fragmentManager.beginTransaction().show(fragmentManager.findFragmentByTag("walk")).commit();
+                        }
+                        else{
+                            fragmentManager.beginTransaction().add(R.id.container, new WalkFragment(),"walk").commit();
+                        }
+                        if(fragmentManager.findFragmentByTag("trip")!=null){
+                            fragmentManager.beginTransaction().hide(fragmentManager.findFragmentByTag("trip")).commit();
+                        }
+                        if(fragmentManager.findFragmentByTag("chat")!=null){
+                            fragmentManager.beginTransaction().hide(fragmentManager.findFragmentByTag("chat")).commit();
+                        }
+
+
                         return true;
                     case R.id.trip:
+                        selected=2;
 
                         titletxt.setText("여행 메이트 게시판");
                         frameLayout.removeView(mainlayout);
-                        tmp[0]=tripFragment;
-                        getSupportFragmentManager().beginTransaction().replace(R.id.container, tripFragment).commit();
+                        if(fragmentManager.findFragmentByTag("walk")!=null){
+                            fragmentManager.beginTransaction().hide(fragmentManager.findFragmentByTag("walk")).commit();
+                        }
+                        if(fragmentManager.findFragmentByTag("trip")!=null){
+                            fragmentManager.beginTransaction().show(fragmentManager.findFragmentByTag("trip")).commit();
+                        }
+                        else{
+                            fragmentManager.beginTransaction().add(R.id.container, new TripFragment(),"trip").commit();
+                        }
+                        if(fragmentManager.findFragmentByTag("chat")!=null){
+                            fragmentManager.beginTransaction().hide(fragmentManager.findFragmentByTag("chat")).commit();
+                        }
+
+
                         return true;
                     case R.id.trace:
+                        selected=3;
                         new Thread(new Runnable() {
                             @Override
                             public void run() {
@@ -155,19 +197,39 @@ public class FeedCalendarActivity extends AppCompatActivity implements Navigatio
                         return true;
                     case R.id.feed:
 
+                        if(fragmentManager.findFragmentByTag("walk")!=null){
+                            fragmentManager.beginTransaction().hide(fragmentManager.findFragmentByTag("walk")).commit();
+                        }
+                        if(fragmentManager.findFragmentByTag("trip")!=null){
+                            fragmentManager.beginTransaction().hide(fragmentManager.findFragmentByTag("trip")).commit();
+                        }
+                        if(fragmentManager.findFragmentByTag("chat")!=null){
+                            fragmentManager.beginTransaction().hide(fragmentManager.findFragmentByTag("chat")).commit();
+                        }
+
                         titletxt.setText("피드 캘린더");
-                        getSupportFragmentManager().beginTransaction().replace(R.id.container, emptyFragment).commit();
-                        if(tmp[0]!=null){
+                        if(selected!=4){
                             frameLayout.addView(mainlayout);
                         }
-                        tmp[0]=null;
+                        selected=4;
                         return true;
                     case R.id.chat:
-
+                        selected=5;
                         titletxt.setText("채팅");
                         frameLayout.removeView(mainlayout);
-                        tmp[0]=chatFragment;
-                        getSupportFragmentManager().beginTransaction().replace(R.id.container, chatFragment).commit();
+                        if(fragmentManager.findFragmentByTag("walk")!=null){
+                            fragmentManager.beginTransaction().hide(fragmentManager.findFragmentByTag("walk")).commit();
+                        }
+                        if(fragmentManager.findFragmentByTag("trip")!=null){
+                            fragmentManager.beginTransaction().hide(fragmentManager.findFragmentByTag("trip")).commit();
+                        }
+                        if(fragmentManager.findFragmentByTag("chat")!=null){
+                            fragmentManager.beginTransaction().show(fragmentManager.findFragmentByTag("chat")).commit();
+                        }
+                        else{
+                            fragmentManager.beginTransaction().add(R.id.container, new ChatFragment(FeedCalendarActivity.this),"chat").commit();
+                        }
+
                         return true;
 
                 }

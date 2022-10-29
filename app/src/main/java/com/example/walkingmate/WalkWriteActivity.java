@@ -174,7 +174,7 @@ public class WalkWriteActivity extends AppCompatActivity {
                 if(result.getResultCode() ==RESULT_OK){
                     if(result.getData()!=null){
                         loccoord=new LatLng(result.getData().getDoubleExtra("lat",0),
-                                result.getData().getDoubleExtra("lat",0));
+                                result.getData().getDoubleExtra("lon",0));
                         location=result.getData().getStringExtra("location");
                         startloctxt.setVisibility(View.VISIBLE);
                         pin_walk.setVisibility(View.VISIBLE);
