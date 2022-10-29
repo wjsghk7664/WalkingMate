@@ -27,7 +27,7 @@
                 android:layout_marginHorizontal="20dp"
                 android:layout_marginBottom="5dp"
                 android:background="@color/transparent"
-                app:srcCompat="@drawable/icon_home_xml" />
+                app:srcCompat="@drawable/icon_home" />
 
             <ImageButton
                 android:id="@+id/imageButton3"
@@ -43,8 +43,8 @@
                 android:id="@+id/imageButton"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
+                android:background="@color/transparent"
                 android:layout_marginHorizontal="16dp"
-                android:background="@drawable/walkbtn_background"
                 app:srcCompat="@drawable/icon_walk_xml"
                 tools:ignore="SpeakableTextPresentCheck" />
 

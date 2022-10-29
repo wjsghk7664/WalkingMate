@@ -5,7 +5,7 @@
         android:id="@+id/walk"
         android:enabled="true"
         android:title="산책"
-        android:icon="@drawable/icon_home_xml"
+        android:icon="@drawable/icon_map_xml"
         app:showAsAction="always"/>
     <item
         android:id="@+id/trip"
@@ -23,7 +23,7 @@
         android:id="@+id/feed"
         android:enabled="true"
         android:title="피드"
-        android:icon="@drawable/icon_feed_xml"
+        android:icon="@drawable/icon_diary_xml"
         app:showAsAction="always"/>
     <item
         android:id="@+id/chat"

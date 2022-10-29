@@ -133,12 +133,33 @@
         android:background="@drawable/layout_divider">
 
         <EditText
-            android:id="@+id/month"
+            android:id="@+id/year"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textSize="16dp"
             android:textColor="@color/black"
             android:layout_marginLeft="20dp"
+            android:ems="4"
+            android:inputType="numberDecimal"
+            android:hint="2022"
+            android:textAlignment="center"/>
+
+        <TextView
+            android:id="@+id/년"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="년"
+            android:textSize="16dp"
+            android:textStyle="bold"
+            android:textColor="@color/black"/>
+
+        <EditText
+            android:id="@+id/month"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="16dp"
+            android:textColor="@color/black"
+            android:layout_marginLeft="10dp"
             android:ems="2"
             android:inputType="numberDecimal"
             android:hint="10"
@@ -159,7 +180,7 @@
             android:layout_height="wrap_content"
             android:textSize="16dp"
             android:textColor="@color/black"
-            android:layout_marginLeft="20dp"
+            android:layout_marginLeft="10dp"
             android:ems="2"
             android:inputType="numberDecimal"
             android:hint="20"
@@ -180,7 +201,7 @@
             android:layout_height="wrap_content"
             android:textSize="16dp"
             android:textColor="@color/black"
-            android:layout_marginLeft="40dp"
+            android:layout_marginLeft="20dp"
             android:ems="2"
             android:inputType="numberDecimal"
             android:hint="14"
@@ -201,7 +222,7 @@
             android:layout_height="wrap_content"
             android:textSize="16dp"
             android:textColor="@color/black"
-            android:layout_marginLeft="20dp"
+            android:layout_marginLeft="10dp"
             android:ems="2"
             android:inputType="numberDecimal"
             android:hint="30"

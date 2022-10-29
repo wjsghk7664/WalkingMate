@@ -48,7 +48,7 @@
         <ImageButton
             android:layout_margin="10dp"
             android:id="@+id/gofeed"
-            android:src="@drawable/icon_feed_xml"
+            android:src="@drawable/icon_pencil_xml"
             android:layout_width="50dp"
             android:layout_height="50dp"
             android:background="@drawable/orangebtn"
@@ -57,7 +57,7 @@
         <ImageButton
             android:layout_margin="10dp"
             android:id="@+id/home_btn"
-            android:src="@drawable/icon_home_xml"
+            android:src="@drawable/icon_home"
             android:layout_width="50dp"
             android:layout_height="50dp"
             android:background="@drawable/orangebtn"
