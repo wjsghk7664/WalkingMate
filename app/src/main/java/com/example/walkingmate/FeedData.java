@@ -208,7 +208,7 @@ public class FeedData extends Activity {
         return decodeFeed(result);
     }
 
-    public void deletefeed(String fileName, Activity activity){
+    static public void deletefeed(String fileName, Activity activity){
         String folder= activity.getFilesDir().getAbsolutePath() + "/walkingmate/";
         String path=folder+fileName;
 

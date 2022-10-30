@@ -630,4 +630,15 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
             }
         }
     };
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        Intent intent1=new Intent(getApplicationContext(),LocationService.class);
+        Intent intent2=new Intent(getApplicationContext(),StepCounterService.class);
+        Intent intent3=new Intent(getApplicationContext(),TimecheckingService.class);
+        stopService(intent1);
+        stopService(intent2);
+        stopService(intent3);
+    }
 }

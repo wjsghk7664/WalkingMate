@@ -125,11 +125,15 @@ public class WalkFragment extends Fragment implements OnMapReadyCallback{
     Bitmap retBitmap = null;//프로필에 띄울 이미지
     String curdocu=""; //현재 클릭한 게시물 문서아이디
 
+
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View root= inflater.inflate(R.layout.fragment_walk, container, false);
+
+        setLocation=new LatLng(37.5666103, 126.9783882);
 
         userImage=root.findViewById(R.id.profileImage);
         title=root.findViewById(R.id.walkview_title);
@@ -152,9 +156,6 @@ public class WalkFragment extends Fragment implements OnMapReadyCallback{
                 if (location != null) {
                     //시작위치부터 좌표모음 시작
                     setLocation=new LatLng(location.getLatitude(),location.getLongitude());
-                }
-                else{
-                    setLocation=new LatLng(37.5666103, 126.9783882);
                 }
             }
         });

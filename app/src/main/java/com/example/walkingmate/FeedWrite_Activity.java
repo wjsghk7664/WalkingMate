@@ -7,6 +7,7 @@ import androidx.fragment.app.FragmentActivity;
 import androidx.viewpager2.adapter.FragmentStateAdapter;
 import androidx.viewpager2.widget.ViewPager2;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -103,6 +104,8 @@ public class FeedWrite_Activity extends AppCompatActivity implements OnMapReadyC
 
     ArrayList<String> imgurls=new ArrayList<>();
 
+    String fileName;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -111,7 +114,7 @@ public class FeedWrite_Activity extends AppCompatActivity implements OnMapReadyC
         getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN);
 
         Intent getFeed=getIntent();
-        String fileName=getFeed.getStringExtra("filename");
+        fileName=getFeed.getStringExtra("filename");
 
         FeedData fd=new FeedData();
         feedData=fd.loadfeed(fileName,this);
@@ -330,6 +333,7 @@ public class FeedWrite_Activity extends AppCompatActivity implements OnMapReadyC
                             public void onSuccess(Void unused) {
                                 Log.d("피드_완료",imgurls.toString());
                                 Toast.makeText(getApplicationContext(),"작성 완료되었습니다.",Toast.LENGTH_SHORT).show();
+                                FeedData.deletefeed(fileName, FeedWrite_Activity.this);
                                 finish();
                             }
                         }).addOnFailureListener(new OnFailureListener() {
