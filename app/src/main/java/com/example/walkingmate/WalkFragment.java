@@ -366,19 +366,22 @@ public class WalkFragment extends Fragment implements OnMapReadyCallback{
             public void onComplete(@NonNull Task<DocumentSnapshot> task) {
                 DocumentSnapshot document=task.getResult();
                 ArrayList<String> docuids= (ArrayList<String>) document.get("requestlist");
-                if(docuids.size()>0){
-                    for(String s:docuids){
-                        walkuser.document(s).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
-                            @Override
-                            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-                                DocumentSnapshot documentSnapshot=task.getResult();
-                                Map<String,Long> datas= (Map<String, Long>) documentSnapshot.get("userlist");
-                                myreqlist.put(s,datas.get(userData.userid));
-                                mapsync();
-                            }
-                        });
+                if(docuids!=null){
+                    if(docuids.size()>0){
+                        for(String s:docuids){
+                            walkuser.document(s).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                                @Override
+                                public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                                    DocumentSnapshot documentSnapshot=task.getResult();
+                                    Map<String,Long> datas= (Map<String, Long>) documentSnapshot.get("userlist");
+                                    myreqlist.put(s,datas.get(userData.userid));
+                                    mapsync();
+                                }
+                            });
+                        }
                     }
                 }
+
             }
         });
     }
