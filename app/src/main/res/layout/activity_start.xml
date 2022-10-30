@@ -32,7 +32,7 @@
         </LinearLayout>
 
         <LinearLayout
-            android:gravity="center|bottom"
+            android:gravity="center"
             android:layout_weight="1"
             android:layout_width="match_parent"
             android:layout_height="0dp"
@@ -47,14 +47,16 @@
                 android:layout_height="wrap_content"
                 android:text="TextView" />
             <Button
+                android:visibility="invisible"
+                android:padding="5dp"
                 android:textColor="@color/white"
                 android:background="@drawable/plusbtn"
                 android:id="@+id/permission"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
+                android:layout_margin="10dp"
                 android:text="권한설정이 필요합니다.(이동)"
-                android:visibility="invisible" />
+                 />
 
         </LinearLayout>
 
@@ -68,8 +70,7 @@
             <com.nhn.android.naverlogin.ui.view.OAuthLoginButton
                 android:id="@+id/buttonOAuthLoginImg"
                 android:layout_width="wrap_content"
-                android:layout_height="50dp"
-                android:visibility="invisible"/>
+                android:layout_height="50dp" />
 
         </LinearLayout>
 
