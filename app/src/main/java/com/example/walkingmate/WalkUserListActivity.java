@@ -119,7 +119,14 @@ public class WalkUserListActivity extends Activity {
                     @Override
                     public void onComplete(@NonNull Task<DocumentSnapshot> task) {
                         DocumentSnapshot document=task.getResult();
-                        String result =String.format("%s (%s/%s)",document.get("appname"),document.get("gender"),document.get("age"));
+                        String genderstr;
+                        if(document.get("gender").equals("M")){
+                            genderstr="남성";
+                        }
+                        else {
+                            genderstr="여성";
+                        }
+                        String result =String.format("%s (%s/%s)",document.get("appname"),genderstr,document.get("age"));
                         waituserprofile.add(result);
                         waitAdapter.notifyDataSetChanged();
                     }
@@ -132,7 +139,14 @@ public class WalkUserListActivity extends Activity {
                     @Override
                     public void onComplete(@NonNull Task<DocumentSnapshot> task) {
                         DocumentSnapshot document=task.getResult();
-                        String result =String.format("%s (%s/%s)",document.get("appname"),document.get("gender"),document.get("age"));
+                        String genderstr;
+                        if(document.get("gender").equals("M")){
+                            genderstr="남성";
+                        }
+                        else {
+                            genderstr="여성";
+                        }
+                        String result =String.format("%s (%s/%s)",document.get("appname"),genderstr,document.get("age"));
                         acceptuserprofile.add(result);
                         acceptAdapter.notifyDataSetChanged();
                     }

@@ -391,12 +391,14 @@ public class WalkFragment extends Fragment implements OnMapReadyCallback{
             @Override
             public void onComplete(@NonNull Task<DocumentSnapshot> task) {
                 ArrayList<String> tmps= (ArrayList<String>) task.getResult().get("requestlist");
-                if(!tmps.contains(curdocu)){
+                //요청한적이 없어 문서가 없거나 요청을 안한경우
+                if(tmps==null||!tmps.contains(curdocu)){
                     sendreq();
                 }
                 else{
                     Toast.makeText(getActivity(),"이미 요청을 보낸 게시물입니다.",Toast.LENGTH_SHORT).show();
                 }
+
             }
         });
     }
@@ -422,7 +424,7 @@ public class WalkFragment extends Fragment implements OnMapReadyCallback{
         walkreq.document(userData.userid).set(data,SetOptions.merge()).addOnCompleteListener(new OnCompleteListener<Void>() {
             @Override
             public void onComplete(@NonNull Task<Void> task) {
-                Log.d("산책 메이트 신청","신청리스트 갱신");
+                Toast.makeText(getActivity(),"메이트 신청 완료",Toast.LENGTH_SHORT).show();
             }
         });
 
