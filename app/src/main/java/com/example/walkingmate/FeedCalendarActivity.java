@@ -111,9 +111,6 @@ public class FeedCalendarActivity extends AppCompatActivity implements Navigatio
         frameLayout=findViewById(R.id.container);
 
 
-
-
-
         WalkFragment walkFragment=new WalkFragment();
         fragmentManager.beginTransaction().replace(R.id.container, walkFragment,"walk").commitAllowingStateLoss();
 
@@ -271,10 +268,6 @@ public class FeedCalendarActivity extends AppCompatActivity implements Navigatio
         calendarView.setLeftArrow(android.R.color.white);
         calendarView.setRightArrow(android.R.color.white);
 
-        calendarView.addDecorators(new SaturdayDecorator(), new SundayDecorator(), new blurSatDecorator(),
-                new blurSunDecorator(), new blurDecorator(), new selDecorator(FeedCalendarActivity.this),
-                new DotDecorator(RED, findDays(feedlist)));
-
         calendarView.setSelectionMode(MaterialCalendarView.SELECTION_MODE_SINGLE);
 
         calendarView.setTitleFormatter(new TitleFormatter() {
@@ -392,13 +385,7 @@ public class FeedCalendarActivity extends AppCompatActivity implements Navigatio
     @Override
     protected void onResume() {
         super.onResume();
-        feedData=new FeedData();
-        feedlist=feedData.scanFeedList(FeedCalendarActivity.this);
-        calendarView.removeDecorators();
         CheckWrittenDays(CalendarDay.today().getYear(),CalendarDay.today().getMonth());
-        calendarView.addDecorators(new SaturdayDecorator(), new SundayDecorator(), new blurSatDecorator(),
-                new blurSunDecorator(), new blurDecorator(), new selDecorator(FeedCalendarActivity.this),
-                new DotDecorator(RED, findDays(feedlist)));
     }
 
 
@@ -418,7 +405,18 @@ public class FeedCalendarActivity extends AppCompatActivity implements Navigatio
                             Integer.parseInt(tmps[2].replace("일","")));
                     result.add(tmpcal);
                 }
+
+                calendarView.clearSelection();
+                selectedDay=null;
+                feedData=new FeedData();
+                feedlist=feedData.scanFeedList(FeedCalendarActivity.this);
+                calendarView.removeDecorators();
+
+                calendarView.addDecorators(new SaturdayDecorator(), new SundayDecorator(), new blurSatDecorator(),
+                        new blurSunDecorator(), new blurDecorator(), new selDecorator(FeedCalendarActivity.this),
+                        new DotDecorator(RED, findDays(feedlist)));
                 calendarView.addDecorator(new WrittenDecorator(FeedCalendarActivity.this,result));
+
             }
         });
     }
@@ -559,7 +557,6 @@ class blurDecorator implements DayViewDecorator{
 
     @Override
     public void decorate(DayViewFacade view){
-
         view.addSpan(new ForegroundColorSpan(argb(50,0,0,0)));
     }
 }

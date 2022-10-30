@@ -151,6 +151,7 @@ public class FeedActivity extends Activity {
         ArrayList<String> docuid=new ArrayList<>();
 
         if(year==9999){
+            Log.d("피드리스트","모든날 진입");
             walklist.whereEqualTo("userid",userData.userid).get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
                         @Override
                         public void onComplete(@NonNull Task<QuerySnapshot> task) {
@@ -169,7 +170,8 @@ public class FeedActivity extends Activity {
                     });
         }
         else{
-            walklist.whereEqualTo("userid",userData.userid).whereEqualTo("month",month).
+            Log.d("피드리스트","특정날 진입");
+            walklist.whereEqualTo("userid",userData.userid).whereEqualTo("day",day).whereEqualTo("month",month).
                     whereEqualTo("year",year).get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
                         @Override
                         public void onComplete(@NonNull Task<QuerySnapshot> task) {
