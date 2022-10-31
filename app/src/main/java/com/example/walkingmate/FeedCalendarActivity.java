@@ -1,6 +1,7 @@
 package com.example.walkingmate;
 
 import static android.graphics.Color.*;
+import static androidx.annotation.Dimension.DP;
 import static com.example.walkingmate.R.drawable.bottom_navigation;
 import static com.example.walkingmate.R.drawable.selected_day;
 
@@ -17,6 +18,8 @@ import android.app.Activity;
 import android.app.Application;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
@@ -25,12 +28,18 @@ import android.os.Bundle;
 import android.provider.Settings;
 import android.text.style.ForegroundColorSpan;
 import android.text.style.StyleSpan;
+import android.util.DisplayMetrics;
 import android.util.Log;
+import android.view.Display;
+import android.view.Gravity;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
+import android.view.ViewTreeObserver;
 import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -61,6 +70,9 @@ import com.prolificinteractive.materialcalendarview.spans.DotSpan;
 import org.threeten.bp.DayOfWeek;
 import org.threeten.bp.LocalDate;
 
+import java.io.InputStream;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
@@ -75,14 +87,18 @@ public class FeedCalendarActivity extends AppCompatActivity implements Navigatio
 
 
 
-    TextView yearText, titletxt;
+    View reliable_main, reliable_hori;
+    TextView yearText, titletxt, usertitle, username, userreliable_txt;
     CalendarDay selectedDay;
+
+    ImageView userimage;
 
     FeedData feedData;
     ArrayList<String> feedlist;
 
     DrawerLayout drawerLayout;
     NavigationView navigationView;
+    View headerview;
 
     LinearLayout mainlayout;
 
@@ -92,6 +108,8 @@ public class FeedCalendarActivity extends AppCompatActivity implements Navigatio
     private FragmentManager fragmentManager;
 
     int selected=1;
+
+    UserData userData;
 
 
     @Override
@@ -105,7 +123,7 @@ public class FeedCalendarActivity extends AppCompatActivity implements Navigatio
 
         titletxt=findViewById(R.id.fragtitle);
 
-
+        userData=UserData.loadData(this);
 
         mainlayout=findViewById(R.id.mainLayout_calendar);
         frameLayout=findViewById(R.id.container);
@@ -236,6 +254,15 @@ public class FeedCalendarActivity extends AppCompatActivity implements Navigatio
 
         drawerLayout=findViewById(R.id.Calendar_Layout);
         navigationView=findViewById(R.id.navigationView_calendar);
+        headerview=navigationView.getHeaderView(0);
+
+        usertitle=headerview.findViewById(R.id.title_sidebar);
+        username=headerview.findViewById(R.id.username_sidebar);
+        userimage=headerview.findViewById(R.id.userimage_sidebar);
+
+        reliable_hori=headerview.findViewById(R.id.reliable_horizontal);
+        reliable_main=headerview.findViewById(R.id.reliable_mainred);
+        userreliable_txt=headerview.findViewById(R.id.reliable_number);
 
         drawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
         navigationView.setNavigationItemSelectedListener(this);
@@ -365,6 +392,59 @@ public class FeedCalendarActivity extends AppCompatActivity implements Navigatio
 
     }
 
+    public int getdp(int a){
+        DisplayMetrics displayMetrics=getResources().getDisplayMetrics();
+        return Math.round(a*displayMetrics.density);
+    }
+
+    @Override
+    public void onWindowFocusChanged(boolean hasFocus) {
+        super.onWindowFocusChanged(hasFocus);
+        int horih,mainh,relitxt;
+
+        Long relivalue=userData.reliability;
+        int relimax=headerview.findViewById(R.id.reliable_background).getHeight();
+        Log.d("높이",relimax+"");
+        mainh= (int) ((relimax*relivalue)/100);
+        horih=mainh+getdp(9);
+        relitxt=horih-getdp(13);
+
+        FrameLayout.LayoutParams lp0=new FrameLayout.LayoutParams(getdp(30),mainh);
+        lp0.setMargins(0,0,0,getdp(13));
+        lp0.gravity= Gravity.BOTTOM;
+        reliable_main.setLayoutParams(lp0);
+
+        FrameLayout.LayoutParams lp=new FrameLayout.LayoutParams(getdp(30),getdp(4));
+        lp.setMargins(getdp(15),0,0,horih);
+        lp.gravity= Gravity.BOTTOM;
+        reliable_hori.setLayoutParams(lp);
+
+        FrameLayout.LayoutParams lp2=new FrameLayout.LayoutParams(getdp(30),getdp(30));
+        lp2.setMargins(getdp(35),0,0,relitxt);
+        lp2.gravity= Gravity.BOTTOM;
+        userreliable_txt.setLayoutParams(lp2);
+        userreliable_txt.setText(relivalue.toString());
+
+        //사이드바 프로필 설정
+        String usertitlestr;
+        if(userData.title.equals("없음")){
+            usertitlestr="[칭호를 설정해주세요]";
+        }
+        else{
+            usertitlestr="["+userData.title+"]";
+        }
+        usertitle.setText(usertitlestr);
+        username.setText(userData.appname);
+        Bitmap userimagebmp=UserData.loadImageToBitmap(this);
+        Log.d("유저 프로필",(userimagebmp==null)+"");
+        if(userimagebmp!=null){
+            userimage.setImageBitmap(userimagebmp);
+        }
+        else{
+            userimage.setImageResource(R.drawable.blank_profile);
+        }
+    }
+
     //뒤로가기로 나갔을시 홈버튼으로 나간것처럼 만들음. 종료로 인한 오류 방지
     @Override
     public void onBackPressed() {
@@ -452,17 +532,25 @@ public class FeedCalendarActivity extends AppCompatActivity implements Navigatio
         Intent intent=new Intent();
         if(id==R.id.challenge){
             intent=new Intent(this, challenge_activity.class);
+            startActivity(intent);
         }
         else if(id==R.id.managefriends){
             intent=new Intent(this, ManageFriend_Activity.class);
+            startActivity(intent);
         }
         else if(id==R.id.helpinfo){
-                intent=new Intent(this, HelpInfo_Activity.class);
+            intent=new Intent(this, HelpInfo_Activity.class);
+            startActivity(intent);
         }
         else if(id==R.id.appinfo){
-                intent=new Intent(this, AppInfo_Activity.class);
+            intent=new Intent(this, AppInfo_Activity.class);
+            startActivity(intent);
         }
-        startActivity(intent);
+        else if(id==R.id.settingprofile){
+            intent=new Intent(this, EditUserProfileActivity.class);
+            startActivity(intent);
+            finish();
+        }
         return true;
     }
 }

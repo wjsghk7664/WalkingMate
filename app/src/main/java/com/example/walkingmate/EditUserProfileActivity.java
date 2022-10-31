@@ -7,13 +7,14 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ImageView;
+import android.widget.ImageButton;
+import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -24,57 +25,81 @@ import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QuerySnapshot;
+import com.google.firebase.firestore.auth.User;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
-import java.util.HashMap;
 
-public class SettingProfileActivity extends AppCompatActivity {
+import de.hdodenhof.circleimageview.CircleImageView;
+
+public class EditUserProfileActivity extends AppCompatActivity {
 
     FirebaseFirestore db = FirebaseFirestore.getInstance();
     FirebaseStorage storage=FirebaseStorage.getInstance();
     StorageReference storageReference=storage.getReference();
 
-    boolean checkdup;
+    UserData userData;
 
-    ImageView profile;
-    EditText appnametxt;
+    EditText username;
+    Spinner usertitle;
+    ImageButton back;
+    Button setfinish,resetimg,editimg,checkname;
+    CircleImageView circleImageView;
+    TextView curappname,loading;
 
-    TextView curappname;
-    Bitmap bitmap=null;
+    Bitmap curimg;
 
-    String userid,age,gender,name,nickname,birthyear, finalappname, appname,profileImage;
+    String appname,finalappname,profileImage;
 
     Uri downloadUri;
-
-    HashMap<String, Object> user=new HashMap<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_setting_profile);
+        setContentView(R.layout.activity_edit_user_profile);
 
-        finalappname="";
+        userData=UserData.loadData(this);
+        appname="";
+        finalappname=userData.appname;
         profileImage="";
 
-        curappname=findViewById(R.id.curappname);
+        username=findViewById(R.id.userappname_userset);
+        usertitle=findViewById(R.id.titlespin_userset);//이부분은 구현되면 추가
+        back=findViewById(R.id.back_userset);
+        setfinish=findViewById(R.id.setprofile_userset);
+        resetimg=findViewById(R.id.profiledefault_userset);
+        editimg=findViewById(R.id.profileEdit_userset);
+        checkname=findViewById(R.id.checkdup_userset);
+        circleImageView=findViewById(R.id.profileImage_userset);
+        curappname=findViewById(R.id.curappname_userset);
+        loading=findViewById(R.id.loading_userset);
 
-        Intent userdata=getIntent();
-        userid=userdata.getStringExtra("userid");
-        age=userdata.getStringExtra("age");
-        gender=userdata.getStringExtra("gender");
-        name=userdata.getStringExtra("name");
-        nickname=userdata.getStringExtra("nickname");
-        birthyear=userdata.getStringExtra("birthyear");
+        curappname.setText("현재 선택한 닉네임: "+finalappname);
 
-        appnametxt=findViewById(R.id.userappname);
+        curimg=UserData.loadImageToBitmap(this);
+        if(curimg==null){
+            curimg=BitmapFactory.decodeResource(getApplicationContext().getResources(),R.drawable.blank_profile);
+        }
+        circleImageView.setImageBitmap(curimg);
 
-        profile=findViewById(R.id.profileImage);
-
-        findViewById(R.id.profileEdit).setOnClickListener(new View.OnClickListener() {
+        back.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                startActivity(new Intent(getApplicationContext(),FeedCalendarActivity.class));
+                finish();
+            }
+        });
+        resetimg.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                curimg=BitmapFactory.decodeResource(getApplicationContext().getResources(),R.drawable.blank_profile);
+                circleImageView.setImageResource(R.drawable.blank_profile);
+            }
+        });
+        editimg.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Intent galleryintent=new Intent();
@@ -83,20 +108,11 @@ public class SettingProfileActivity extends AppCompatActivity {
                 startActivityForResult(galleryintent,1);
             }
         });
-
-        findViewById(R.id.profiledefault).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                bitmap=null;
-                profile.setImageResource(R.drawable.blank_profile);
-            }
-        });
-
-        findViewById(R.id.checkdup).setOnClickListener(new View.OnClickListener() {
+        checkname.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 appname="";
-                appname+=appnametxt.getText().toString();
+                appname+=username.getText().toString();
                 if(appname.equals("")){
                     return;
                 }
@@ -116,32 +132,21 @@ public class SettingProfileActivity extends AppCompatActivity {
             }
         });
 
-        findViewById(R.id.setprofile).setOnClickListener(new View.OnClickListener() {
+        setfinish.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if(finalappname.equals("")){
-                    Toast.makeText(getApplicationContext(),"이름을 설정해주세요",Toast.LENGTH_SHORT).show();
-                    return;
-                }
-                else{
-                    findViewById(R.id.loading).setVisibility(View.VISIBLE);
-                    if(bitmap==null){
-                        bitmap=BitmapFactory.decodeResource(getApplicationContext().getResources(),R.drawable.blank_profile);
-                    }
-                    uploadImage();
-                }
-
+                loading.setVisibility(View.VISIBLE);
+                uploadImage();
             }
         });
-
     }
 
+
     public void uploadImage(){
-        StorageReference uploadRef=storageReference.child(userid+"_profile.jpg");
-        Log.d("로그인_이미지명",userid+"_profile.jpg");
+        StorageReference uploadRef=storageReference.child(userData.userid+"_profile.jpg");
 
         ByteArrayOutputStream baos=new ByteArrayOutputStream();
-        bitmap.compress(Bitmap.CompressFormat.JPEG,100,baos);
+        curimg.compress(Bitmap.CompressFormat.JPEG,100,baos);
         byte[] datas=baos.toByteArray();
 
         UploadTask uploadTask=uploadRef.putBytes(datas);
@@ -172,24 +177,17 @@ public class SettingProfileActivity extends AppCompatActivity {
                             downloadUri = task.getResult();
                             profileImage=downloadUri.toString();
                             Log.d("로그인 프로필 이미지 url",downloadUri.toString());
-                            user.put("nickname",nickname);
-                            user.put("name",name);
-                            user.put("age",age);
-                            user.put("gender",gender);
-                            user.put("birthyear",birthyear);
-                            user.put("appname",finalappname);
-                            user.put("profileImage",profileImage);
-                            user.put("title","없음");
-                            user.put("reliability",50);
+                            userData.appname=finalappname;
+                            userData.profileImage=profileImage;
+                            UserData.saveBitmapToJpeg(curimg,EditUserProfileActivity.this);
+                            //userData.title=title;
 
-                            db.collection("users").document(userid).set(user).addOnSuccessListener(new OnSuccessListener<Void>() {
+                            db.collection("users").document(userData.userid).set(UserData.getHashmap(userData)).addOnSuccessListener(new OnSuccessListener<Void>() {
                                 @Override
                                 public void onSuccess(Void unused) {
-                                    Toast.makeText(getApplicationContext(),"회원가입 성공.",Toast.LENGTH_SHORT).show();
-                                    UserData.saveData(new UserData(userid,profileImage,appname,nickname,name,age,gender,birthyear,"없음", 50L),SettingProfileActivity.this);
-                                    UserData.saveBitmapToJpeg(bitmap,SettingProfileActivity.this);
-                                    startActivity(new Intent(SettingProfileActivity.this, FeedCalendarActivity.class));
-                                    finish();
+                                    Toast.makeText(getApplicationContext(),"프로필 변경 완료.",Toast.LENGTH_SHORT).show();
+                                    UserData.saveData(userData,EditUserProfileActivity.this);
+                                    loading.setVisibility(View.INVISIBLE);
                                 }
                             });
                         } else {
@@ -205,22 +203,20 @@ public class SettingProfileActivity extends AppCompatActivity {
 
 
     @Override
+    public void onBackPressed() {
+        back.performClick();
+    }
+
+    @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if(resultCode==RESULT_OK){
             try{
                 InputStream in=getContentResolver().openInputStream(data.getData());
-                bitmap= BitmapFactory.decodeStream(in);
-                profile.setImageBitmap(bitmap);
+                curimg= BitmapFactory.decodeStream(in);
+                circleImageView.setImageBitmap(curimg);
                 in.close();
             }catch (Exception e){e.printStackTrace();}
         }
-    }
-
-    @Override
-    public void onBackPressed() {
-        super.onBackPressed();
-        startActivity(new Intent(this,StartActivity.class));
-        finish();
     }
 }
