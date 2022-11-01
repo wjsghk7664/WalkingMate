@@ -5,6 +5,8 @@ import static androidx.annotation.Dimension.DP;
 import static com.example.walkingmate.R.drawable.bottom_navigation;
 import static com.example.walkingmate.R.drawable.selected_day;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
@@ -52,6 +54,7 @@ import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QuerySnapshot;
+import com.naver.maps.geometry.LatLng;
 import com.prolificinteractive.materialcalendarview.CalendarDay;
 import com.prolificinteractive.materialcalendarview.DayViewDecorator;
 import com.prolificinteractive.materialcalendarview.DayViewFacade;
@@ -397,11 +400,10 @@ public class FeedCalendarActivity extends AppCompatActivity implements Navigatio
         return Math.round(a*displayMetrics.density);
     }
 
-    @Override
-    public void onWindowFocusChanged(boolean hasFocus) {
-        super.onWindowFocusChanged(hasFocus);
+    public void setReliable(){
         int horih,mainh,relitxt;
 
+        userData=UserData.loadData(this);
         Long relivalue=userData.reliability;
         int relimax=headerview.findViewById(R.id.reliable_background).getHeight();
         Log.d("높이",relimax+"");
@@ -445,6 +447,12 @@ public class FeedCalendarActivity extends AppCompatActivity implements Navigatio
         }
     }
 
+    @Override
+    public void onWindowFocusChanged(boolean hasFocus) {
+        super.onWindowFocusChanged(hasFocus);
+        setReliable();
+    }
+
     //뒤로가기로 나갔을시 홈버튼으로 나간것처럼 만들음. 종료로 인한 오류 방지
     @Override
     public void onBackPressed() {
@@ -467,6 +475,15 @@ public class FeedCalendarActivity extends AppCompatActivity implements Navigatio
         super.onResume();
         CheckWrittenDays(CalendarDay.today().getYear(),CalendarDay.today().getMonth());
     }
+
+
+    private final ActivityResultLauncher<Intent> setProfileResult= registerForActivityResult(
+            new ActivityResultContracts.StartActivityForResult(),
+            result -> {
+                if(result.getResultCode() ==RESULT_OK){
+                    setReliable();
+                }
+            });
 
 
     public void CheckWrittenDays(int year, int month){
@@ -548,8 +565,7 @@ public class FeedCalendarActivity extends AppCompatActivity implements Navigatio
         }
         else if(id==R.id.settingprofile){
             intent=new Intent(this, EditUserProfileActivity.class);
-            startActivity(intent);
-            finish();
+            setProfileResult.launch(intent);
         }
         return true;
     }

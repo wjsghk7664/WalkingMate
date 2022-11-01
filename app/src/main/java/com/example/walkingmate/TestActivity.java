@@ -214,7 +214,12 @@ public class TestActivity extends AppCompatActivity implements OnMapReadyCallbac
             @Override
             public void onClick(View view) {
                 if(coordlist==null||coordlist.size()==0){
-                    Toast.makeText(getApplicationContext(),"경로 탐색이 지원되지 않는 목적지가 포함되어 있습니다.",Toast.LENGTH_SHORT).show();
+                    if(markers.size()==0){
+                        Toast.makeText(getApplicationContext(),"목적지를 선택해 주세요.",Toast.LENGTH_SHORT).show();
+                    }
+                    else {
+                        Toast.makeText(getApplicationContext(),"경로 탐색이 지원되지 않는 목적지가 포함되어 있습니다.",Toast.LENGTH_SHORT).show();
+                    }
                 }
                 setmarkers=true;
                 for(int i=0; i<markers.size(); ++i){

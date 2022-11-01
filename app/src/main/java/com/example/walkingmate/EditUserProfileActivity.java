@@ -88,7 +88,8 @@ public class EditUserProfileActivity extends AppCompatActivity {
         back.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                startActivity(new Intent(getApplicationContext(),FeedCalendarActivity.class));
+                Intent backpage=new Intent(getApplicationContext(),FeedCalendarActivity.class);
+                setResult(RESULT_OK, backpage);
                 finish();
             }
         });

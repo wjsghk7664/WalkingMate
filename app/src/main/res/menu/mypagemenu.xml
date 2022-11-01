@@ -11,7 +11,7 @@
         <item
             android:id="@+id/managefriends"
             android:icon="@drawable/white_arrow"
-            android:title="친구 관리"
+            android:title="차단 유저 관리"
             />
 
         <item

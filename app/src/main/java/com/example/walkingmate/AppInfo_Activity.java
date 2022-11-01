@@ -23,5 +23,7 @@ public class AppInfo_Activity extends AppCompatActivity {
                 finish();
             }
         });
+
+
     }
 }
