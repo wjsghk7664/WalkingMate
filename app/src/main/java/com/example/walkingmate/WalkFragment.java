@@ -84,6 +84,7 @@ public class WalkFragment extends Fragment implements OnMapReadyCallback{
     CollectionReference udata=fb.collection("users");
     CollectionReference walkuser=fb.collection("walkuser");
     CollectionReference walkreq=fb.collection("walkrequest");
+    CollectionReference block=fb.collection("blocklist");
 
     private FusedLocationSource locationSource;
     private FusedLocationProviderClient fusedLocationProviderClient;
@@ -526,89 +527,119 @@ public class WalkFragment extends Fragment implements OnMapReadyCallback{
             query=query.whereEqualTo("userage",agestr);
             Log.d("산책 나이체크",agestr);
         }
-        query.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+
+        Query finalQuery = query;
+
+        //받아오는 사람이 체크해서 못받아오게 하기위함
+        //내가 블록한 사람체크 우선, 그 후 받아오기
+        ArrayList<String> blockusers=new ArrayList<>();
+        block.document(userData.userid).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
             @Override
-            public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                if(task.isSuccessful()){
-                    Log.d("산책 쿼리 결과물",""+task.getResult().size());
-                    for(QueryDocumentSnapshot document: task.getResult()){
-                        boolean req=true;
-                        //상대 요구와 다르면 제외
-                        if(!document.get("age").equals("무관")){
-                            if(!document.get("age").equals(myage)){
-                                req=false;
-                                Log.d("산책 맵1","결과"+req);
-                            }
-                        }
-                        if(!document.get("gender").equals("무관")){
-                            if(!document.get("gender").equals(mygender)){
-                                req=false;
-                                Log.d("산책 맵2","결과"+req);
-                            }
-                        }
-                        //날짜 지났으면 제외
-                        if((Long)document.get("year")<times[0]){
-                            req=false;
-                            Log.d("산책 맵3-0","결과"+req);
-                        }
-                        else if((Long)document.get("year")==times[0]){
-                            if((Long)document.get("month")<times[1]){
-                                req=false;
-                                Log.d("산책 맵3","결과"+req);
-                            }
-                            else if((Long)document.get("month")==times[1]){
-                                if((Long)document.get("day")<times[2]){
-                                    req=false;
-                                    Log.d("산책 맵4","결과"+req);
-                                }
-                                else if((Long)document.get("day")==times[2]){
-                                    if((Long)document.get("hour")<times[3]){
-                                        req=false;
-                                        Log.d("산책 맵5","결과"+req);
-                                    }
-                                    else if((Long)document.get("hour")==times[3]){
-                                        if((Long)document.get("minute")<times[4]){
-                                            req=false;
-                                            Log.d("산책 맵6","결과"+req);
-                                        }
-                                    }
-                                }
-                            }
-                        }
-
-
-
-                        Log.d("산책 맵7","결과"+req);
-                        if(req){
-                            idlist.add((String) document.get("userid"));
-                            docuidlist.add(document.getId());
-
-                            Map<String, Object> tmpmap= (Map<String, Object>) document.get("location_coord");
-                            LatLng tmplatlng=new LatLng((Double) tmpmap.get("latitude"), (Double) tmpmap.get("longitude"));
-                            Log.d("산책_게시물좌표",tmplatlng.toString());
-
-                            //카메라 범위에 벗어나면 제외는 Onmapready에서 처리
-                            coordlist.add(tmplatlng);
-
-
-
-                            String timetmp=String.format("%04d_%02d_%02d_%02d_%02d",(Long)document.get("year"),(Long)document.get("month"),(Long)document.get("day"),(Long)document.get("hour"),(Long)document.get("minute"));
-                            timelist.add(timetmp);
-                        }
-
+            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                if(task.getResult().exists()){
+                    DocumentSnapshot document=task.getResult();
+                    for(String s:(ArrayList<String>)document.get("userid")){
+                        blockusers.add(s);
                     }
                 }
-                else{
-                    Log.d("산책 쿼리","실패");
-                }
-                mapsync();
-            }
-        }).addOnFailureListener(new OnFailureListener() {
-            @Override
-            public void onFailure(@NonNull Exception e) {
-                Log.d("산책 쿼리 에러",e.toString());
+                block.whereArrayContains("userid",userData.userid).get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                        if(!task.getResult().getDocuments().isEmpty()){
+                            ArrayList<DocumentSnapshot> documents= (ArrayList<DocumentSnapshot>) task.getResult().getDocuments();
+                            for(DocumentSnapshot document: documents){
+                                blockusers.add(document.getId());
+                            }
+                        }
+                        Log.d("차단유저 체크",blockusers.toString());
+                        finalQuery.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                            @Override
+                            public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                                if(task.isSuccessful()){
+                                    Log.d("산책 쿼리 결과물",""+task.getResult().size());
+                                    for(QueryDocumentSnapshot document: task.getResult()){
+                                        boolean req=true;
+                                        //상대 요구와 다르면 제외
+                                        if(!document.get("age").equals("무관")){
+                                            if(!document.get("age").equals(myage)){
+                                                req=false;
+                                                Log.d("산책 맵1","결과"+req);
+                                            }
+                                        }
+                                        if(!document.get("gender").equals("무관")){
+                                            if(!document.get("gender").equals(mygender)){
+                                                req=false;
+                                                Log.d("산책 맵2","결과"+req);
+                                            }
+                                        }
+                                        //날짜 지났으면 제외
+                                        if((Long)document.get("year")<times[0]){
+                                            req=false;
+                                            Log.d("산책 맵3-0","결과"+req);
+                                        }
+                                        else if((Long)document.get("year")==times[0]){
+                                            if((Long)document.get("month")<times[1]){
+                                                req=false;
+                                                Log.d("산책 맵3","결과"+req);
+                                            }
+                                            else if((Long)document.get("month")==times[1]){
+                                                if((Long)document.get("day")<times[2]){
+                                                    req=false;
+                                                    Log.d("산책 맵4","결과"+req);
+                                                }
+                                                else if((Long)document.get("day")==times[2]){
+                                                    if((Long)document.get("hour")<times[3]){
+                                                        req=false;
+                                                        Log.d("산책 맵5","결과"+req);
+                                                    }
+                                                    else if((Long)document.get("hour")==times[3]){
+                                                        if((Long)document.get("minute")<times[4]){
+                                                            req=false;
+                                                            Log.d("산책 맵6","결과"+req);
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        }
+
+
+
+                                        Log.d("산책 맵7","결과"+req);
+                                        if(req&&(!blockusers.contains(document.get("userid")))){
+                                            idlist.add((String) document.get("userid"));
+                                            docuidlist.add(document.getId());
+
+                                            Map<String, Object> tmpmap= (Map<String, Object>) document.get("location_coord");
+                                            LatLng tmplatlng=new LatLng((Double) tmpmap.get("latitude"), (Double) tmpmap.get("longitude"));
+                                            Log.d("산책_게시물좌표",tmplatlng.toString());
+
+                                            //카메라 범위에 벗어나면 제외는 Onmapready에서 처리
+                                            coordlist.add(tmplatlng);
+
+
+
+                                            String timetmp=String.format("%04d_%02d_%02d_%02d_%02d",(Long)document.get("year"),(Long)document.get("month"),(Long)document.get("day"),(Long)document.get("hour"),(Long)document.get("minute"));
+                                            timelist.add(timetmp);
+                                        }
+
+                                    }
+                                }
+                                else{
+                                    Log.d("산책 쿼리","실패");
+                                }
+                                mapsync();
+                            }
+                        }).addOnFailureListener(new OnFailureListener() {
+                            @Override
+                            public void onFailure(@NonNull Exception e) {
+                                Log.d("산책 쿼리 에러",e.toString());
+                            }
+                        });
+                    }
+                });
             }
         });
+
     }
 
     public void getmydata(){
