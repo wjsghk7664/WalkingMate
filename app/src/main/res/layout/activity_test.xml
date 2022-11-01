@@ -75,7 +75,7 @@
             </LinearLayout>
         </LinearLayout>
 
-        <LinearLayout
+        <FrameLayout
             android:layout_marginTop="5dp"
             android:layout_weight="7"
             android:layout_width="match_parent"
@@ -88,7 +88,19 @@
                 android:layout_height="match_parent"
                 tools:layout="@android:layout/activity_list_item" />
 
-        </LinearLayout>
+            <TextView
+                android:visibility="invisible"
+                android:background="@color/blurblack"
+                android:textSize="30dp"
+                android:textStyle="bold"
+                android:textColor="@color/white"
+                android:gravity="center"
+                android:id="@+id/loading_trip"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:text="로딩중..." />
+
+        </FrameLayout>
 
         <LinearLayout
             android:layout_marginBottom="10dp"

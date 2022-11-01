@@ -103,13 +103,18 @@ public class TestActivity extends AppCompatActivity implements OnMapReadyCallbac
 
     int selecteditem=7;//index 7은 존재할 수 없으므로 미클릭된 상태 값으로 사용
 
-    ArrayList<LatLng> Check=new ArrayList<>();
+    boolean startreq,clickreq,finishreq,clickfin;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_test);
+
+        startreq=false;
+        clickreq=false;
+        finishreq=false;
+        clickfin=false;
 
         setmarkers=false;
 
@@ -213,6 +218,12 @@ public class TestActivity extends AppCompatActivity implements OnMapReadyCallbac
         reqroute.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                Log.d("경로탐색","startreq:"+startreq+", coordsize:"+coordlist.size());
+                if(startreq){
+                    clickreq=true;
+                    findViewById(R.id.loading_trip).setVisibility(View.VISIBLE);
+                    return;
+                }
                 if(coordlist==null||coordlist.size()==0){
                     if(markers.size()==0){
                         Toast.makeText(getApplicationContext(),"목적지를 선택해 주세요.",Toast.LENGTH_SHORT).show();
@@ -240,6 +251,11 @@ public class TestActivity extends AppCompatActivity implements OnMapReadyCallbac
                     return;
                 }
                 else{
+                    if(startreq){
+                        clickfin=true;
+                        findViewById(R.id.loading_trip).setVisibility(View.VISIBLE);
+                        return;
+                    }
                     while(coordlist.size()>5000){
                         ArrayList<LatLng> tmp=new ArrayList();
                         Log.d("여행루트",coordlist.size()+"");
@@ -676,6 +692,7 @@ public class TestActivity extends AppCompatActivity implements OnMapReadyCallbac
     }
 
     public void RequestTmap(){
+        startreq=true;
         double startX, startY, endX, endY;
         String startName, endName;
         startX=locList.get(0).longitude;
@@ -740,6 +757,38 @@ public class TestActivity extends AppCompatActivity implements OnMapReadyCallbac
             coordlist=getPoints(mresponse);
             Log.d("JSON-최종 좌표모음",coordlist.toString());
             Log.d("JSON-최종 좌표 수",coordlist.size()+"");
+
+            startreq=false;
+            findViewById(R.id.loading_trip).setVisibility(View.INVISIBLE);
+            if(clickfin){
+                clickfin=false;
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                findViewById(R.id.finish_setroute).performClick();
+                            }
+                        });
+                    }
+                }).start();
+            }
+            if(clickreq){
+                clickreq=false;
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                reqroute.performClick();
+                            }
+                        });
+                    }
+                }).start();
+            }
+
 
 
         }catch (Exception e){
