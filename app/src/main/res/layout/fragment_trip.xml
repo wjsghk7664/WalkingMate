@@ -6,11 +6,24 @@
     tools:context=".TripFragment">
 
     <!-- TODO: Update blank fragment layout -->
-    <TextView
-        android:textSize="50dp"
+    <LinearLayout
         android:gravity="center"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:text="여행" />
+        android:orientation="vertical">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:text="여행"
+            android:textSize="50dp" />
+
+        <Button
+            android:id="@+id/gomain_trip"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="메인으로" />
+    </LinearLayout>
 
 </FrameLayout>

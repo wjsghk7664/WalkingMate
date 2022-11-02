@@ -245,7 +245,7 @@ public class FeedCalendarActivity extends AppCompatActivity implements Navigatio
                             fragmentManager.beginTransaction().show(fragmentManager.findFragmentByTag("chat")).commit();
                         }
                         else{
-                            fragmentManager.beginTransaction().add(R.id.container, new ChatFragment(FeedCalendarActivity.this),"chat").commit();
+                            fragmentManager.beginTransaction().add(R.id.container, new ChatFragment(),"chat").commit();
                         }
 
                         return true;

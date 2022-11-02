@@ -1,5 +1,6 @@
 package com.example.walkingmate;
 
+import android.content.Intent;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
@@ -20,7 +21,15 @@ public class TripFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_trip, container, false);
+        View view= inflater.inflate(R.layout.fragment_trip, container, false);
+
+        view.findViewById(R.id.gomain_trip).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                startActivity(new Intent(getActivity(),MainActivity.class));
+            }
+        });
+
+        return view;
     }
 }
