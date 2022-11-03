@@ -67,6 +67,13 @@ public class ChatFragment extends Fragment {
             }
         });
 
+        view.findViewById(R.id.addevery).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                addEveryChatrooms();
+            }
+        });
+
         userData=UserData.loadData(getActivity());
 
 
@@ -129,6 +136,31 @@ public class ChatFragment extends Fragment {
         Map<String,Boolean> usertmp=new HashMap<>();
         usertmp.put("ob_ua6RyFxqm66pBjej9gJ0VDyatPHLDu81RRis__xY",true);
         usertmp.put("qy-LTaqG2gfFXY3JbNJmRVInup3ensNQBhEBjPou-DM",true);
+        tmp.userids=usertmp;
+
+        saverooms(tmp);
+
+        dr.child(tmp.roomid).setValue(tmp).addOnCompleteListener(new OnCompleteListener<Void>() {
+            @Override
+            public void onComplete(@NonNull Task<Void> task) {
+                getChatrooms();
+            }
+        });
+    }
+
+    public void addEveryChatrooms(){
+        SimpleDateFormat sdf=new SimpleDateFormat("HHmmss");
+        Date date=new Date(System.currentTimeMillis());
+
+        ChatRoom tmp=new ChatRoom();
+        tmp.roomid=sdf.format(date);
+        Log.d("채팅룸 아이디",tmp.roomid);
+        tmp.roomname="testevery";
+        Map<String,Boolean> usertmp=new HashMap<>();
+        usertmp.put("ob_ua6RyFxqm66pBjej9gJ0VDyatPHLDu81RRis__xY",true);
+        usertmp.put("qy-LTaqG2gfFXY3JbNJmRVInup3ensNQBhEBjPou-DM",true);
+        usertmp.put("SsNtgRDgtZSjD0GI37M476ixp0p9d7NjKmN9SHlX04o", true);
+        usertmp.put("t8hCqWDoYJUZsmTK0FW0EWfZJjO2LkIOJYqqyM22FJU", true);
         tmp.userids=usertmp;
 
         saverooms(tmp);
