@@ -14,6 +14,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -26,6 +27,7 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.firestore.SetOptions;
 
 import org.checkerframework.checker.units.qual.A;
 
@@ -280,6 +282,58 @@ public class ChatFragment extends Fragment {
         }
     }
 
+    public void Outroom(ChatRoom chatRoom){
+        String roomid=chatRoom.roomid;
+        Map<String,Object> tmp=new HashMap<>();
+        tmp.put(userData.userid,false);
+        dr.child(roomid).child("userids").updateChildren(tmp).addOnCompleteListener(new OnCompleteListener<Void>() {
+            @Override
+            public void onComplete(@NonNull Task<Void> task) {
+                checkDel(roomid);
+            }
+        });
+        deleteroom(roomid);
+        chatRooms.remove(chatRoom);
+        chatroomAdapter.notifyDataSetChanged();
+    }
+
+    public void checkDel(String roomid){
+        dr.child(roomid).child("userids").addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                int count=0;
+                Map<String,Boolean> users= (Map<String, Boolean>) snapshot.getValue();
+                for(String s:users.keySet()){
+                    if(users.get(s)){
+                        ++count;
+                    }
+                }
+                if(count==0){
+                    dr.child(roomid).removeValue();
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
+    }
+
+    public void deleteroom(String roomid){
+        String folder= getActivity().getFilesDir().getAbsolutePath() + "/messages/";
+        String path=folder+roomid+".txt";
+
+        try{
+            File file=new File(path);
+            if(file.exists()){
+                file.delete();
+            }
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+    }
+
     public class ChatroomAdapter extends BaseAdapter {
 
         LayoutInflater layoutInflater;
@@ -314,6 +368,7 @@ public class ChatFragment extends Fragment {
             }
             LinearLayout chatroombody=view.findViewById(R.id.body_chatroom);
             TextView chatroomname=view.findViewById(R.id.chatroomname);
+            Button outrooms=view.findViewById(R.id.outroom);
 
             Log.d("채팅방 세팅",chatRooms.get(position).roomname);
             chatroomname.setText(chatRooms.get(position).roomname+"("+chatRooms.get(position).roomid+")");
@@ -325,6 +380,15 @@ public class ChatFragment extends Fragment {
                     startActivity(intent);
                 }
             });
+
+            outrooms.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    Outroom(chatRooms.get(position));
+                }
+            });
+
+
 
             return view;
         }

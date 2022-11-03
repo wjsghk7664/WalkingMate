@@ -132,8 +132,11 @@ public class FeedCalendarActivity extends AppCompatActivity implements Navigatio
         frameLayout=findViewById(R.id.container);
 
 
+
+
         WalkFragment walkFragment=new WalkFragment();
         fragmentManager.beginTransaction().replace(R.id.container, walkFragment,"walk").commitAllowingStateLoss();
+
 
 
         NavigationBarView navigationBarView=findViewById(R.id.bottom_navigation);
