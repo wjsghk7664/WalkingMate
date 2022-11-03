@@ -86,13 +86,14 @@ public class StartActivity extends AppCompatActivity {
 
         //백그라운드 위치권한은 요청이 불가능 하므로 직접 설정하도록 유도해 줘야함.
         //메인 화면에서 백그라운드 권한 요청이 안되어 있는경우 화면에 보여서 권한 승인 화면으로 가도록 유도
-        String[] Permissions = {Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.ACTIVITY_RECOGNITION};
+        String[] Permissions = {Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.ACTIVITY_RECOGNITION,Manifest.permission.READ_EXTERNAL_STORAGE};
 
 
         ActivityCompat.requestPermissions(this, Permissions, 1);
 
         if(ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_BACKGROUND_LOCATION) != PackageManager.PERMISSION_GRANTED||
-                ActivityCompat.checkSelfPermission(this, Manifest.permission.ACTIVITY_RECOGNITION) != PackageManager.PERMISSION_GRANTED){
+                ActivityCompat.checkSelfPermission(this, Manifest.permission.ACTIVITY_RECOGNITION) != PackageManager.PERMISSION_GRANTED||
+                ActivityCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED){
             mOAuthLoginButton.setVisibility(View.INVISIBLE);
             permissionbtn.setVisibility(View.VISIBLE);
             permlist.setVisibility(View.VISIBLE);
@@ -134,7 +135,10 @@ public class StartActivity extends AppCompatActivity {
             reqperm+="위치권한: 항상 허용으로 설정\n";
         }
         if(ActivityCompat.checkSelfPermission(this, Manifest.permission.ACTIVITY_RECOGNITION) != PackageManager.PERMISSION_GRANTED){
-            reqperm+="신체활동 권한: 허용으로 설정";
+            reqperm+="신체활동 권한: 허용으로 설정\n";
+        }
+        if(ActivityCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED){
+            reqperm+="파일 및 미디어 권한: 허용으로 설정";
         }
         permlist.setText(reqperm);
 
