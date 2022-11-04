@@ -92,6 +92,7 @@ public class ChatFragment extends Fragment {
 
 
     //우선 로컬에서 채팅방가져오고 난 뒤 로컬에 없는 신규 채팅방을 추가
+    //채팅이 올때마다도 업데이트 되므로 챗룸객체도 겹치는게 존재시 실시간 업데이트
     public void getChatrooms(){
 
         dr.orderByChild("userids/"+userData.userid).equalTo(true).addValueEventListener(new ValueEventListener() {
@@ -100,9 +101,14 @@ public class ChatFragment extends Fragment {
                 for(DataSnapshot dataSnapshot:snapshot.getChildren()){
                     ChatRoom tmpc=dataSnapshot.getValue(ChatRoom.class);
                     boolean checkroom=false;
+                    int idx=-1;
+                    //업데이트
                     for(ChatRoom chatRoom: chatRooms){
                         if(chatRoom.roomid.equals(tmpc.roomid)){
                             checkroom=true;
+                            idx=chatRooms.indexOf(chatRoom);
+                            chatRooms.set(idx,tmpc);
+
                         }
                     }
                     //룸아이디 체크해 존재하지 않는 경우만 추가
@@ -362,6 +368,8 @@ public class ChatFragment extends Fragment {
             LinearLayout chatroombody=view.findViewById(R.id.body_chatroom);
             TextView chatroomname=view.findViewById(R.id.chatroomname);
             Button outrooms=view.findViewById(R.id.outroom);
+            TextView lastmsg=view.findViewById(R.id.lastmsg);
+            TextView usernum=view.findViewById(R.id.usernum);
 
             Log.d("채팅방 세팅",chatRooms.get(position).roomname);
             chatroomname.setText(chatRooms.get(position).roomname+"("+chatRooms.get(position).roomid+")");
@@ -374,6 +382,29 @@ public class ChatFragment extends Fragment {
                 }
             });
 
+            if(chatRooms.get(position).comments!=null&&chatRooms.get(position).comments.size()!=0){
+                Map<String, ChatRoom.Comment> cmap= chatRooms.get(position).comments;
+                long lasttime=0;
+                String laststr="";
+                for(String s:cmap.keySet()){
+                    long tmptime=Long.parseLong(cmap.get(s).time);
+                    if(tmptime>lasttime){
+                        lasttime=tmptime;
+                        laststr=cmap.get(s).msg;
+                    }
+                }
+                lastmsg.setText(laststr+returntime(lasttime+""));
+            }
+
+            Map<String,Boolean> users=chatRooms.get(position).userids;
+            int usern=0;
+            for(String s:users.keySet()){
+                if(users.get(s)){
+                    usern++;
+                }
+            }
+            usernum.setText(usern+"");
+
             outrooms.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
@@ -385,5 +416,15 @@ public class ChatFragment extends Fragment {
 
             return view;
         }
+    }
+
+    public String returntime(String time){
+        String y=time.substring(2,4);
+        String m=time.substring(4,6);
+        String d=time.substring(6,8);
+        String h=time.substring(8,10);
+        String min=time.substring(10,12);
+        return String.format(" (%s/%s/%s %s:%s)",y,m,d,h,min);
+
     }
 }
