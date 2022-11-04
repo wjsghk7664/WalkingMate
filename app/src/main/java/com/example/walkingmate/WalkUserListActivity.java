@@ -242,6 +242,8 @@ public class WalkUserListActivity extends Activity {
                     Log.d("수락 목록",waituser.get(position));
 
                     acceptuserprofile.add(waituserprofile.get(position));
+                    acceptUserChatrooms(docuid,waituser.get(position));
+
                     waituser.remove(position);
                     waituserprofile.remove(position);
                     notifyDataSetChanged();
@@ -264,7 +266,7 @@ public class WalkUserListActivity extends Activity {
             chat.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    addChatrooms(docuid,waituser.get(position));
+                    addPersonalChatrooms(docuid,waituser.get(position));
                 }
             });
 
@@ -272,8 +274,8 @@ public class WalkUserListActivity extends Activity {
         }
     }
 
-    //채팅방 생성 및 이동, 이미존재하면 그냥 이동
-    public void addChatrooms(String docuid, String userid){
+    //개인 신청자에 대하여 채팅방 생성 및 이동, 이미존재하면 그냥 이동
+    public void addPersonalChatrooms(String docuid, String userid){
         DatabaseReference dr= FirebaseDatabase.getInstance().getReference("Chatrooms");
 
         ChatRoom tmp=new ChatRoom();
@@ -319,6 +321,48 @@ public class WalkUserListActivity extends Activity {
             }
         });
 
+    }
+
+    //게시물의 수락자들을 모아놓는 채팅방 생성.
+    //수락 누를때 마다 실행.
+    public void acceptUserChatrooms(String docuid, String acceptuserid){
+        DatabaseReference dr= FirebaseDatabase.getInstance().getReference("Chatrooms");
+
+        ChatRoom tmp=new ChatRoom();
+
+        String roomnames="";
+        if(walkname!=null){
+            roomnames="[산책][수락]"+walkname;
+        }
+        tmp.roomid=docuid;
+        Log.d("채팅룸 아이디",tmp.roomid);
+        tmp.roomname=roomnames;
+        Map<String,Boolean> usertmp=new HashMap<>();
+        usertmp.put(userData.userid,true);
+        usertmp.put(acceptuserid,true);
+        tmp.userids=usertmp;
+
+        //채팅방 존재여부 체크 후 이동
+        dr.child(tmp.roomid).addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                if(snapshot.getValue(ChatRoom.class)!=null){
+                    Log.d("수락채팅방 생성","이미 존재하는 채팅방-수락자 추가");
+                    Map<String,Object> adduser=new HashMap<>();
+                    adduser.put(acceptuserid,true);
+                    dr.child(tmp.roomid).child("userids").updateChildren(adduser);
+                }
+                else{
+                    Log.d("수락채팅방 생성","새 채팅방 생성");
+                    dr.child(tmp.roomid).setValue(tmp);
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
     }
 
 

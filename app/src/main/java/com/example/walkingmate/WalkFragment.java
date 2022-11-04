@@ -184,9 +184,7 @@ public class WalkFragment extends Fragment implements OnMapReadyCallback{
                 agestr=age.getSelectedItem().toString();
                 genderstr=gender.getSelectedItem().toString();
                 Log.d("산책_버튼","테스트:"+agestr+"_"+genderstr);
-                getdata();
-                getmydata();
-                myreq();
+                refreshdata();
             }
         });
 
@@ -195,6 +193,7 @@ public class WalkFragment extends Fragment implements OnMapReadyCallback{
             public void onClick(View view) {
                 //처음(0):내글 제외
                 //1:내글만
+                refreshdata();
                 if(mywalkcheck==0){
                     mywalk.setTextColor(Color.BLUE);
                     mywalkcheck=1;
@@ -243,6 +242,12 @@ public class WalkFragment extends Fragment implements OnMapReadyCallback{
 
 
         return root;
+    }
+
+    public void refreshdata(){
+        getdata();
+        getmydata();
+        myreq();
     }
 
 
@@ -698,6 +703,7 @@ public class WalkFragment extends Fragment implements OnMapReadyCallback{
     public void onResume() {
         super.onResume();
         mapView.onResume();
+        refreshdata();
     }
 
     @Override
