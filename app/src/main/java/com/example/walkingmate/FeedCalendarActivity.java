@@ -50,6 +50,11 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.navigation.NavigationBarView;
 import com.google.android.material.navigation.NavigationView;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -73,12 +78,16 @@ import com.prolificinteractive.materialcalendarview.spans.DotSpan;
 import org.threeten.bp.DayOfWeek;
 import org.threeten.bp.LocalDate;
 
+import java.io.File;
+import java.io.FileFilter;
+import java.io.FileWriter;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
+import java.util.Locale;
 
 import okhttp3.Challenge;
 
@@ -134,13 +143,19 @@ public class FeedCalendarActivity extends AppCompatActivity implements Navigatio
 
 
 
+        ChatFragment chatFragment=new ChatFragment();
+        fragmentManager.beginTransaction().replace(R.id.Chatcontainer, chatFragment, "chat").commitAllowingStateLoss();
+
+
         WalkFragment walkFragment=new WalkFragment();
         fragmentManager.beginTransaction().replace(R.id.container, walkFragment,"walk").commitAllowingStateLoss();
 
 
 
+
         NavigationBarView navigationBarView=findViewById(R.id.bottom_navigation);
         View walkitem=navigationBarView.findViewById(R.id.walk);
+
 
 
         navigationBarView.setOnItemSelectedListener(new NavigationBarView.OnItemSelectedListener() {
@@ -235,6 +250,7 @@ public class FeedCalendarActivity extends AppCompatActivity implements Navigatio
                         selected=4;
                         return true;
                     case R.id.chat:
+                        findViewById(R.id.Chatcontainer).setVisibility(View.VISIBLE);
                         selected=5;
                         titletxt.setText("채팅");
                         frameLayout.removeView(mainlayout);
@@ -245,10 +261,11 @@ public class FeedCalendarActivity extends AppCompatActivity implements Navigatio
                             fragmentManager.beginTransaction().hide(fragmentManager.findFragmentByTag("trip")).commit();
                         }
                         if(fragmentManager.findFragmentByTag("chat")!=null){
+                            Log.d("네비","챗 존재");
                             fragmentManager.beginTransaction().show(fragmentManager.findFragmentByTag("chat")).commit();
                         }
                         else{
-                            fragmentManager.beginTransaction().add(R.id.container, new ChatFragment(),"chat").commit();
+                            fragmentManager.beginTransaction().add(R.id.Chatcontainer, new ChatFragment(),"chat").commit();
                         }
 
                         return true;
@@ -572,6 +589,11 @@ public class FeedCalendarActivity extends AppCompatActivity implements Navigatio
         }
         return true;
     }
+
+
+
+
+
 }
 
 class SaturdayDecorator implements DayViewDecorator{

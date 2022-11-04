@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
 import android.os.SystemClock;
@@ -51,21 +52,21 @@ public class ChatFragment extends Fragment {
     ArrayList<ChatRoom> chatRooms=new ArrayList<>();
 
     @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        Log.d("테스트","oc");
+    }
+
+    @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+        Log.d("테스트","ocv");
         View view=inflater.inflate(R.layout.fragment_chat, container, false);
 
         view.findViewById(R.id.addroom).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 addChatrooms();
-            }
-        });
-
-        view.findViewById(R.id.refreshroom).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                getChatrooms();
             }
         });
 
@@ -92,7 +93,8 @@ public class ChatFragment extends Fragment {
 
     //우선 로컬에서 채팅방가져오고 난 뒤 로컬에 없는 신규 채팅방을 추가
     public void getChatrooms(){
-        dr.orderByChild("userids/"+userData.userid).equalTo(true).addListenerForSingleValueEvent(new ValueEventListener() {
+
+        dr.orderByChild("userids/"+userData.userid).equalTo(true).addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 for(DataSnapshot dataSnapshot:snapshot.getChildren()){
@@ -137,17 +139,12 @@ public class ChatFragment extends Fragment {
         tmp.roomname="test";
         Map<String,Boolean> usertmp=new HashMap<>();
         usertmp.put("ob_ua6RyFxqm66pBjej9gJ0VDyatPHLDu81RRis__xY",true);
-        usertmp.put("qy-LTaqG2gfFXY3JbNJmRVInup3ensNQBhEBjPou-DM",true);
+        usertmp.put("C7VynmLzbvX9yXxViYZZxMQQpqeASDbQKg6XFuAnivY",true);
         tmp.userids=usertmp;
 
         saverooms(tmp);
 
-        dr.child(tmp.roomid).setValue(tmp).addOnCompleteListener(new OnCompleteListener<Void>() {
-            @Override
-            public void onComplete(@NonNull Task<Void> task) {
-                getChatrooms();
-            }
-        });
+        dr.child(tmp.roomid).setValue(tmp);
     }
 
     public void addEveryChatrooms(){
@@ -163,16 +160,12 @@ public class ChatFragment extends Fragment {
         usertmp.put("qy-LTaqG2gfFXY3JbNJmRVInup3ensNQBhEBjPou-DM",true);
         usertmp.put("SsNtgRDgtZSjD0GI37M476ixp0p9d7NjKmN9SHlX04o", true);
         usertmp.put("t8hCqWDoYJUZsmTK0FW0EWfZJjO2LkIOJYqqyM22FJU", true);
+        usertmp.put("C7VynmLzbvX9yXxViYZZxMQQpqeASDbQKg6XFuAnivY", true);
         tmp.userids=usertmp;
 
         saverooms(tmp);
 
-        dr.child(tmp.roomid).setValue(tmp).addOnCompleteListener(new OnCompleteListener<Void>() {
-            @Override
-            public void onComplete(@NonNull Task<Void> task) {
-                getChatrooms();
-            }
-        });
+        dr.child(tmp.roomid).setValue(tmp);
     }
 
     public ArrayList<String> getlocalChatroomslist(){

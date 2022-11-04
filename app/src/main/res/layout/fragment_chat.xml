@@ -33,12 +33,6 @@
                 android:layout_weight="1"
                 android:text="챗룸추가" />
 
-            <Button
-                android:id="@+id/refreshroom"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="새로고침" />
         </LinearLayout>
 
         <ListView
