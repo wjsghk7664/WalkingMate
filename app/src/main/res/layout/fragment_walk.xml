@@ -104,11 +104,12 @@
                 android:layout_height="match_parent" />
 
             <LinearLayout
+                android:visibility="invisible"
                 android:id="@+id/userprofile_walkview"
                 android:layout_width="match_parent"
                 android:layout_height="240dp"
                 android:orientation="vertical"
-                android:visibility="invisible">
+                >
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -132,68 +133,110 @@
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:orientation="vertical"
-                        android:paddingLeft="10dp">
+                        android:paddingLeft="10dp"
+                        android:weightSum="6">
 
-                        <TextView
-                            android:textSize="20dp"
-                            android:textColor="@color/black"
-                            android:textStyle="bold"
-                            android:id="@+id/walkview_title"
+                        <LinearLayout
                             android:layout_width="match_parent"
                             android:layout_height="0dp"
-                            android:layout_marginVertical="5dp"
-                            android:layout_weight="2"
-                            android:text="TextView" />
+                            android:orientation="vertical"
+                            android:layout_weight="2">
 
-                        <TextView
-                            android:textSize="20dp"
-                            android:textColor="@color/black"
-                            android:textStyle="bold"
-                            android:id="@+id/walkview_user"
+                            <TextView
+                                android:id="@+id/walkview_title"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:text="[칭호]"
+                                android:layout_marginTop="10dp"/>
+
+                            <TextView
+                                android:id="@+id/walkview_user"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:text="닉네임 (성별/나이대)"
+                                android:textColor="@color/black"
+                                android:textStyle="bold"
+                                android:textSize="15dp"
+                                android:layout_marginTop="3dp"/>
+
+                        </LinearLayout>
+
+                        <LinearLayout
                             android:layout_width="match_parent"
                             android:layout_height="0dp"
-                            android:layout_marginVertical="5dp"
-                            android:layout_weight="2"
-                            android:text="TextView" />
+                            android:orientation="horizontal"
+                            android:layout_weight="1">
 
-                        <View
+                            <ImageView
+                                android:id="@+id/imageView"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginRight="5dp"
+                                android:src="@drawable/pinclick_clock_xml" />
+
+                            <TextView
+                                android:id="@+id/walkview_time"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="00 : 00"
+                                android:textColor="@color/black"/>
+
+                        </LinearLayout>
+
+                        <LinearLayout
                             android:layout_width="match_parent"
                             android:layout_height="0dp"
-                            android:layout_weight="1" />
+                            android:orientation="horizontal"
+                            android:layout_weight="1">
 
-                        <TextView
-                            android:textSize="20dp"
-                            android:textColor="@color/black"
-                            android:textStyle="bold"
-                            android:id="@+id/walkview_time"
+                            <ImageView
+                                android:id="@+id/imageView2"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginRight="5dp"
+                                android:src="@drawable/pinclick_pin_xml" />
+
+                            <TextView
+                                android:id="@+id/walkview_location"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:text="ㅇㅇ시 ㅇㅇ구 ㅇㅇ동"
+                                android:textColor="@color/black"/>
+
+                        </LinearLayout>
+
+                        <androidx.constraintlayout.widget.ConstraintLayout
                             android:layout_width="match_parent"
                             android:layout_height="0dp"
-                            android:layout_marginVertical="5dp"
-                            android:layout_weight="2"
-                            android:text="TextView" />
+                            android:layout_weight="2">
 
-                        <Button
-                            android:id="@+id/mate_walkview"
-                            android:layout_width="match_parent"
-                            android:layout_height="0dp"
-                            android:layout_marginVertical="5dp"
-                            android:layout_weight="3"
-                            android:background="@drawable/plusbtn"
-                            android:text="메이트 신청하기"
-                            android:textColor="@color/white"
-                            android:textSize="20dp"
-                            android:textStyle="bold" />
+                            <Button
+                                android:id="@+id/mate_walkview"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:background="@drawable/greenbtn"
+                                android:text="메이트 신청하기"
+                                android:textColor="@color/white"
+                                android:textStyle="bold"
+                                app:layout_constraintBottom_toBottomOf="parent"
+                                app:layout_constraintEnd_toEndOf="parent"
+                                app:layout_constraintStart_toStartOf="parent"
+                                app:layout_constraintTop_toTopOf="parent" />
+
+                        </androidx.constraintlayout.widget.ConstraintLayout>
+
                     </LinearLayout>
 
+
+
                 </LinearLayout>
-                <Button
+                <ImageButton
                     android:layout_gravity="center"
                     android:id="@+id/close_profile"
                     android:background="@drawable/orangebtn"
+                    android:src="@drawable/cancel_xml"
                     android:layout_width="40dp"
-                    android:layout_height="40dp"
-                    android:text="x"
-                    android:textColor="@color/white"/>
+                    android:layout_height="40dp" />
             </LinearLayout>
 
             <LinearLayout
@@ -216,12 +259,12 @@
                     android:text="MY"/>
 
                 <ImageButton
-                    android:background="@drawable/plusbtn"
+                    android:background="@drawable/greenbtn"
                     android:layout_marginHorizontal="20dp"
                     android:id="@+id/add_walkview"
                     android:layout_width="50dp"
                     android:layout_height="50dp"
-                    android:src="@drawable/icon_pencil_xml"/>
+                    android:src="@drawable/add_xml"/>
             </LinearLayout>
 
         </FrameLayout>

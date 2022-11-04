@@ -37,6 +37,25 @@
 
 
         <Button
+            android:id="@+id/chat_walkwait"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="채팅"
+            android:textColor="@color/gray"
+            android:textStyle="bold"
+            android:textSize="15dp"
+            android:background="@color/transparent"/>
+    </LinearLayout>
+    <LinearLayout
+        android:paddingEnd="12dp"
+        android:layout_width="0dp"
+        android:gravity="end|center"
+        android:layout_weight="1"
+        android:layout_height="match_parent">
+
+
+        <Button
             android:id="@+id/accept_walkwait"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"

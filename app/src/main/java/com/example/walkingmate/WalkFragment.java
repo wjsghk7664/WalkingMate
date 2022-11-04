@@ -94,13 +94,13 @@ public class WalkFragment extends Fragment implements OnMapReadyCallback{
     UserData userData;
     LatLng setLocation;
 
-    ImageButton refresh,addwalk;
+    ImageButton refresh,addwalk, close;
     Spinner gender, age;
 
-    Button mywalk, mate, close;
+    Button mywalk, mate;
 
     CircleImageView userImage;
-    TextView title,usertxt,time;
+    TextView title,usertxt,time,locationtxt;
     LinearLayout userprofile;
 
     String genderstr, agestr;
@@ -109,6 +109,7 @@ public class WalkFragment extends Fragment implements OnMapReadyCallback{
     ArrayList<String> docuidlist=new ArrayList<>();
     ArrayList<LatLng> coordlist=new ArrayList<>();
     ArrayList<String> timelist=new ArrayList<>(); //yyyyMMddhhmm형식으로
+    ArrayList<String> locationlist=new ArrayList<>();
 
     ArrayList<Marker> markers=new ArrayList<>();
 
@@ -141,6 +142,7 @@ public class WalkFragment extends Fragment implements OnMapReadyCallback{
         usertxt=root.findViewById(R.id.walkview_user);
         time=root.findViewById(R.id.walkview_time);
         userprofile=root.findViewById(R.id.userprofile_walkview);
+        locationtxt=root.findViewById(R.id.walkview_location);
 
         genderstr="무관";
         agestr="무관";
@@ -313,7 +315,7 @@ public class WalkFragment extends Fragment implements OnMapReadyCallback{
                     public boolean onClick(@NonNull Overlay overlay) {
                         int idx=markers.indexOf(tmpmarker);
                         curdocu=docuidlist.get(idx);
-                        getuserdata(idlist.get(idx),String.format("%s년 %s월 %s일 %s시 %s분",timedata[0],timedata[1],timedata[2],timedata[3],timedata[4]));
+                        getuserdata(idlist.get(idx),String.format("%s년 %s월 %s일 %s시 %s분",timedata[0],timedata[1],timedata[2],timedata[3],timedata[4]),locationlist.get(idx));
                         return false;
                     }
                 });
@@ -349,6 +351,7 @@ public class WalkFragment extends Fragment implements OnMapReadyCallback{
                         int idx=mymarker.indexOf(marker);
                         Intent intent=new Intent(getActivity(),WalkUserListActivity.class);
                         intent.putExtra("mydocu",mydocuidlist.get(idx));
+                        intent.putExtra("walkname",mydaylist.get(idx)+" "+mytimelist.get(idx));
                         startActivity(intent);
                         return false;
                     }
@@ -432,7 +435,7 @@ public class WalkFragment extends Fragment implements OnMapReadyCallback{
 
     }
 
-    public void getuserdata(String userid,String times){
+    public void getuserdata(String userid,String times,String location){
         udata.document(userid).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
             @Override
             public void onComplete(@NonNull Task<DocumentSnapshot> task) {
@@ -455,6 +458,7 @@ public class WalkFragment extends Fragment implements OnMapReadyCallback{
                 title.setText(titlestr);
                 usertxt.setText(userstr);
                 time.setText(times);
+                locationtxt.setText(location);
                 String urlstr= (String) document.get("profileImage");
                 new Thread(new Runnable() {
                     @Override
@@ -494,6 +498,7 @@ public class WalkFragment extends Fragment implements OnMapReadyCallback{
         docuidlist.clear();
         coordlist.clear();
         timelist.clear();
+        locationlist.clear();
 
         //상대가 설정한 필터, 내가 설정한 필터 모두 이용
         String mygender;
@@ -608,6 +613,7 @@ public class WalkFragment extends Fragment implements OnMapReadyCallback{
                                         if(req&&(!blockusers.contains(document.get("userid")))){
                                             idlist.add((String) document.get("userid"));
                                             docuidlist.add(document.getId());
+                                            locationlist.add((String) document.get("location_name"));
 
                                             Map<String, Object> tmpmap= (Map<String, Object>) document.get("location_coord");
                                             LatLng tmplatlng=new LatLng((Double) tmpmap.get("latitude"), (Double) tmpmap.get("longitude"));

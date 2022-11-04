@@ -372,7 +372,7 @@ public class ChatFragment extends Fragment {
             TextView usernum=view.findViewById(R.id.usernum);
 
             Log.d("채팅방 세팅",chatRooms.get(position).roomname);
-            chatroomname.setText(chatRooms.get(position).roomname+"("+chatRooms.get(position).roomid+")");
+            chatroomname.setText(chatRooms.get(position).roomname);
             chatroombody.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
