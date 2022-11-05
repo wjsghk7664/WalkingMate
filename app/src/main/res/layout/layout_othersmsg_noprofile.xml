@@ -3,33 +3,16 @@
     android:orientation="horizontal"
     android:paddingVertical="5dp"
     android:paddingRight="40dp"
+    android:paddingLeft="45dp"
     android:gravity="left"
     android:layout_width="match_parent"
     android:layout_height="wrap_content">
 
-    <de.hdodenhof.circleimageview.CircleImageView
-        android:id="@+id/userimg_others"
-        android:layout_width="45dp"
-        android:layout_height="45dp"
-        android:background="@android:color/transparent"
-        android:src="@drawable/blank_profile"
-        android:layout_gravity="top" />
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical">
-
-        <TextView
-            android:gravity="left"
-            android:id="@+id/name_others"
-            android:layout_marginLeft="10dp"
-            android:layout_marginBottom="5dp"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:textColor="@color/black"
-            android:textSize="15dp"
-            android:text="유저아이디" />
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -38,7 +21,7 @@
 
             <TextView
                 android:maxWidth="200dp"
-                android:id="@+id/msg_others"
+                android:id="@+id/msg_othersno"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="top"
@@ -52,7 +35,7 @@
                 android:textSize="16dp" />
 
             <TextView
-                android:id="@+id/time_others"
+                android:id="@+id/time_othersno"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="bottom"

@@ -6,6 +6,8 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -18,12 +20,17 @@ import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FirebaseFirestore;
 
 import org.checkerframework.checker.units.qual.A;
 
@@ -32,13 +39,27 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.FileWriter;
+import java.io.InputStream;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
+
+import de.hdodenhof.circleimageview.CircleImageView;
 
 public class ChatActivity extends AppCompatActivity {
     DatabaseReference dr= FirebaseDatabase.getInstance().getReference("Chatrooms");
+    FirebaseFirestore db=FirebaseFirestore.getInstance();
+    CollectionReference user=db.collection("users");
+
+    ChildEventListener childEventListener;
+
     String roomid;
+    ArrayList<String> users=new ArrayList<>();
+    HashMap<String, Bitmap> userimgs=new HashMap<>();
+    HashMap<String, String> usernames=new HashMap<>();
 
     EditText msg;
     Button sendmsg;
@@ -54,11 +75,17 @@ public class ChatActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_chat);
+        Log.d("채팅방","activity시작");
 
         userData=UserData.loadData(this);
 
         Intent intent=getIntent();
         roomid=intent.getStringExtra("roomid");
+
+        //자기 프로필은 필요없으니 제외
+        users=intent.getStringArrayListExtra("userids");
+        Log.d("채팅 유저",users.toString());
+        users.remove(userData.userid);
 
         msg=findViewById(R.id.msg);
         sendmsg=findViewById(R.id.sendmsg);
@@ -66,6 +93,8 @@ public class ChatActivity extends AppCompatActivity {
 
         msgAdapter=new MsgAdapter(this,roomid,userData.userid);
         msglist.setAdapter(msgAdapter);
+
+        loaduserprofile();
 
         sendmsg.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -108,7 +137,10 @@ public class ChatActivity extends AppCompatActivity {
                 resultc.add(tmpc);
                 Log.d("채팅 불러오기",tmpc.msg);
             }
-            starttime=resultc.get(resultc.size()-1).time;
+            if(resultc.size()!=0){
+                starttime=resultc.get(resultc.size()-1).time;
+            }
+
         }catch(Exception e){
             e.printStackTrace();
         }
@@ -119,7 +151,7 @@ public class ChatActivity extends AppCompatActivity {
     public void sendmsgs(){
         String tmpmsg=msg.getText().toString();
 
-        SimpleDateFormat sdf=new SimpleDateFormat("yyyyMMddHHmmss");
+        SimpleDateFormat sdf=new SimpleDateFormat("yyyyMMddHHmmssSS");
         Date date=new Date(System.currentTimeMillis());
         String now=sdf.format(date);
 
@@ -150,6 +182,59 @@ public class ChatActivity extends AppCompatActivity {
         }catch(Exception e){
             e.printStackTrace();
         }
+    }
+
+    public void loaduserprofile(){
+        for(String s:users){
+            user.document(s).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                @Override
+                public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                    if(task.isSuccessful()){
+                        String urlstr= (String) task.getResult().get("profileImagesmall");
+                        usernames.put(s, (String) task.getResult().get("appname"));
+                        new Thread(new Runnable() {
+                            @Override
+                            public void run() {
+                                HttpURLConnection connection = null;
+                                InputStream is = null;
+                                try {
+                                    URL imgUrl = new URL(urlstr);
+                                    connection = (HttpURLConnection) imgUrl.openConnection();
+                                    connection.setDoInput(true); //url로 input받는 flag 허용
+                                    connection.connect(); //연결
+                                    is = connection.getInputStream(); // get inputstream
+                                    Bitmap retBitmap = BitmapFactory.decodeStream(is);
+                                    userimgs.put(s,retBitmap);
+                                    runOnUiThread(new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            msgAdapter.notifyDataSetChanged();
+                                        }
+                                    });
+
+                                } catch (Exception e) {
+                                    e.printStackTrace();
+                                } finally {
+                                    if (connection != null) {
+                                        connection.disconnect();
+                                    }
+                                }
+                            }
+                        }).start();
+                    }
+                }
+            });
+
+        }
+    }
+
+    public String gettime(String time){
+        String y=time.substring(0,4);
+        String m=time.substring(4,6);
+        String d=time.substring(6,8);
+        String h=time.substring(8,10);
+        String min=time.substring(10,12);
+        return String.format("%s/%s/%s %s:%s",y,m,d,h,min);
     }
 
     public class MsgAdapter extends BaseAdapter {
@@ -187,21 +272,48 @@ public class ChatActivity extends AppCompatActivity {
         @Override
         public View getView(int position, View convertView, ViewGroup parent) {
             View view;
-            TextView msgitem;
+            TextView msgitem,timeitem,username;
+            CircleImageView userimg;
             if(comments.get(position).userid.equals(userid)){
                 view=layoutInflater.inflate(R.layout.layout_mymsg,null);
                 msgitem=view.findViewById(R.id.msg_mine);
+                timeitem=view.findViewById(R.id.time_mine);
             }
             else{
-                view=layoutInflater.inflate(R.layout.layout_othersmsg, null);
-                msgitem=view.findViewById(R.id.msg_others);
+                //if는 맨 처음이거나 바로 위와 다른사람이 말을 한 경우-프로필 있는걸로
+                if(position==0||(!comments.get(position).userid.equals(comments.get(position-1).userid))){
+                    view=layoutInflater.inflate(R.layout.layout_othersmsg, null);
+                    msgitem=view.findViewById(R.id.msg_others);
+                    timeitem=view.findViewById(R.id.time_others);
+                    username=view.findViewById(R.id.name_others);
+                    userimg=view.findViewById(R.id.userimg_others);
+
+                    username.setText(usernames.get(comments.get(position).userid));
+                    if(userimgs.get(comments.get(position).userid)!=null){
+                        userimg.setImageBitmap(userimgs.get(comments.get(position).userid));
+                    }
+
+
+                }
+                else{
+                    view=layoutInflater.inflate(R.layout.layout_othersmsg_noprofile, null);
+                    msgitem=view.findViewById(R.id.msg_othersno);
+                    timeitem=view.findViewById(R.id.time_othersno);
+                }
             }
             View emptyview=layoutInflater.inflate(R.layout.list_layout_empty,null);
             if(comments.size()==0){
                 return emptyview;
             }
 
+            if(position+1<comments.size()){
+                if(comments.get(position+1).userid.equals(comments.get(position).userid)&&comments.get(position+1).time.substring(0,12).equals(comments.get(position).time.substring(0,12))){
+                    timeitem.setVisibility(View.INVISIBLE);
+                }
+            }
+
             msgitem.setText(comments.get(position).msg);
+            timeitem.setText(gettime(comments.get(position).time));
 
             return view;
         }
@@ -229,8 +341,7 @@ public class ChatActivity extends AppCompatActivity {
         //startAt으로 기존 것은 안가져오게 설정
         //메시지는 로컬에 저장해두기.
         public void getrecentmsg(){
-            DatabaseReference dr= FirebaseDatabase.getInstance().getReference("Chatrooms");
-            dr.child(roomid).child("comments").orderByChild("time").startAfter(starttime).addChildEventListener(new ChildEventListener() {
+            childEventListener=new ChildEventListener() {
                 @Override
                 public void onChildAdded(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
                     ChatRoom.Comment tmpcomment=snapshot.getValue(ChatRoom.Comment.class);
@@ -260,7 +371,14 @@ public class ChatActivity extends AppCompatActivity {
                 public void onCancelled(@NonNull DatabaseError error) {
 
                 }
-            });
+            };
+            dr.child(roomid).child("comments").orderByChild("time").startAfter(starttime).addChildEventListener(childEventListener);
         }
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        dr.child(roomid).child("comments").orderByChild("time").startAfter(starttime).removeEventListener(childEventListener);
     }
 }

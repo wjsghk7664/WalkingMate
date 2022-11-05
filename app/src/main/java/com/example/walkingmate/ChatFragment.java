@@ -28,6 +28,8 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.SetOptions;
 
 import org.checkerframework.checker.units.qual.A;
@@ -376,8 +378,13 @@ public class ChatFragment extends Fragment {
             chatroombody.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
+                    ArrayList<String> useridslist=new ArrayList<>();
+                    for(String s:chatRooms.get(position).userids.keySet()){
+                        useridslist.add(s);
+                    }
                     Intent intent=new Intent(getActivity(),ChatActivity.class);
                     intent.putExtra("roomid",chatRooms.get(position).roomid);
+                    intent.putExtra("userids", useridslist);
                     startActivity(intent);
                 }
             });
@@ -392,6 +399,9 @@ public class ChatFragment extends Fragment {
                         lasttime=tmptime;
                         laststr=cmap.get(s).msg;
                     }
+                }
+                if(laststr.length()>50){
+                    laststr=laststr.substring(0,50)+"...";
                 }
                 lastmsg.setText(laststr+returntime(lasttime+""));
             }

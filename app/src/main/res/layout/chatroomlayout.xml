@@ -27,7 +27,7 @@
                 android:layout_gravity="center"
                 android:text="Title"
                 android:textColor="@color/black"
-                android:textSize="20dp"
+                android:textSize="16dp"
                 android:textStyle="bold"></TextView>
 
             <TextView
@@ -37,7 +37,7 @@
                 android:layout_marginLeft="10dp"
                 android:text="4"
                 android:textColor="@color/gray"
-                android:textSize="20dp" />
+                android:textSize="16dp" />
         </LinearLayout>
 
         <LinearLayout
@@ -47,11 +47,11 @@
             android:orientation="horizontal">
 
             <TextView
-                android:textSize="15dp"
+                android:textSize="12dp"
                 android:layout_gravity="top"
                 android:id="@+id/lastmsg"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_height="match_parent"
                 android:text="" />
         </LinearLayout>
 

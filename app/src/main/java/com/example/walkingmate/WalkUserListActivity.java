@@ -300,6 +300,9 @@ public class WalkUserListActivity extends Activity {
                     Log.d("채팅방 생성","이미 존재하는 채팅방-해당 채팅방으로 이동");
                     Intent intent=new Intent(WalkUserListActivity.this,ChatActivity.class);
                     intent.putExtra("roomid",tmp.roomid);
+                    ArrayList<String> tmpid=new ArrayList<>();
+                    tmpid.add(userid);
+                    intent.putExtra("userids",tmpid);
                     startActivity(intent);
                 }
                 else{
@@ -309,6 +312,9 @@ public class WalkUserListActivity extends Activity {
                         public void onComplete(@NonNull Task<Void> task) {
                             Intent intent=new Intent(WalkUserListActivity.this,ChatActivity.class);
                             intent.putExtra("roomid",tmp.roomid);
+                            ArrayList<String> tmpid=new ArrayList<>();
+                            tmpid.add(userid);
+                            intent.putExtra("userids",tmpid);
                             startActivity(intent);
                         }
                     });

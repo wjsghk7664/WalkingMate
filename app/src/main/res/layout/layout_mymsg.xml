@@ -1,20 +1,34 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="horizontal"
+    android:gravity="right"
+    android:paddingLeft="80dp"
+    android:paddingVertical="5dp"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="wrap_content">
 
 
     <TextView
+        android:textSize="15dp"
+        android:layout_gravity="bottom"
+        android:id="@+id/time_mine"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="2022/12/5 12:33" />
+
+    <TextView
+        android:background="@drawable/gray_empty"
+        android:paddingVertical="10dp"
+        android:layout_marginLeft="5dp"
+        android:layout_marginRight="10dp"
         android:paddingHorizontal="10dp"
-        android:gravity="end"
         android:id="@+id/msg_mine"
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
-        android:text="Title"
+        android:text="Tixxdddddddxde"
         android:textColor="@color/black"
-        android:textSize="20dp">
+        android:textSize="16dp">
 
     </TextView>
 
