@@ -9,6 +9,7 @@ import android.util.Log;
 
 import com.google.firebase.firestore.auth.User;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileFilter;
 import java.io.FileInputStream;
@@ -28,7 +29,8 @@ import java.util.Locale;
 
 public class UserData {
     String userid;
-    String profileImage;
+    String profileImagebig;
+    String profileImagesmall;
     String appname;
 
     String nickname;
@@ -41,9 +43,10 @@ public class UserData {
     String title;
     Long reliability;
 
-    public UserData(String userid, String profileImage, String appname, String nickname, String name, String age, String gender, String birthyear, String title, Long reliability) {
+    public UserData(String userid, String profileImagebig,String profileImagesmall, String appname, String nickname, String name, String age, String gender, String birthyear, String title, Long reliability) {
         this.userid = userid;
-        this.profileImage = profileImage;
+        this.profileImagebig = profileImagebig;
+        this.profileImagesmall=profileImagesmall;
         this.appname = appname;
         this.nickname = nickname;
         this.name = name;
@@ -61,7 +64,8 @@ public class UserData {
         user.put("age",userData.age);
         user.put("gender",userData.gender);
         user.put("birthyear",userData.birthyear);
-        user.put("profileImage",userData.profileImage);
+        user.put("profileImagebig",userData.profileImagebig);
+        user.put("profileImagesmall",userData.profileImagesmall);
         user.put("appname",userData.appname);
         user.put("title", userData.title);
         user.put("reliability",userData.reliability);
@@ -166,7 +170,7 @@ public class UserData {
 
     public static String encode(UserData userData){
         String result="";
-        result+=userData.userid+"@"+userData.profileImage+"@"+
+        result+=userData.userid+"@"+userData.profileImagebig+"@"+userData.profileImagesmall+"@"+
                 userData.appname+"@"+userData.nickname+"@"+
                 userData.name+"@"+userData.age+"@"+
                 userData.gender+"@"+userData.birthyear+"@"+userData.title+"@"+userData.reliability;
@@ -175,7 +179,7 @@ public class UserData {
 
     public static UserData decode(String userDataString){
         String[] result=userDataString.split("@");
-        return new UserData(result[0],result[1],result[2],result[3],result[4],result[5],result[6],result[7],result[8],Long.parseLong(result[9]));
+        return new UserData(result[0],result[1],result[2],result[3],result[4],result[5],result[6],result[7],result[8],result[9],Long.parseLong(result[10]));
     }
 
 
@@ -203,21 +207,27 @@ public class UserData {
         return retBitmap;
     }
 
-    public static void saveBitmapToJpeg(Bitmap bitmap, Activity activity) {
-        if(bitmap==null){
+    public static void saveBitmapToJpeg(Bitmap bitmapbig,Bitmap bitmapsmall, Activity activity) {
+        if(bitmapbig==null||bitmapsmall==null){
             return;
         }
 
         String path=activity.getFilesDir().getAbsolutePath()+ "/userData/";
         File storage = new File(path);
-        String fileName ="profile.jpg";
-        File tempFile = new File(storage, fileName);
+        String fileNamebig ="profilebig.jpg";
+        String fileNamesmall ="profilesmall.jpg";
+        File tempFilebig = new File(storage, fileNamebig);
+        File tempFilesmall = new File(storage, fileNamesmall);
         try {
 
-            tempFile.createNewFile();
-            FileOutputStream out = new FileOutputStream(tempFile);
-            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, out);
-            out.close();
+            tempFilebig.createNewFile();
+            tempFilesmall.createNewFile();
+            FileOutputStream outbig = new FileOutputStream(tempFilebig);
+            FileOutputStream outsmall = new FileOutputStream(tempFilesmall);
+            bitmapbig.compress(Bitmap.CompressFormat.JPEG, 100, outbig);
+            bitmapsmall.compress(Bitmap.CompressFormat.JPEG, 100, outsmall);
+            outbig.close();
+            outsmall.close();
 
         } catch (FileNotFoundException e) {
 
@@ -227,9 +237,61 @@ public class UserData {
     }
 
     public static Bitmap loadImageToBitmap(Activity activity){
-        String path=activity.getFilesDir().getAbsolutePath()+ "/userData/profile.jpg";
+        String path=activity.getFilesDir().getAbsolutePath()+ "/userData/profilebig.jpg";
         Bitmap bitmap=null;
         bitmap=BitmapFactory.decodeFile(path);
         return bitmap;
+    }
+
+    public static Bitmap loadSmallImageToBitmap(Activity activity){
+        String path=activity.getFilesDir().getAbsolutePath()+ "/userData/profilesmall.jpg";
+        Bitmap bitmap=null;
+        bitmap=BitmapFactory.decodeFile(path);
+        return bitmap;
+    }
+
+
+    //type:true-큰 프로필 이미지, false-작은 프로필 이미지지
+   public static Bitmap getResizedImage(Bitmap bitmap, boolean type){
+
+        Bitmap result=null;
+
+        if(bitmap != null) {
+            FileOutputStream fout = null;
+            try {
+                int MAX_IMAGE_SIZE;// max final file size
+                if(type){
+                    MAX_IMAGE_SIZE=500*500;
+                }
+                else{
+                    MAX_IMAGE_SIZE=150*150;
+                }
+                int compressQuality = 100; // quality decreasing by 5 every loop. (start from 99)
+                int streamLength = MAX_IMAGE_SIZE;
+
+                ByteArrayOutputStream baos=new ByteArrayOutputStream();
+                byte[] bytes=null;
+                while(streamLength >= MAX_IMAGE_SIZE){
+                    baos=new ByteArrayOutputStream();
+                    bitmap.compress(Bitmap.CompressFormat.JPEG, compressQuality, baos);
+                    bytes=baos.toByteArray();
+                    streamLength = (int)bytes.length;
+                    compressQuality -= 5;
+                    if(compressQuality==0){
+                        break;
+                    }
+                }
+                result=BitmapFactory.decodeByteArray(bytes,0,bytes.length);
+                baos.flush();
+                baos.close();
+
+
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
+        }
+        Log.d("이미지리사이즈",(result==null)+"");
+        return result;
     }
 }

@@ -42,6 +42,7 @@ import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.GeoPoint;
 import com.google.firebase.firestore.Query;
@@ -235,8 +236,8 @@ public class WalkFragment extends Fragment implements OnMapReadyCallback{
         mate.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                //checkandsendreq에서 refreshdata까지 수행
                 checkandsendreq();
-                myreq();
             }
         });
 
@@ -420,6 +421,7 @@ public class WalkFragment extends Fragment implements OnMapReadyCallback{
         HashMap<String, Integer> myreq=new HashMap<>();
         myreq.put(userData.userid,0);
 
+        //userlist는 map-setoption.merge로 업데이트
         data.put("userlist",myreq);
         walkuser.document(curdocu).set(data, SetOptions.merge()).addOnSuccessListener(new OnSuccessListener<Void>() {
             @Override
@@ -431,12 +433,31 @@ public class WalkFragment extends Fragment implements OnMapReadyCallback{
         data.clear();
         data.put("requestlist", Arrays.asList(curdocu));
 
-        walkreq.document(userData.userid).set(data,SetOptions.merge()).addOnCompleteListener(new OnCompleteListener<Void>() {
+        //requestlist는 list-arrayunion으로 업데이트
+        walkreq.document(userData.userid).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
             @Override
-            public void onComplete(@NonNull Task<Void> task) {
-                Toast.makeText(getActivity(),"메이트 신청 완료",Toast.LENGTH_SHORT).show();
+            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                if(!task.getResult().exists()){
+                    walkreq.document(userData.userid).set(data).addOnCompleteListener(new OnCompleteListener<Void>() {
+                        @Override
+                        public void onComplete(@NonNull Task<Void> task) {
+                            Toast.makeText(getActivity(),"메이트 신청 완료",Toast.LENGTH_SHORT).show();
+                            refreshdata();
+                        }
+                    });
+                }
+                else{
+                    walkreq.document(userData.userid).update("requestlist", FieldValue.arrayUnion(curdocu)).addOnCompleteListener(new OnCompleteListener<Void>() {
+                        @Override
+                        public void onComplete(@NonNull Task<Void> task) {
+                            Toast.makeText(getActivity(),"메이트 신청 완료",Toast.LENGTH_SHORT).show();
+                            refreshdata();
+                        }
+                    });
+                }
             }
         });
+
 
     }
 
@@ -464,7 +485,7 @@ public class WalkFragment extends Fragment implements OnMapReadyCallback{
                 usertxt.setText(userstr);
                 time.setText(times);
                 locationtxt.setText(location);
-                String urlstr= (String) document.get("profileImage");
+                String urlstr= (String) document.get("profileImagebig");
                 new Thread(new Runnable() {
                     @Override
                     public void run() {

@@ -5,6 +5,25 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
+    <LinearLayout
+        android:id="@+id/profile_blockuser"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="2"
+        android:gravity="center|start"
+        android:orientation="vertical">
+
+        <de.hdodenhof.circleimageview.CircleImageView
+            android:id="@+id/profileImage_blockuser"
+            android:layout_width="45dp"
+            android:layout_height="45dp"
+            android:background="@android:color/transparent"
+            android:src="@drawable/blank_profile"
+            android:layout_gravity="center" />
+
+
+    </LinearLayout>
+
 
     <LinearLayout
         android:id="@+id/body_walkwait"
@@ -32,7 +51,7 @@
 
 
     <LinearLayout
-        android:paddingEnd="12dp"
+        android:paddingEnd="5dp"
         android:layout_width="0dp"
         android:gravity="end|center"
         android:layout_weight="2"

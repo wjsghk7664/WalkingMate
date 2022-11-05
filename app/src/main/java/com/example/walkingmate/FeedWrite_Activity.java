@@ -491,6 +491,7 @@ public class FeedWrite_Activity extends AppCompatActivity implements OnMapReadyC
                 try{
                     InputStream in=getContentResolver().openInputStream(data.getData());
                     Bitmap tmpbmp= BitmapFactory.decodeStream(in);
+                    tmpbmp=FeedData.getResizedFeedImage(tmpbmp);
 
                     Uri uri=data.getData();
                     Log.d("uri체크",uri.toString());

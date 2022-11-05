@@ -57,9 +57,10 @@ public class EditUserProfileActivity extends AppCompatActivity {
 
     Bitmap curimg;
 
-    String appname,finalappname,profileImage;
+    String appname,finalappname,profileImagebig,profileImagesmall;
 
-    Uri downloadUri;
+
+    Uri downloadUribig, downloadUrismall;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -69,7 +70,8 @@ public class EditUserProfileActivity extends AppCompatActivity {
         userData=UserData.loadData(this);
         appname="";
         finalappname=userData.appname;
-        profileImage="";
+        profileImagebig="";
+        profileImagesmall="";
 
         username=findViewById(R.id.userappname_userset);
         usertitle=findViewById(R.id.titlespin_userset);//이부분은 구현되면 추가
@@ -149,18 +151,30 @@ public class EditUserProfileActivity extends AppCompatActivity {
 
 
     public void uploadImage(){
-        StorageReference uploadRef=storageReference.child(userData.userid+"_profile.jpg");
+        String userid= userData.userid;
+        String bigfilename=userid+"bigprofile.jpg";
+        String smallfilename=userid+"smallprofile.jpg";
 
-        ByteArrayOutputStream baos=new ByteArrayOutputStream();
-        curimg.compress(Bitmap.CompressFormat.JPEG,100,baos);
-        byte[] datas=baos.toByteArray();
+        Bitmap bitmap=UserData.getResizedImage(curimg,true);
+        Bitmap smallbitmap=UserData.getResizedImage(curimg,false);
 
-        UploadTask uploadTask=uploadRef.putBytes(datas);
+        StorageReference uploadRefbig=storageReference.child(bigfilename);
+        StorageReference uploadRefsmall=storageReference.child(smallfilename);
+        Log.d("이미지명_big",bigfilename);
+        Log.d("이미지명_small",smallfilename);
+        ByteArrayOutputStream baosbig=new ByteArrayOutputStream();
+        ByteArrayOutputStream baossmall=new ByteArrayOutputStream();
+        bitmap.compress(Bitmap.CompressFormat.JPEG,100,baosbig);
+        smallbitmap.compress(Bitmap.CompressFormat.JPEG,100,baossmall);
+        byte[] datasbig=baosbig.toByteArray();
+        byte[] datassmall=baossmall.toByteArray();
+
+        UploadTask uploadTask=uploadRefbig.putBytes(datasbig);
         uploadTask.addOnFailureListener(new OnFailureListener() {
             @Override
             public void onFailure(@NonNull Exception e) {
                 Toast.makeText(getApplicationContext(),"이미지 업로드 실패",Toast.LENGTH_SHORT).show();
-                Log.d("로그인_이미지실패",e.toString());
+                Log.d("이미지실패",e.toString());
             }
         }).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
             @Override
@@ -174,26 +188,57 @@ public class EditUserProfileActivity extends AppCompatActivity {
                         }
 
                         // Continue with the task to get the download URL
-                        return uploadRef.getDownloadUrl();
+                        return uploadRefbig.getDownloadUrl();
                     }
                 }).addOnCompleteListener(new OnCompleteListener<Uri>() {
                     @Override
                     public void onComplete(@NonNull Task<Uri> task) {
                         if (task.isSuccessful()) {
-                            downloadUri = task.getResult();
-                            profileImage=downloadUri.toString();
-                            Log.d("로그인 프로필 이미지 url",downloadUri.toString());
-                            userData.appname=finalappname;
-                            userData.profileImage=profileImage;
-                            UserData.saveBitmapToJpeg(curimg,EditUserProfileActivity.this);
-                            //userData.title=title;
-
-                            db.collection("users").document(userData.userid).set(UserData.getHashmap(userData)).addOnSuccessListener(new OnSuccessListener<Void>() {
+                            downloadUribig = task.getResult();
+                            profileImagebig=downloadUribig.toString();
+                            Log.d("로그인 프로필 이미지big url",downloadUribig.toString());
+                            UploadTask uploadTask1=uploadRefsmall.putBytes(datassmall);
+                            uploadTask1.addOnFailureListener(new OnFailureListener() {
                                 @Override
-                                public void onSuccess(Void unused) {
-                                    Toast.makeText(getApplicationContext(),"프로필 변경 완료.",Toast.LENGTH_SHORT).show();
-                                    UserData.saveData(userData,EditUserProfileActivity.this);
-                                    loading.setVisibility(View.INVISIBLE);
+                                public void onFailure(@NonNull Exception e) {
+
+                                }
+                            }).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                                @Override
+                                public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                                    Task<Uri> uriTask1=uploadTask1.continueWithTask(new Continuation<UploadTask.TaskSnapshot, Task<Uri>>() {
+                                        @Override
+                                        public Task<Uri> then(@NonNull Task<UploadTask.TaskSnapshot> task) throws Exception {
+                                            if(!task.isSuccessful()){
+                                                throw task.getException();
+                                            }
+
+                                            return uploadRefsmall.getDownloadUrl();
+                                        }
+                                    }).addOnCompleteListener(new OnCompleteListener<Uri>() {
+                                        @Override
+                                        public void onComplete(@NonNull Task<Uri> task) {
+                                            if(task.isSuccessful()){
+                                                downloadUrismall=task.getResult();
+                                                profileImagesmall=downloadUrismall.toString();
+                                                Log.d("로그인 프로필 이미지small url",downloadUrismall.toString());
+                                                userData.appname=finalappname;
+                                                userData.profileImagebig=profileImagebig;
+                                                userData.profileImagesmall=profileImagesmall;
+                                                UserData.saveBitmapToJpeg(bitmap,smallbitmap,EditUserProfileActivity.this);
+                                                //userData.title=title;
+
+                                                db.collection("users").document(userData.userid).set(UserData.getHashmap(userData)).addOnSuccessListener(new OnSuccessListener<Void>() {
+                                                    @Override
+                                                    public void onSuccess(Void unused) {
+                                                        Toast.makeText(getApplicationContext(),"프로필 변경 완료.",Toast.LENGTH_SHORT).show();
+                                                        UserData.saveData(userData,EditUserProfileActivity.this);
+                                                        loading.setVisibility(View.INVISIBLE);
+                                                    }
+                                                });
+                                            }
+                                        }
+                                    });
                                 }
                             });
                         } else {

@@ -5,6 +5,8 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -13,17 +15,24 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.ImageButton;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.google.common.collect.BiMap;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 
+import java.io.InputStream;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
+
+import de.hdodenhof.circleimageview.CircleImageView;
 
 public class ManageFriend_Activity extends AppCompatActivity {
 
@@ -36,6 +45,7 @@ public class ManageFriend_Activity extends AppCompatActivity {
 
     ArrayList<String> blockusers=new ArrayList<>();
     ArrayList<String> blockusersProfile=new ArrayList<>();
+    HashMap<String, Bitmap> userimg=new HashMap<>();
     UserData userData;
 
     BlockAdapter blockAdapter;
@@ -52,7 +62,6 @@ public class ManageFriend_Activity extends AppCompatActivity {
         back.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                startActivity(new Intent(ManageFriend_Activity.this,FeedCalendarActivity.class));
                 finish();
             }
         });
@@ -69,7 +78,11 @@ public class ManageFriend_Activity extends AppCompatActivity {
             @Override
             public void onComplete(@NonNull Task<DocumentSnapshot> task) {
                 if(task.getResult().exists()){
-                    for(String s: (ArrayList<String>)task.getResult().get("userid")){
+                    ArrayList<String> blockuserstmp= (ArrayList<String>) task.getResult().get("userid");
+                    if(blockuserstmp.size()!=0){
+                        findViewById(R.id.loading_block).setVisibility(View.VISIBLE);
+                    }
+                    for(String s: blockuserstmp){
                         users.document(s).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
                             @Override
                             public void onComplete(@NonNull Task<DocumentSnapshot> task) {
@@ -85,7 +98,40 @@ public class ManageFriend_Activity extends AppCompatActivity {
                                     }
                                     String userprofile=String.format("%s (%s/%s)",user.get("appname"),gender,user.get("age"));
                                     blockusersProfile.add(userprofile);
-                                    blockAdapter.notifyDataSetChanged();
+
+                                    String urlstr= (String) user.get("profileImagesmall");
+                                    new Thread(new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            HttpURLConnection connection = null;
+                                            InputStream is = null;
+                                            try {
+                                                URL imgUrl = new URL(urlstr);
+                                                connection = (HttpURLConnection) imgUrl.openConnection();
+                                                connection.setDoInput(true); //url로 input받는 flag 허용
+                                                connection.connect(); //연결
+                                                is = connection.getInputStream(); // get inputstream
+                                                Bitmap retBitmap = BitmapFactory.decodeStream(is);
+                                                userimg.put(s,retBitmap);
+                                                runOnUiThread(new Runnable() {
+                                                    @Override
+                                                    public void run() {
+                                                        if(userimg.size()==blockuserstmp.size()){
+                                                            findViewById(R.id.loading_block).setVisibility(View.INVISIBLE);
+                                                        }
+                                                        blockAdapter.notifyDataSetChanged();
+                                                    }
+                                                });
+
+                                            } catch (Exception e) {
+                                                e.printStackTrace();
+                                            } finally {
+                                                if (connection != null) {
+                                                    connection.disconnect();
+                                                }
+                                            }
+                                        }
+                                    }).start();
                                 }
 
                             }
@@ -138,12 +184,16 @@ public class ManageFriend_Activity extends AppCompatActivity {
             }
             Button cancel=view.findViewById(R.id.cancel_block);
             TextView profile=view.findViewById(R.id.user_block);
+            LinearLayout profilelayout=view.findViewById(R.id.profile_blockuser);
+            CircleImageView profileimage=view.findViewById(R.id.profileImage_blockuser);
 
             profile.setText(blockusersProfile.get(position));
+            profileimage.setImageBitmap(userimg.get(blockusers.get(position)));
 
             cancel.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
+                    userimg.remove(blockusers.get(position));
                     blockusers.remove(position);
                     blockusersProfile.remove(position);
                     notifyDataSetChanged();

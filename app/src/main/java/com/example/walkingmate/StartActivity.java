@@ -317,7 +317,8 @@ public class StartActivity extends AppCompatActivity {
                         Log.d("시작로그인","success");
                         permlist.setVisibility(View.VISIBLE);
                         permlist.setText("접속중...");
-                        UserData userDatatmp=new UserData(task.getResult().getId(), (String) task.getResult().get("profileImage"),
+                        UserData userDatatmp=new UserData(task.getResult().getId(), (String) task.getResult().get("profileImagebig"),
+                                (String) task.getResult().get("profileImagesmall"),
                                 (String) task.getResult().get("appname"), model.getNickname(),model.getName(),model.getAge(),
                                 model.getGender(),model.getBirthyear(),(String) task.getResult().get("title"),
                                 (Long)task.getResult().get("reliability"));
@@ -326,7 +327,8 @@ public class StartActivity extends AppCompatActivity {
                         new Thread(new Runnable() {
                             @Override
                             public void run() {
-                                UserData.saveBitmapToJpeg(UserData.GetBitmapfromURL((String) task.getResult().get("profileImage")),StartActivity.this);
+                                UserData.saveBitmapToJpeg(UserData.GetBitmapfromURL((String) task.getResult().get("profileImagebig")),
+                                        UserData.GetBitmapfromURL((String) task.getResult().get("profileImagesmall")),StartActivity.this);
                             }
                         }).start();
 

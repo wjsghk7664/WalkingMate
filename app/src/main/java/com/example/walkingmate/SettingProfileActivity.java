@@ -29,6 +29,7 @@ import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QuerySnapshot;
+import com.google.firebase.firestore.auth.User;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
@@ -50,10 +51,11 @@ public class SettingProfileActivity extends AppCompatActivity {
 
     TextView curappname;
     Bitmap bitmap=null;
+    Bitmap smallbitmap=null;
 
-    String userid,age,gender,name,nickname,birthyear, finalappname, appname,profileImage;
+    String userid,age,gender,name,nickname,birthyear, finalappname, appname,profileImagebig,profileImagesmall;
 
-    Uri downloadUri;
+    Uri downloadUribig,downloadUrismall;
 
     HashMap<String, Object> user=new HashMap<>();
 
@@ -63,7 +65,8 @@ public class SettingProfileActivity extends AppCompatActivity {
         setContentView(R.layout.activity_setting_profile);
 
         finalappname="";
-        profileImage="";
+        profileImagebig="";
+        profileImagesmall="";
 
         curappname=findViewById(R.id.curappname);
 
@@ -133,6 +136,8 @@ public class SettingProfileActivity extends AppCompatActivity {
                     if(bitmap==null){
                         bitmap=BitmapFactory.decodeResource(getApplicationContext().getResources(),R.drawable.blank_profile);
                     }
+                    bitmap= UserData.getResizedImage(bitmap,true);
+                    smallbitmap=UserData.getResizedImage(bitmap,false);
                     uploadImage();
                 }
 
@@ -142,14 +147,21 @@ public class SettingProfileActivity extends AppCompatActivity {
     }
 
     public void uploadImage(){
-        StorageReference uploadRef=storageReference.child(userid+"_profile.jpg");
-        Log.d("로그인_이미지명",userid+"_profile.jpg");
+        String bigfilename=userid+"bigprofile.jpg";
+        String smallfilename=userid+"smallprofile.jpg";
 
-        ByteArrayOutputStream baos=new ByteArrayOutputStream();
-        bitmap.compress(Bitmap.CompressFormat.JPEG,100,baos);
-        byte[] datas=baos.toByteArray();
+        StorageReference uploadRefbig=storageReference.child(bigfilename);
+        StorageReference uploadRefsmall=storageReference.child(smallfilename);
+        Log.d("로그인_이미지명_big",bigfilename);
+        Log.d("로그인_이미지명_small",smallfilename);
+        ByteArrayOutputStream baosbig=new ByteArrayOutputStream();
+        ByteArrayOutputStream baossmall=new ByteArrayOutputStream();
+        bitmap.compress(Bitmap.CompressFormat.JPEG,100,baosbig);
+        smallbitmap.compress(Bitmap.CompressFormat.JPEG,100,baossmall);
+        byte[] datasbig=baosbig.toByteArray();
+        byte[] datassmall=baossmall.toByteArray();
 
-        UploadTask uploadTask=uploadRef.putBytes(datas);
+        UploadTask uploadTask=uploadRefbig.putBytes(datasbig);
         uploadTask.addOnFailureListener(new OnFailureListener() {
             @Override
             public void onFailure(@NonNull Exception e) {
@@ -168,33 +180,64 @@ public class SettingProfileActivity extends AppCompatActivity {
                         }
 
                         // Continue with the task to get the download URL
-                        return uploadRef.getDownloadUrl();
+                        return uploadRefbig.getDownloadUrl();
                     }
                 }).addOnCompleteListener(new OnCompleteListener<Uri>() {
                     @Override
                     public void onComplete(@NonNull Task<Uri> task) {
                         if (task.isSuccessful()) {
-                            downloadUri = task.getResult();
-                            profileImage=downloadUri.toString();
-                            Log.d("로그인 프로필 이미지 url",downloadUri.toString());
-                            user.put("nickname",nickname);
-                            user.put("name",name);
-                            user.put("age",age);
-                            user.put("gender",gender);
-                            user.put("birthyear",birthyear);
-                            user.put("appname",finalappname);
-                            user.put("profileImage",profileImage);
-                            user.put("title","없음");
-                            user.put("reliability",50);
-
-                            db.collection("users").document(userid).set(user).addOnSuccessListener(new OnSuccessListener<Void>() {
+                            downloadUribig = task.getResult();
+                            profileImagebig=downloadUribig.toString();
+                            Log.d("로그인 프로필 이미지big url",downloadUribig.toString());
+                            UploadTask uploadTask1=uploadRefsmall.putBytes(datassmall);
+                            uploadTask1.addOnFailureListener(new OnFailureListener() {
                                 @Override
-                                public void onSuccess(Void unused) {
-                                    Toast.makeText(getApplicationContext(),"회원가입 성공.",Toast.LENGTH_SHORT).show();
-                                    UserData.saveData(new UserData(userid,profileImage,appname,nickname,name,age,gender,birthyear,"없음", 50L),SettingProfileActivity.this);
-                                    UserData.saveBitmapToJpeg(bitmap,SettingProfileActivity.this);
-                                    startActivity(new Intent(SettingProfileActivity.this, FeedCalendarActivity.class));
-                                    finish();
+                                public void onFailure(@NonNull Exception e) {
+
+                                }
+                            }).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                                @Override
+                                public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                                    Task<Uri> uriTask1=uploadTask1.continueWithTask(new Continuation<UploadTask.TaskSnapshot, Task<Uri>>() {
+                                        @Override
+                                        public Task<Uri> then(@NonNull Task<UploadTask.TaskSnapshot> task) throws Exception {
+                                            if(!task.isSuccessful()){
+                                                throw task.getException();
+                                            }
+
+                                            return uploadRefsmall.getDownloadUrl();
+                                        }
+                                    }).addOnCompleteListener(new OnCompleteListener<Uri>() {
+                                        @Override
+                                        public void onComplete(@NonNull Task<Uri> task) {
+                                            if(task.isSuccessful()){
+                                                downloadUrismall=task.getResult();
+                                                profileImagesmall=downloadUrismall.toString();
+                                                Log.d("로그인 프로필 이미지small url",downloadUrismall.toString());
+                                                user.put("nickname",nickname);
+                                                user.put("name",name);
+                                                user.put("age",age);
+                                                user.put("gender",gender);
+                                                user.put("birthyear",birthyear);
+                                                user.put("appname",finalappname);
+                                                user.put("profileImagebig",profileImagebig);
+                                                user.put("profileImagesmall",profileImagesmall);
+                                                user.put("title","없음");
+                                                user.put("reliability",50);
+
+                                                db.collection("users").document(userid).set(user).addOnSuccessListener(new OnSuccessListener<Void>() {
+                                                    @Override
+                                                    public void onSuccess(Void unused) {
+                                                        Toast.makeText(getApplicationContext(),"회원가입 성공.",Toast.LENGTH_SHORT).show();
+                                                        UserData.saveData(new UserData(userid,profileImagebig,profileImagesmall,appname,nickname,name,age,gender,birthyear,"없음", 50L),SettingProfileActivity.this);
+                                                        UserData.saveBitmapToJpeg(bitmap,smallbitmap,SettingProfileActivity.this);
+                                                        startActivity(new Intent(SettingProfileActivity.this, FeedCalendarActivity.class));
+                                                        finish();
+                                                    }
+                                                });
+                                            }
+                                        }
+                                    });
                                 }
                             });
                         } else {

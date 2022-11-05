@@ -1,6 +1,8 @@
 package com.example.walkingmate;
 
 import android.app.Activity;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Environment;
 import android.util.Log;
 
@@ -9,7 +11,7 @@ import com.naver.maps.map.overlay.Align;
 import com.naver.maps.map.overlay.Marker;
 
 
-
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileFilter;
 import java.io.FileInputStream;
@@ -220,6 +222,43 @@ public class FeedData extends Activity {
         }catch (Exception e){
             e.printStackTrace();
         }
+    }
+
+    public static Bitmap getResizedFeedImage(Bitmap bitmap){
+
+        Bitmap result=null;
+
+        if(bitmap != null) {
+            FileOutputStream fout = null;
+            try {
+                int MAX_IMAGE_SIZE=500*500;// max final file size
+
+                int compressQuality = 100; // quality decreasing by 5 every loop. (start from 99)
+                int streamLength = MAX_IMAGE_SIZE;
+
+                ByteArrayOutputStream baos=new ByteArrayOutputStream();
+                byte[] bytes=null;
+                while(streamLength >= MAX_IMAGE_SIZE){
+                    baos=new ByteArrayOutputStream();
+                    bitmap.compress(Bitmap.CompressFormat.JPEG, compressQuality, baos);
+                    bytes=baos.toByteArray();
+                    streamLength = (int)bytes.length;
+                    compressQuality -= 5;
+                    if(compressQuality==0){
+                        break;
+                    }
+                }
+                result= BitmapFactory.decodeByteArray(bytes,0,bytes.length);
+                baos.flush();
+                baos.close();
+
+
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
+        }
+        return result;
     }
 
 }
