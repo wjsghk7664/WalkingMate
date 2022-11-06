@@ -13,6 +13,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
 import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.EditText;
@@ -79,6 +80,7 @@ public class ChatActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_chat);
+        getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN);
         Log.d("채팅방","activity시작");
 
         userData=UserData.loadData(this);
@@ -100,6 +102,10 @@ public class ChatActivity extends AppCompatActivity {
 
         msgAdapter=new MsgAdapter(this,roomid,userData.userid);
         msglist.setAdapter(msgAdapter);
+        if(msgAdapter.getCount()>0){
+            msglist.setSelection(msgAdapter.getCount()-1);
+        }
+
 
         loaduserprofile();
 
@@ -157,6 +163,9 @@ public class ChatActivity extends AppCompatActivity {
 
     public void sendmsgs(){
         String tmpmsg=msg.getText().toString();
+        if(tmpmsg.equals("")){
+            return;
+        }
 
         SimpleDateFormat sdf=new SimpleDateFormat("yyyyMMddHHmmssSS");
         Date date=new Date(System.currentTimeMillis());
@@ -264,38 +273,40 @@ public class ChatActivity extends AppCompatActivity {
                         if(usernames.get(s)==null){
                             usernames.put(s, (String) task.getResult().get("appname"));
                         }
-                        if(userimgs.get(s)==null){
-                            new Thread(new Runnable() {
-                                @Override
-                                public void run() {
-                                    HttpURLConnection connection = null;
-                                    InputStream is = null;
-                                    try {
-                                        URL imgUrl = new URL(urlstr);
-                                        connection = (HttpURLConnection) imgUrl.openConnection();
-                                        connection.setDoInput(true); //url로 input받는 flag 허용
-                                        connection.connect(); //연결
-                                        is = connection.getInputStream(); // get inputstream
-                                        Bitmap retBitmap = BitmapFactory.decodeStream(is);
+                        new Thread(new Runnable() {
+                            @Override
+                            public void run() {
+                                HttpURLConnection connection = null;
+                                InputStream is = null;
+                                try {
+                                    URL imgUrl = new URL(urlstr);
+                                    connection = (HttpURLConnection) imgUrl.openConnection();
+                                    connection.setDoInput(true); //url로 input받는 flag 허용
+                                    connection.connect(); //연결
+                                    is = connection.getInputStream(); // get inputstream
+                                    Bitmap retBitmap = BitmapFactory.decodeStream(is);
+                                    //없거나 프로필이 바뀐경우 업데이트
+                                    if(userimgs.get(s)==null||userimgs.get(s)!=retBitmap){
                                         userimgs.put(s,retBitmap);
-                                        savelocalprofile(retBitmap,s);
-                                        runOnUiThread(new Runnable() {
-                                            @Override
-                                            public void run() {
-                                                msgAdapter.notifyDataSetChanged();
-                                            }
-                                        });
+                                    }
 
-                                    } catch (Exception e) {
-                                        e.printStackTrace();
-                                    } finally {
-                                        if (connection != null) {
-                                            connection.disconnect();
+                                    savelocalprofile(retBitmap,s);
+                                    runOnUiThread(new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            msgAdapter.notifyDataSetChanged();
                                         }
+                                    });
+
+                                } catch (Exception e) {
+                                    e.printStackTrace();
+                                } finally {
+                                    if (connection != null) {
+                                        connection.disconnect();
                                     }
                                 }
-                            }).start();
-                        }
+                            }
+                        }).start();
                     }
                 }
             });
@@ -328,6 +339,7 @@ public class ChatActivity extends AppCompatActivity {
             this.userid=userid;
             comments=setChattingroom(roomid);
             getrecentmsg();
+
         }
 
         @Override
@@ -426,6 +438,9 @@ public class ChatActivity extends AppCompatActivity {
                     savemsg(tmpcomment.msg);
                     savemsg(tmpcomment.time);
                     notifyDataSetChanged();
+                    if(tmpcomment.userid.equals(userData.userid)){
+                        msglist.setSelection(msgAdapter.getCount()-1);
+                    }
                 }
 
                 @Override

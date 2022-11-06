@@ -297,6 +297,14 @@ public class WalkUserListActivity extends Activity {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 if(snapshot.getValue(ChatRoom.class)!=null){
+                    //전에 나갔던 채팅방이면 다시 true로 바꾸며 들어옴
+                    if(snapshot.getValue(ChatRoom.class).userids.get(userData.userid).equals(false)){
+                        Map<String,Object> tmpuser=new HashMap<>();
+                        tmpuser.put(userData.userid,true);
+                        dr.child(tmp.roomid).child("userids").updateChildren(tmpuser);
+                    }
+
+
                     Log.d("채팅방 생성","이미 존재하는 채팅방-해당 채팅방으로 이동");
                     Intent intent=new Intent(WalkUserListActivity.this,ChatActivity.class);
                     intent.putExtra("roomid",tmp.roomid);
