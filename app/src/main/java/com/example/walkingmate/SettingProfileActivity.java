@@ -262,7 +262,12 @@ public class SettingProfileActivity extends AppCompatActivity {
 
                 Uri uri=data.getData();
                 Log.d("uri체크",uri.toString());
-                Uri PhotoUri=Uri.parse(getRealPathFromURI(uri));
+                Uri PhotoUri;
+                try{
+                    PhotoUri=Uri.parse(getRealPathFromURI(uri));
+                }catch (IllegalArgumentException e){
+                    PhotoUri=Uri.parse(getRealPathFromURIgal(uri));
+                }
                 ExifInterface exif=new ExifInterface(PhotoUri.getPath());
                 int orientation = exif.getAttributeInt(ExifInterface.TAG_ORIENTATION, ExifInterface.ORIENTATION_UNDEFINED);
                 bitmap = rotateBitmap(tmpbmp, orientation);
@@ -300,6 +305,20 @@ public class SettingProfileActivity extends AppCompatActivity {
             cursor.close();
         }
         return null;
+    }
+
+    private String getRealPathFromURIgal(Uri contentURI) {
+        String result;
+        Cursor cursor = getContentResolver().query(contentURI, null, null, null, null);
+        if (cursor == null) { // Source is Dropbox or other similar local file path
+            result = contentURI.getPath();
+        } else {
+            cursor.moveToFirst();
+            int idx = cursor.getColumnIndex(MediaStore.Images.ImageColumns.DATA);
+            result = cursor.getString(idx);
+            cursor.close();
+        }
+        return result;
     }
 
     public static Bitmap rotateBitmap(Bitmap bitmap, int orientation) {
