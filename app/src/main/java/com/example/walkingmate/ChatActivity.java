@@ -37,8 +37,10 @@ import org.checkerframework.checker.units.qual.A;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FileWriter;
+import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
@@ -46,6 +48,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Map;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
@@ -55,6 +58,7 @@ public class ChatActivity extends AppCompatActivity {
     CollectionReference user=db.collection("users");
 
     ChildEventListener childEventListener;
+    ValueEventListener valueEventListener;
 
     String roomid;
     ArrayList<String> users=new ArrayList<>();
@@ -86,6 +90,9 @@ public class ChatActivity extends AppCompatActivity {
         users=intent.getStringArrayListExtra("userids");
         Log.d("채팅 유저",users.toString());
         users.remove(userData.userid);
+
+        checkuser();
+        loadlocalprofile();
 
         msg=findViewById(R.id.msg);
         sendmsg=findViewById(R.id.sendmsg);
@@ -121,7 +128,7 @@ public class ChatActivity extends AppCompatActivity {
             if(!check.isDirectory()){
                 return resultc;
             }
-            String dir=folder+roomid+".txt";
+            String dir=folder+roomid+"message.txt";
             File file=new File(dir);
             FileInputStream fis=new FileInputStream(file);
             byte[] buffer=new byte[fis.available()];
@@ -129,7 +136,7 @@ public class ChatActivity extends AppCompatActivity {
             fis.close();
             result=new String(buffer);
             results=result.split("\n");
-            for(int i=1; i<results.length; i+=3){
+            for(int i=0; i<results.length; i+=3){
                 ChatRoom.Comment tmpc=new ChatRoom.Comment();
                 tmpc.userid=results[i];
                 tmpc.msg=results[i+1];
@@ -167,7 +174,7 @@ public class ChatActivity extends AppCompatActivity {
 
     public void savemsg(String msg){
         String folder= getFilesDir().getAbsolutePath() + "/messages/";
-        String filename=roomid+".txt";
+        String filename=roomid+"message.txt";
         File file_path;
         try{
             file_path=new File(folder);
@@ -184,46 +191,115 @@ public class ChatActivity extends AppCompatActivity {
         }
     }
 
+    public void checkuser(){
+        valueEventListener=new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                Log.d("채팅방","새로운 참가자 변동");
+                Map<String,Object> tmpusers=new HashMap<>();
+                tmpusers= (Map<String, Object>) snapshot.getValue();
+                for(String s:tmpusers.keySet()){
+                    if(((Boolean)tmpusers.get(s))&&(!users.contains(s))){
+                        users.add(s);
+                    }
+                }
+                loaduserprofile();
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        };
+        dr.child(roomid).child("userids").addValueEventListener(valueEventListener);
+    }
+
+    //제일 먼저 로컬에서 사진파일 불러오기
+    public void loadlocalprofile(){
+        for(String userid:users){
+            String path=getFilesDir().getAbsolutePath()+"/messages/"+roomid+"@"+userid+".jpg";
+            Bitmap bitmap=null;
+            bitmap=BitmapFactory.decodeFile(path);
+            if(bitmap!=null){
+                userimgs.put(userid,bitmap);
+            }
+        }
+
+    }
+
+    public void savelocalprofile(Bitmap bitmap,String userid){
+        if(bitmap==null){
+            return;
+        }
+
+        String path=getFilesDir().getAbsolutePath()+ "/messages/";
+        File storage = new File(path);
+        String filename=roomid+"@"+userid+".jpg";
+        File tempFile = new File(storage, filename);
+        try {
+
+            tempFile.createNewFile();
+            FileOutputStream out = new FileOutputStream(tempFile);
+            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, out);
+            out.close();
+
+        } catch (FileNotFoundException e) {
+
+        } catch (IOException e) {
+
+        }
+    }
+
+    //hashmap에 있는지 체크. 없으면 불러오기 시작
+    //첫 시작, 새유저 접속시 작동
+    //목록에 없으면 저장
     public void loaduserprofile(){
         for(String s:users){
+            //기존에 없는 경우에만 불러옴.
             user.document(s).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
                 @Override
                 public void onComplete(@NonNull Task<DocumentSnapshot> task) {
                     if(task.isSuccessful()){
                         String urlstr= (String) task.getResult().get("profileImagesmall");
-                        usernames.put(s, (String) task.getResult().get("appname"));
-                        new Thread(new Runnable() {
-                            @Override
-                            public void run() {
-                                HttpURLConnection connection = null;
-                                InputStream is = null;
-                                try {
-                                    URL imgUrl = new URL(urlstr);
-                                    connection = (HttpURLConnection) imgUrl.openConnection();
-                                    connection.setDoInput(true); //url로 input받는 flag 허용
-                                    connection.connect(); //연결
-                                    is = connection.getInputStream(); // get inputstream
-                                    Bitmap retBitmap = BitmapFactory.decodeStream(is);
-                                    userimgs.put(s,retBitmap);
-                                    runOnUiThread(new Runnable() {
-                                        @Override
-                                        public void run() {
-                                            msgAdapter.notifyDataSetChanged();
-                                        }
-                                    });
+                        if(usernames.get(s)==null){
+                            usernames.put(s, (String) task.getResult().get("appname"));
+                        }
+                        if(userimgs.get(s)==null){
+                            new Thread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    HttpURLConnection connection = null;
+                                    InputStream is = null;
+                                    try {
+                                        URL imgUrl = new URL(urlstr);
+                                        connection = (HttpURLConnection) imgUrl.openConnection();
+                                        connection.setDoInput(true); //url로 input받는 flag 허용
+                                        connection.connect(); //연결
+                                        is = connection.getInputStream(); // get inputstream
+                                        Bitmap retBitmap = BitmapFactory.decodeStream(is);
+                                        userimgs.put(s,retBitmap);
+                                        savelocalprofile(retBitmap,s);
+                                        runOnUiThread(new Runnable() {
+                                            @Override
+                                            public void run() {
+                                                msgAdapter.notifyDataSetChanged();
+                                            }
+                                        });
 
-                                } catch (Exception e) {
-                                    e.printStackTrace();
-                                } finally {
-                                    if (connection != null) {
-                                        connection.disconnect();
+                                    } catch (Exception e) {
+                                        e.printStackTrace();
+                                    } finally {
+                                        if (connection != null) {
+                                            connection.disconnect();
+                                        }
                                     }
                                 }
-                            }
-                        }).start();
+                            }).start();
+                        }
                     }
                 }
             });
+
 
         }
     }
@@ -380,5 +456,6 @@ public class ChatActivity extends AppCompatActivity {
     protected void onStop() {
         super.onStop();
         dr.child(roomid).child("comments").orderByChild("time").startAfter(starttime).removeEventListener(childEventListener);
+        dr.child(roomid).child("userids").removeEventListener(valueEventListener);
     }
 }
