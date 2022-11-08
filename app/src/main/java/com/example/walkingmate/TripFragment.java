@@ -15,6 +15,7 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.ImageButton;
 import android.widget.ListView;
+import android.widget.TextView;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -138,6 +139,9 @@ public class TripFragment extends Fragment {
                     startActivity(intent);
                 }
             });
+
+            TextView title=view.findViewById(R.id.title_trip);
+            TextView datetxt=view.findViewById(R.id.trip_date);
 
 
             return view;
