@@ -38,6 +38,7 @@ dependencies {
     implementation 'androidx.viewpager2:viewpager2:1.0.0'
     implementation 'me.relex:circleindicator:2.1.4'
     implementation 'de.hdodenhof:circleimageview:3.1.0'
+    implementation "androidx.recyclerview:recyclerview:1.2.1"
 
     implementation "androidx.media:media:1.2.0"
     implementation 'com.github.bumptech.glide:glide:3.7.0'
@@ -45,10 +46,10 @@ dependencies {
 
 implementation 'com.google.android.gms:play-services-location:20.0.0'
     implementation 'androidx.appcompat:appcompat:1.5.1'
-    implementation 'com.google.android.material:material:1.6.1'
+    implementation 'com.google.android.material:material:1.7.0'
     implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
     implementation files('libs/naveridlogin_android_sdk_4.2.6.aar')
-    implementation 'com.google.firebase:firebase-firestore:24.0.2'
+    implementation 'com.google.firebase:firebase-firestore:24.4.0'
     implementation 'com.google.firebase:firebase-storage'
     implementation 'com.google.firebase:firebase-database'
     implementation platform('com.google.firebase:firebase-bom:30.5.0')
@@ -59,6 +60,7 @@ implementation 'com.google.android.gms:play-services-location:20.0.0'
     implementation "com.fasterxml.jackson.core:jackson-core:2.9.9"
     implementation "com.fasterxml.jackson.core:jackson-annotations:2.9.9"
     implementation "com.fasterxml.jackson.core:jackson-databind:2.9.9"
+
 
 
 }
