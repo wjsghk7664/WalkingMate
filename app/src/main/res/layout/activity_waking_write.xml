@@ -92,7 +92,7 @@
             android:layout_marginLeft="20dp"/>
 
         <TextView
-            android:id="@+id/textView5"
+            android:id="@+id/meettxt"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="출발지가 이곳에 표시됩니다."

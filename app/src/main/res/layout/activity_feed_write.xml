@@ -75,7 +75,7 @@
 
                         <TextView
                             android:textColor="@color/brightgray"
-                            android:id="@+id/textView4"
+                            android:id="@+id/seqtxt"
                             android:layout_marginHorizontal="30dp"
                             android:layout_marginTop="100dp"
                             android:layout_marginBottom="5dp"

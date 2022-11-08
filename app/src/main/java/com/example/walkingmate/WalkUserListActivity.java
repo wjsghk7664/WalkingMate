@@ -47,6 +47,7 @@ public class WalkUserListActivity extends Activity {
     FirebaseFirestore fb=FirebaseFirestore.getInstance();
     CollectionReference walkuser=fb.collection("walkuser");
     CollectionReference users=fb.collection("users");
+    CollectionReference challenge=fb.collection("challenge");
 
     String docuid;
     String walkname;
@@ -237,6 +238,17 @@ public class WalkUserListActivity extends Activity {
                 @Override
                 public void onClick(View view) {
                     setstate(waituser.get(position),1);
+
+                    //사교적인 워커 본인 반영은 처음 수락시
+                    if(acceptuser.size()==0){
+                        Long mymeet= (Long) challenge.document(userData.userid).get().getResult().get("meet");
+                        challenge.document(userData.userid).update("meet",mymeet+1);
+                    }
+
+                    //수락한 유저 도전과제 반영
+                    Long usermeet= (Long) challenge.document(waituser.get(position)).get().getResult().get("meet");
+                    challenge.document(waituser.get(position)).update("meet",usermeet+1);
+
                     acceptuser.add(waituser.get(position));
 
                     Log.d("수락 목록",waituser.get(position));

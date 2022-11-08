@@ -126,6 +126,10 @@ public class ViewFeedActivity extends AppCompatActivity implements OnMapReadyCal
                 weather=(String)documentSnapshot.get("weather");
                 emotion=(String)documentSnapshot.get("emotion");
 
+                if(imgurls.size()==0){
+                    findViewById(R.id.loading_feedview).setVisibility(View.INVISIBLE);
+                }
+
                 markers=feedData.markerList;
                 mapFragmentFeed.getMapAsync(ViewFeedActivity.this);
 

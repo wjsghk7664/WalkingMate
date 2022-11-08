@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
@@ -53,15 +53,401 @@
         </LinearLayout>
         <View
             android:layout_width="match_parent"
-            android:layout_height="1dp"
-            android:background="@color/gray"/>
+            android:layout_height="2dp"
+            android:background="@color/brightgray"/>
 
         <LinearLayout
             android:layout_weight="14"
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:orientation="vertical"></LinearLayout>
+            android:orientation="vertical">
+
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="1"
+                android:orientation="vertical"
+                android:background="@drawable/layout_divider">
+
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    android:layout_weight="1">
+
+                    <TextView
+                        android:id="@+id/steptxt"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="건강한 워커 (n/5)"
+                        android:textSize="17dp"
+                        android:textColor="@color/black"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"
+                        android:layout_marginStart="10dp"/>
+                </androidx.constraintlayout.widget.ConstraintLayout>
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    android:layout_weight="4">
+
+
+                    <ImageButton
+                        android:id="@+id/step1"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:background="@drawable/profile"
+                        android:padding="8dp"
+                        android:layout_marginLeft="55dp"
+                        android:layout_marginTop="5dp"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"
+                        android:src="@drawable/achieve_walk_xml" />
+
+
+                    <ImageButton
+                        android:id="@+id/step2"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:background="@drawable/profile"
+                        android:padding="8dp"
+                        android:layout_marginLeft="55dp"
+                        android:layout_marginTop="5dp"
+                        app:layout_constraintStart_toEndOf="@+id/step1"
+                        app:layout_constraintTop_toTopOf="parent"
+                        android:src="@drawable/achieve_walk_xml" />
+
+
+                    <ImageButton
+                        android:id="@+id/step3"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:background="@drawable/profile"
+                        android:padding="8dp"
+                        android:layout_marginLeft="55dp"
+                        android:layout_marginTop="5dp"
+                        app:layout_constraintStart_toEndOf="@id/step2"
+                        app:layout_constraintTop_toTopOf="parent"
+                        android:src="@drawable/achieve_walk_xml" />
+
+
+                    <ImageButton
+                        android:id="@+id/step4"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:background="@drawable/profile"
+                        android:padding="8dp"
+                        android:layout_marginLeft="112dp"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@id/step1"
+                        android:src="@drawable/achieve_walk_xml" />
+
+
+                    <ImageButton
+                        android:id="@+id/step5"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:background="@drawable/profile"
+                        android:padding="8dp"
+                        android:layout_marginLeft="55dp"
+                        app:layout_constraintStart_toEndOf="@id/step4"
+                        app:layout_constraintTop_toBottomOf="@id/step2"
+                        android:src="@drawable/achieve_walk_xml" />
+
+
+
+
+                </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="1"
+                android:orientation="vertical"
+                android:background="@drawable/layout_divider">
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    android:layout_weight="1">
+
+                    <TextView
+                        android:id="@+id/reltxt"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="믿음직한 워커 (n/5)"
+                        android:textSize="17dp"
+                        android:textColor="@color/black"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"
+                        android:layout_marginStart="10dp"/>
+                </androidx.constraintlayout.widget.ConstraintLayout>
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    android:layout_weight="4">
+
+
+                    <ImageButton
+                        android:id="@+id/rel1"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:background="@drawable/profile"
+                        android:padding="8dp"
+                        android:layout_marginLeft="55dp"
+                        android:layout_marginTop="5dp"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"
+                        android:src="@drawable/achieve_trust_xml" />
+
+                    <ImageButton
+                        android:id="@+id/rel2"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:background="@drawable/profile"
+                        android:padding="8dp"
+                        android:layout_marginLeft="55dp"
+                        android:layout_marginTop="5dp"
+                        app:layout_constraintStart_toEndOf="@+id/rel1"
+                        app:layout_constraintTop_toTopOf="parent"
+                        android:src="@drawable/achieve_trust_xml" />
+
+                    <ImageButton
+                        android:id="@+id/rel3"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:background="@drawable/profile"
+                        android:padding="8dp"
+                        android:layout_marginLeft="55dp"
+                        android:layout_marginTop="5dp"
+                        app:layout_constraintStart_toEndOf="@id/rel2"
+                        app:layout_constraintTop_toTopOf="parent"
+                        android:src="@drawable/achieve_trust_xml" />
+
+                    <ImageButton
+                        android:id="@+id/rel4"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:background="@drawable/profile"
+                        android:padding="8dp"
+                        android:layout_marginLeft="112dp"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@id/rel1"
+                        android:src="@drawable/achieve_trust_xml" />
+
+                    <ImageButton
+                        android:id="@+id/rel5"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:background="@drawable/profile"
+                        android:padding="8dp"
+                        android:layout_marginLeft="55dp"
+                        app:layout_constraintStart_toEndOf="@id/rel4"
+                        app:layout_constraintTop_toBottomOf="@id/rel2"
+                        android:src="@drawable/achieve_trust_xml" />
+
+
+                </androidx.constraintlayout.widget.ConstraintLayout>
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="1"
+                android:orientation="vertical"
+                android:background="@drawable/layout_divider">
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    android:layout_weight="1">
+
+                    <TextView
+                        android:id="@+id/seqtxt"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="꾸준한 워커 (n/5)"
+                        android:textSize="17dp"
+                        android:textColor="@color/black"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"
+                        android:layout_marginStart="10dp"/>
+                </androidx.constraintlayout.widget.ConstraintLayout>
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    android:layout_weight="4">
+
+
+                    <ImageButton
+                        android:id="@+id/seq1"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:background="@drawable/profile"
+                        android:padding="10dp"
+                        android:layout_marginLeft="55dp"
+                        android:layout_marginTop="5dp"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"
+                        android:src="@drawable/achieve_planner_xml" />
+
+                    <ImageButton
+                        android:id="@+id/seq2"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:background="@drawable/profile"
+                        android:padding="10dp"
+                        android:layout_marginLeft="55dp"
+                        android:layout_marginTop="5dp"
+                        app:layout_constraintStart_toEndOf="@+id/seq1"
+                        app:layout_constraintTop_toTopOf="parent"
+                        android:src="@drawable/achieve_planner_xml" />
+
+                    <ImageButton
+                        android:id="@+id/seq3"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:background="@drawable/profile"
+                        android:padding="10dp"
+                        android:layout_marginLeft="55dp"
+                        android:layout_marginTop="5dp"
+                        app:layout_constraintStart_toEndOf="@id/seq2"
+                        app:layout_constraintTop_toTopOf="parent"
+                        android:src="@drawable/achieve_planner_xml" />
+
+                    <ImageButton
+                        android:id="@+id/seq4"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:background="@drawable/profile"
+                        android:padding="10dp"
+                        android:layout_marginLeft="112dp"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@id/seq1"
+                        android:src="@drawable/achieve_planner_xml" />
+
+                    <ImageButton
+                        android:id="@+id/seq5"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:background="@drawable/profile"
+                        android:padding="10dp"
+                        android:layout_marginLeft="55dp"
+                        app:layout_constraintStart_toEndOf="@id/seq4"
+                        app:layout_constraintTop_toBottomOf="@id/seq2"
+                        android:src="@drawable/achieve_planner_xml" />
+
+
+                </androidx.constraintlayout.widget.ConstraintLayout>
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="1"
+                android:orientation="vertical"
+                android:background="@drawable/layout_divider">
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    android:layout_weight="1">
+
+                    <TextView
+                        android:id="@+id/meettxt"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="사교적인 워커 (n/5)"
+                        android:textSize="17dp"
+                        android:textColor="@color/black"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"
+                        android:layout_marginStart="10dp"/>
+                </androidx.constraintlayout.widget.ConstraintLayout>
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    android:layout_weight="4">
+
+
+                    <ImageButton
+                        android:id="@+id/meet1"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:background="@drawable/profile"
+                        android:padding="8dp"
+                        android:layout_marginLeft="55dp"
+                        android:layout_marginTop="5dp"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"
+                        android:src="@drawable/achieve_laugh_xml" />
+
+                    <ImageButton
+                        android:id="@+id/meet2"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:background="@drawable/profile"
+                        android:padding="8dp"
+                        android:layout_marginLeft="55dp"
+                        android:layout_marginTop="5dp"
+                        app:layout_constraintStart_toEndOf="@+id/meet1"
+                        app:layout_constraintTop_toTopOf="parent"
+                        android:src="@drawable/achieve_laugh_xml" />
+
+                    <ImageButton
+                        android:id="@+id/meet3"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:background="@drawable/profile"
+                        android:padding="8dp"
+                        android:layout_marginLeft="55dp"
+                        android:layout_marginTop="5dp"
+                        app:layout_constraintStart_toEndOf="@id/meet2"
+                        app:layout_constraintTop_toTopOf="parent"
+                        android:src="@drawable/achieve_laugh_xml" />
+
+                    <ImageButton
+                        android:id="@+id/meet4"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:background="@drawable/profile"
+                        android:padding="8dp"
+                        android:layout_marginLeft="112dp"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@id/meet1"
+                        android:src="@drawable/achieve_laugh_xml" />
+
+                    <ImageButton
+                        android:id="@+id/meet5"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:background="@drawable/profile"
+                        android:padding="8dp"
+                        android:layout_marginLeft="55dp"
+                        app:layout_constraintStart_toEndOf="@id/meet4"
+                        app:layout_constraintTop_toBottomOf="@id/meet2"
+                        android:src="@drawable/achieve_laugh_xml" />
+
+
+                </androidx.constraintlayout.widget.ConstraintLayout>
+            </LinearLayout>
+
+
+        </LinearLayout>
 
     </LinearLayout>
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+</FrameLayout>

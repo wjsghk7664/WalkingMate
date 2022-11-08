@@ -329,6 +329,18 @@ public class StartActivity extends AppCompatActivity {
                             public void run() {
                                 UserData.saveBitmapToJpeg(UserData.GetBitmapfromURL((String) task.getResult().get("profileImagebig")),
                                         UserData.GetBitmapfromURL((String) task.getResult().get("profileImagesmall")),StartActivity.this);
+                                db.collection("challenge").document(model.getId()).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                                    @Override
+                                    public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                                        if(!task.getResult().exists()){
+                                            Map<String, Object> cha=new HashMap<>();
+                                            cha.put("step",0);
+                                            cha.put("feedseq",0);
+                                            cha.put("meet",0);
+                                            db.collection("challenge").document(model.getId()).set(cha);
+                                        }
+                                    }
+                                });
                             }
                         }).start();
 

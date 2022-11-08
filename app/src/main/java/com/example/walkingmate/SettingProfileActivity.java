@@ -27,6 +27,7 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.firestore.auth.User;
@@ -37,6 +38,7 @@ import com.google.firebase.storage.UploadTask;
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.util.HashMap;
+import java.util.Map;
 
 public class SettingProfileActivity extends AppCompatActivity {
 
@@ -228,6 +230,18 @@ public class SettingProfileActivity extends AppCompatActivity {
                                                 db.collection("users").document(userid).set(user).addOnSuccessListener(new OnSuccessListener<Void>() {
                                                     @Override
                                                     public void onSuccess(Void unused) {
+                                                        db.collection("challenge").document(userid).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                                                            @Override
+                                                            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                                                                if(!task.getResult().exists()){
+                                                                    Map<String, Object> cha=new HashMap<>();
+                                                                    cha.put("step",0);
+                                                                    cha.put("feedseq",0);
+                                                                    cha.put("meet",0);
+                                                                    db.collection("challenge").document(userid).set(cha);
+                                                                }
+                                                            }
+                                                        });
                                                         Toast.makeText(getApplicationContext(),"회원가입 성공.",Toast.LENGTH_SHORT).show();
                                                         UserData.saveData(new UserData(userid,profileImagebig,profileImagesmall,appname,nickname,name,age,gender,birthyear,"없음", 50L),SettingProfileActivity.this);
                                                         UserData.saveBitmapToJpeg(bitmap,smallbitmap,SettingProfileActivity.this);

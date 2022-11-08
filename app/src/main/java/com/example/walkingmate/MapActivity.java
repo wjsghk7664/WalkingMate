@@ -48,8 +48,13 @@ import com.google.android.gms.location.LocationCallback;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationResult;
 import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 import com.google.android.material.navigation.NavigationView;
+import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FirebaseFirestore;
 import com.naver.maps.geometry.LatLng;
 import com.naver.maps.map.CameraPosition;
 import com.naver.maps.map.CameraUpdate;
@@ -74,6 +79,9 @@ import java.util.Iterator;
 public class MapActivity extends AppCompatActivity implements OnMapReadyCallback, NavigationView.OnNavigationItemSelectedListener {
     private FusedLocationSource locationSource;
     private FusedLocationProviderClient fusedLocationProviderClient;
+
+    FirebaseFirestore fb=FirebaseFirestore.getInstance();
+    CollectionReference challenge=fb.collection("challenge");
 
     private static final int ACCESS_LOCATION_PERMISSION_REQUEST_CODE = 100;
 
@@ -201,6 +209,14 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
 
                     stopStepCounterService();
                     stopTimeCheckingService();
+
+                    challenge.document(UserData.loadData(MapActivity.this).userid).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                        @Override
+                        public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                            Long updatestep=task.getResult().getLong("step")+(long)step;
+                            challenge.document(UserData.loadData(MapActivity.this).userid).update("step",updatestep);
+                        }
+                    });
 
                     Intent gofeed=new Intent(MapActivity.this, EndtrackingActivity.class);
                     gofeed.putExtra("filename",sendfilename);
@@ -491,6 +507,14 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
                     //피드데이터 내부저장소에 저장
                     FeedData feedData = new FeedData(coordList, markerList, timecheck, step, displacement);
                     feedData.savefeed(feedData, MapActivity.this);
+
+                    challenge.document(UserData.loadData(MapActivity.this).userid).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                        @Override
+                        public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                            Long updatestep=task.getResult().getLong("step")+(long)step;
+                            challenge.document(UserData.loadData(MapActivity.this).userid).update("step",updatestep);
+                        }
+                    });
 
                     Log.d("백그라운드","중지");
                     IsTracking[0] = false;
