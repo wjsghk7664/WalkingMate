@@ -15,7 +15,17 @@
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_weight="1"
-            android:orientation="horizontal"></LinearLayout>
+            android:orientation="horizontal">
+
+            <TextView
+                android:gravity="center"
+                android:layout_gravity="center"
+                android:id="@+id/textView6"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="검색창 넣을 레이아웃" />
+        </LinearLayout>
 
         <FrameLayout
             android:layout_marginBottom="60dp"
@@ -25,6 +35,7 @@
             android:orientation="vertical">
 
             <LinearLayout
+                android:visibility="invisible"
                 android:background="@color/white"
                 android:layout_width="match_parent"
                 android:layout_height="200dp"
@@ -40,19 +51,44 @@
                     android:text="지역선택" />
             </LinearLayout>
 
-            <ListView
-                android:id="@+id/triplist"
+            <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+                android:id="@+id/refresh_triplist"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent" />
+                android:layout_height="match_parent">
+                <ListView
+                    android:id="@+id/triplist"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent" />
 
-            <ImageButton
-                android:layout_marginBottom="16dp"
-                android:layout_gravity="bottom|center"
-                android:background="@drawable/greenbtn"
-                android:id="@+id/add_triplist"
-                android:layout_width="50dp"
-                android:layout_height="50dp"
-                android:src="@drawable/add_xml"/>
+            </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
+
+
+            <LinearLayout
+                android:paddingHorizontal="50dp"
+                android:gravity="center"
+                android:layout_gravity="bottom"
+                android:layout_width="match_parent"
+                android:layout_height="100dp"
+                android:orientation="horizontal">
+
+
+                <ImageButton
+                    android:layout_marginHorizontal="20dp"
+                    android:background="@drawable/greenbtn"
+                    android:id="@+id/up_triplist"
+                    android:layout_width="50dp"
+                    android:layout_height="50dp"
+                    android:src="@drawable/arrow_up"/>
+
+                <ImageButton
+                    android:background="@drawable/greenbtn"
+                    android:layout_marginHorizontal="20dp"
+                    android:id="@+id/add_triplist"
+                    android:layout_width="50dp"
+                    android:layout_height="50dp"
+                    android:src="@drawable/add_xml"/>
+            </LinearLayout>
+
         </FrameLayout>
 
     </LinearLayout>

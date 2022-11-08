@@ -6,12 +6,14 @@ import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 
-
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AbsListView;
 import android.widget.BaseAdapter;
 import android.widget.ImageButton;
 import android.widget.ListView;
@@ -30,27 +32,37 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Optional;
 
-public class TripFragment extends Fragment {
+public class TripFragment extends Fragment implements SwipeRefreshLayout.OnRefreshListener {
     FirebaseFirestore fb=FirebaseFirestore.getInstance();
     CollectionReference tripdata=fb.collection("tripdatalist");
+    CollectionReference users=fb.collection("users");
+
+    SwipeRefreshLayout swipeRefreshLayout;
 
     ListView triplist;
     TripAdapter tripAdapter;
 
-    ImageButton addtrip;
+    ImageButton addtrip,scrollup;
     String curitem="0";
 
     ArrayList<String> tripdocuids=new ArrayList<>();
+    HashMap<String, String> userids=new HashMap<>();
     HashMap<String,String> titles=new HashMap<>();
     HashMap<String, String> dates=new HashMap<>();
     HashMap<String, ArrayList<String>> locations=new HashMap<>();
+    HashMap<String, String> writetimes=new HashMap<>();
+    HashMap<String, String> writers=new HashMap<>();
 
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view= inflater.inflate(R.layout.fragment_trip, container, false);
+
+        swipeRefreshLayout=view.findViewById(R.id.refresh_triplist);
+        swipeRefreshLayout.setOnRefreshListener(this::onRefresh);
 
         triplist=view.findViewById(R.id.triplist);
         addtrip=view.findViewById(R.id.add_triplist);
@@ -61,13 +73,49 @@ public class TripFragment extends Fragment {
             }
         });
 
+        scrollup=view.findViewById(R.id.up_triplist);
 
+        tripAdapter=new TripAdapter(getContext());
+        triplist.setAdapter(tripAdapter);
+        getlist();
+
+        scrollup.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                triplist.smoothScrollToPosition(0);
+            }
+        });
+
+        triplist.setOnScrollListener(new AbsListView.OnScrollListener() {
+            @Override
+            public void onScrollStateChanged(AbsListView absListView, int i) {
+                if(!triplist.canScrollVertically(1)){
+                    getlist();
+                }
+            }
+
+            @Override
+            public void onScroll(AbsListView absListView, int i, int i1, int i2) {
+
+            }
+        });
 
         return view;
     }
 
+    public void refreshs(){
+        curitem="0";
+        tripdocuids.clear();
+        titles.clear();
+        dates.clear();
+        locations.clear();
+        writetimes.clear();
+        getlist();
+    }
+
+    //필터 추가시 쿼리적용
     public void getlist(){
-        tripdata.whereGreaterThan("writetime",curitem).orderBy("writetime").limit(25).get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+        tripdata.whereGreaterThan("writetime",curitem).orderBy("writetime").limit(15).get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
             @Override
             public void onComplete(@NonNull Task<QuerySnapshot> task) {
                 if(!task.getResult().isEmpty()){
@@ -75,13 +123,27 @@ public class TripFragment extends Fragment {
                     for(DocumentSnapshot document: documents){
                         tripdocuids.add(document.getId());
                         titles.put(document.getId(), (String) document.get("title"));
+                        userids.put(document.getId(), (String) document.get("userid"));
                         try {
                             dates.put(document.getId(),getdatestr(document.get("year"),document.get("month"),document.get("day"),document.get("hour"),document.get("minute"),document.get("takentime")));
                         } catch (ParseException e) {
                             dates.put(document.getId()," ");
                         }
                         locations.put(document.getId(), (ArrayList<String>) document.get("locations_name"));
+                        writetimes.put(document.getId(), (String) document.get("writetime"));
                     }
+                    curitem=writetimes.get(tripdocuids.get(tripdocuids.size()-1));
+                    for(String s:tripdocuids){
+                        users.document(userids.get(s)).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                            @Override
+                            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                                Log.d("여행 유저 추가", (String) task.getResult().get("appname"));
+                                writers.put(s, (String) task.getResult().get("appname"));
+                                tripAdapter.notifyDataSetChanged();
+                            }
+                        });
+                    }
+                    Log.d("여행리스트수",tripdocuids.size()+"");
                 }
             }
         });
@@ -93,8 +155,15 @@ public class TripFragment extends Fragment {
         Date date=sdf.parse(start);
         Calendar calendar=Calendar.getInstance();
         calendar.setTime(date);
-        calendar.add(Calendar.MINUTE,(int)taken);
-        return sdf.format(calendar.getTime());
+        calendar.add(Calendar.MINUTE,Long.valueOf((Long) Optional.ofNullable(taken).orElse(0L)).intValue());
+        return start +"~"+ sdf.format(calendar.getTime());
+    }
+
+    @Override
+    public void onRefresh() {
+        refreshs();
+        Log.d("여행 유저명",writers.values().toString());
+        swipeRefreshLayout.setRefreshing(false);
     }
 
 
@@ -124,7 +193,7 @@ public class TripFragment extends Fragment {
 
         @Override
         public View getView(int position, View convertView, ViewGroup parent) {
-            View view = layoutInflater.inflate(R.layout.list_layout, null);
+            View view = layoutInflater.inflate(R.layout.layout_triplist, null);
             View emptyview=layoutInflater.inflate(R.layout.list_layout_empty,null);
             if(tripdocuids.size()==0){
                 return emptyview;
@@ -140,9 +209,16 @@ public class TripFragment extends Fragment {
                 }
             });
 
-            TextView title=view.findViewById(R.id.title_trip);
+            TextView title=view.findViewById(R.id.trip_title);
             TextView datetxt=view.findViewById(R.id.trip_date);
+            TextView writetime=view.findViewById(R.id.trip_writetime);
+            TextView writer=view.findViewById(R.id.trip_writer);
 
+            title.setText(titles.get(tripdocuids.get(position)));
+            datetxt.setText(dates.get(tripdocuids.get(position)));
+            String timetmp=writetimes.get(tripdocuids.get(position));
+            writetime.setText(String.format("%s/%s/%s %s:%s",timetmp.substring(0,4),timetmp.substring(4,6),timetmp.substring(6,8),timetmp.substring(8,10),timetmp.substring(10,12)));
+            writer.setText(writers.get(tripdocuids.get(position)));
 
             return view;
 
