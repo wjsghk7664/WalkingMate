@@ -116,13 +116,13 @@ public class challenge_activity extends AppCompatActivity {
                     }
                 }
                 //이번주는 따로 체크
-                if(checkweek[thisweek[0]]>=1){
+                if(checkweek[thisweek[0]]>=3){
                     ++seqtotal[0];
                 }
                 Log.d("이번주 체크",thisweek[0]+":"+seqtotal[0]+"");
                 //전주부터 시작
                 thisweek[0] -=1;
-                while(checkweek[thisweek[0]]>=1){
+                while(checkweek[thisweek[0]]>=3){
                     ++seqtotal[0];
                     Log.d("차주 체크",thisweek[0]+"주차:"+seqtotal[0]);
                     --thisweek[0];
