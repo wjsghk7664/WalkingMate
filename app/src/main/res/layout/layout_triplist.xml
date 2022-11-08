@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:id="@+id/trip_body"
+    android:paddingLeft="10dp"
+    android:paddingHorizontal="5dp"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <TextView
+        android:layout_marginVertical="5dp"
+        android:id="@+id/trip_title"
+        android:textSize="20dp"
+        android:text="여행 게시물 제목"
+        android:layout_gravity="left"
+        android:textColor="@color/black"
+        android:textStyle="bold"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+    </TextView>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="horizontal">
+
+        <ImageView
+            android:src="@drawable/calendar_icon"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+        <TextView
+            android:id="@+id/trip_date"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="2022/10/11 ~ 2022/10/13" />
+    </LinearLayout>
+
+</LinearLayout>

@@ -1,34 +1,59 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".TripFragment">
 
-    <!-- TODO: Update blank fragment layout -->
     <LinearLayout
-        android:gravity="center"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical">
 
-        <TextView
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:gravity="center"
-            android:text="여행"
-            android:textSize="50dp" />
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:orientation="horizontal"></LinearLayout>
 
-        <Button
-            android:id="@+id/gomain_trip"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="메인으로" />
+        <FrameLayout
+            android:layout_marginBottom="60dp"
+            android:layout_weight="12"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:orientation="vertical">
+
+            <LinearLayout
+                android:background="@color/white"
+                android:layout_width="match_parent"
+                android:layout_height="200dp"
+                android:orientation="vertical">
+
+                <TextView
+                    android:paddingLeft="10dp"
+                    android:paddingVertical="10dp"
+                    android:textColor="@color/black"
+                    android:textStyle="bold"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="지역선택" />
+            </LinearLayout>
+
+            <ListView
+                android:id="@+id/triplist"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent" />
+
+            <ImageButton
+                android:layout_marginBottom="16dp"
+                android:layout_gravity="bottom|center"
+                android:background="@drawable/greenbtn"
+                android:id="@+id/add_triplist"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:src="@drawable/add_xml"/>
+        </FrameLayout>
+
     </LinearLayout>
-
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/recyclerView"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"/>
-
 </FrameLayout>
