@@ -102,7 +102,7 @@ public class WalkFragment extends Fragment implements OnMapReadyCallback{
     Button mate;
 
     CircleImageView userImage;
-    TextView title,usertxt,time,locationtxt;
+    TextView title,usertxt,time,locationtxt, loading;
     LinearLayout userprofile;
 
     String genderstr, agestr;
@@ -145,6 +145,7 @@ public class WalkFragment extends Fragment implements OnMapReadyCallback{
         time=root.findViewById(R.id.walkview_time);
         userprofile=root.findViewById(R.id.userprofile_walkview);
         locationtxt=root.findViewById(R.id.walkview_location);
+        loading=root.findViewById(R.id.loading_walkfrag);
 
         genderstr="무관";
         agestr="무관";
@@ -313,6 +314,7 @@ public class WalkFragment extends Fragment implements OnMapReadyCallback{
                 tmpmarker.setOnClickListener(new Overlay.OnClickListener() {
                     @Override
                     public boolean onClick(@NonNull Overlay overlay) {
+                        loading.setVisibility(View.VISIBLE);
                         int idx=markers.indexOf(tmpmarker);
                         curdocu=docuidlist.get(idx);
                         getuserdata(idlist.get(idx),String.format("%s년 %s월 %s일 %s시 %s분",timedata[0],timedata[1],timedata[2],timedata[3],timedata[4]),locationlist.get(idx));
@@ -497,6 +499,7 @@ public class WalkFragment extends Fragment implements OnMapReadyCallback{
                                 public void run() {
                                     userImage.setImageBitmap(retBitmap);
                                     userprofile.setVisibility(View.VISIBLE);
+                                    loading.setVisibility(View.INVISIBLE);
                                 }
                             });
 

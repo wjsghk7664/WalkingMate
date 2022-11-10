@@ -124,7 +124,7 @@
             <com.naver.maps.map.MapView
                 android:id="@+id/fragmap"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent" />
+                android:layout_height="match_parent" />-
 
             <LinearLayout
                 android:visibility="invisible"
@@ -289,6 +289,18 @@
                     android:layout_height="50dp"
                     android:src="@drawable/add_xml"/>
             </LinearLayout>
+
+            <TextView
+                android:visibility="invisible"
+                android:textSize="40dp"
+                android:textColor="@color/white"
+                android:textStyle="bold"
+                android:gravity="center"
+                android:background="@color/blurblack"
+                android:id="@+id/loading_walkfrag"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:text="로딩중..." />
 
         </FrameLayout>
 

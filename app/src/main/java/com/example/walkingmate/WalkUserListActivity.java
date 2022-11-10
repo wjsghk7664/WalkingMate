@@ -248,29 +248,50 @@ public class WalkUserListActivity extends Activity {
             accept.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    setstate(waituser.get(position),1);
 
                     //사교적인 워커 본인 반영은 처음 수락시
                     if(acceptuser.size()==0){
-                        Long mymeet= (Long) challenge.document(userData.userid).get().getResult().get("meet");
-                        challenge.document(userData.userid).update("meet",mymeet+1);
+                        challenge.document(userData.userid).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                            @Override
+                            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                                if(task.isSuccessful()){
+                                    Long mymeet= (Long) task.getResult().get("meet");
+                                    challenge.document(userData.userid).update("meet",mymeet+1);
+                                }
+                            }
+                        });
                     }
 
+
                     //수락한 유저 도전과제 반영
-                    Long usermeet= (Long) challenge.document(waituser.get(position)).get().getResult().get("meet");
-                    challenge.document(waituser.get(position)).update("meet",usermeet+1);
+                    challenge.document(waituser.get(position)).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                        @Override
+                        public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                            if(task.isSuccessful()){
+                                Log.d("문서 체크",task.getResult().get("meet").toString());
+                                Long mymeet= (Long) task.getResult().get("meet");
+                                Log.d("신청유저",waituser.toString());
+                                challenge.document(waituser.get(position)).update("meet",mymeet+1).addOnCompleteListener(new OnCompleteListener<Void>() {
+                                    @Override
+                                    public void onComplete(@NonNull Task<Void> task) {
+                                        setstate(waituser.get(position),1);
+                                        acceptuser.add(waituser.get(position));
 
-                    acceptuser.add(waituser.get(position));
+                                        Log.d("수락 목록",waituser.get(position));
 
-                    Log.d("수락 목록",waituser.get(position));
+                                        acceptuserprofile.add(waituserprofile.get(position));
+                                        acceptUserChatrooms(docuid,waituser.get(position));
 
-                    acceptuserprofile.add(waituserprofile.get(position));
-                    acceptUserChatrooms(docuid,waituser.get(position));
+                                        waituser.remove(position);
+                                        waituserprofile.remove(position);
+                                        notifyDataSetChanged();
+                                        acceptAdapter.notifyDataSetChanged();
+                                    }
+                                });
+                            }
+                        }
+                    });
 
-                    waituser.remove(position);
-                    waituserprofile.remove(position);
-                    notifyDataSetChanged();
-                    acceptAdapter.notifyDataSetChanged();
                 }
             });
 
