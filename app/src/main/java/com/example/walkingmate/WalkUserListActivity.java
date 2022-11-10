@@ -17,6 +17,7 @@ import android.view.ViewGroup;
 import android.view.Window;
 import android.widget.BaseAdapter;
 import android.widget.Button;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 
@@ -232,6 +233,16 @@ public class WalkUserListActivity extends Activity {
             Button reject=view.findViewById(R.id.reject_walkwait);
             Button chat=view.findViewById(R.id.chat_walkwait);
 
+            LinearLayout body=view.findViewById(R.id.body_walkwait);
+            body.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    Intent intent=new Intent(WalkUserListActivity.this, UserProfileActivity.class);
+                    intent.putExtra("userid",waituser.get(position));
+                    startActivity(intent);
+                }
+            });
+
             textView.setText(waituserprofile.get(position));
 
             accept.setOnClickListener(new View.OnClickListener() {
@@ -428,6 +439,16 @@ public class WalkUserListActivity extends Activity {
             Button accept=view.findViewById(R.id.accept_walkwait);
             Button reject=view.findViewById(R.id.reject_walkwait);
             Button chat=view.findViewById(R.id.chat_walkwait);
+
+            LinearLayout body=view.findViewById(R.id.body_walkwait);
+            body.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    Intent intent=new Intent(WalkUserListActivity.this, UserProfileActivity.class);
+                    intent.putExtra("userid",acceptuser.get(position));
+                    startActivity(intent);
+                }
+            });
 
             textView.setText(acceptuserprofile.get(position));
 

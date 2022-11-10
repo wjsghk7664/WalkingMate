@@ -57,7 +57,7 @@ public class TripwriteActivity extends AppCompatActivity implements OnMapReadyCa
     CollectionReference tripwrite=fb.collection("tripdata");
     CollectionReference triplist=fb.collection("tripdatalist");
 
-    EditText title,yeartxt,montxt,daytxt,hourtxt,mintxt,takentxt,contentstxt;
+    EditText title,yeartxt,montxt,daytxt,hourtxt,mintxt,takendaytxt,takenhourtxt,takenmintxt,contentstxt;
     Spinner gender,age;
     Button search,finish;
     ImageButton back;
@@ -93,7 +93,9 @@ public class TripwriteActivity extends AppCompatActivity implements OnMapReadyCa
         daytxt=findViewById(R.id.day_trip);
         hourtxt=findViewById(R.id.hour_trip);
         mintxt=findViewById(R.id.min_trip);
-        takentxt=findViewById(R.id.taken_time);
+        takendaytxt=findViewById(R.id.taken_time_day);
+        takenhourtxt=findViewById(R.id.taken_time_hour);
+        takenmintxt=findViewById(R.id.taken_time_minute);
         contentstxt=findViewById(R.id.contents_box);
 
         gender=findViewById(R.id.spinner_sex_trip);
@@ -134,7 +136,9 @@ public class TripwriteActivity extends AppCompatActivity implements OnMapReadyCa
                     hour=Integer.parseInt(hourtxt.getText().toString());
                     min=Integer.parseInt(mintxt.getText().toString());
 
-                    taken=Integer.parseInt(takentxt.getText().toString());
+                    taken=(Integer.parseInt(takendaytxt.getText().toString())*60*24)+
+                            (Integer.parseInt(takenhourtxt.getText().toString())*60)+
+                            Integer.parseInt(takenmintxt.getText().toString());
 
                 }catch (NumberFormatException e){
                     e.printStackTrace();

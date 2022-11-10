@@ -24,6 +24,7 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QuerySnapshot;
 
 import java.text.ParseException;
@@ -115,7 +116,7 @@ public class TripFragment extends Fragment implements SwipeRefreshLayout.OnRefre
 
     //필터 추가시 쿼리적용
     public void getlist(){
-        tripdata.whereGreaterThan("writetime",curitem).orderBy("writetime").limit(15).get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+        tripdata.whereGreaterThan("writetime",curitem).orderBy("writetime", Query.Direction.DESCENDING).limit(15).get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
             @Override
             public void onComplete(@NonNull Task<QuerySnapshot> task) {
                 if(!task.getResult().isEmpty()){
@@ -150,7 +151,7 @@ public class TripFragment extends Fragment implements SwipeRefreshLayout.OnRefre
     }
 
     public String getdatestr(Object y, Object m, Object d, Object h, Object min, Object taken) throws ParseException {
-        SimpleDateFormat sdf=new SimpleDateFormat("yyyy/MM/dd hh:mm");
+        SimpleDateFormat sdf=new SimpleDateFormat("yyyy/MM/dd HH:mm");
         String start=String.format("%04d/%02d/%02d %02d:%02d",y,m,d,h,min);
         Date date=sdf.parse(start);
         Calendar calendar=Calendar.getInstance();

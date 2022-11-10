@@ -27,6 +27,7 @@ import android.view.DragEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
@@ -96,9 +97,9 @@ public class WalkFragment extends Fragment implements OnMapReadyCallback{
     LatLng setLocation;
 
     ImageButton refresh,addwalk, close;
-    Spinner gender, age;
+    Spinner gender, age, viewmode;
 
-    Button mywalk, mate;
+    Button mate;
 
     CircleImageView userImage;
     TextView title,usertxt,time,locationtxt;
@@ -174,7 +175,6 @@ public class WalkFragment extends Fragment implements OnMapReadyCallback{
         gender=root.findViewById(R.id.spinner_sex_walkmap);
 
         refresh=root.findViewById(R.id.refresh_walkingmap);
-        mywalk=root.findViewById(R.id.seemy_walkview);
         addwalk=root.findViewById(R.id.add_walkview);
         mate=root.findViewById(R.id.mate_walkview);
         close=root.findViewById(R.id.close_profile);
@@ -189,32 +189,17 @@ public class WalkFragment extends Fragment implements OnMapReadyCallback{
             }
         });
 
-        mywalk.setOnClickListener(new View.OnClickListener() {
+        viewmode=root.findViewById(R.id.spinner_viewmode_walkmap);
+        viewmode.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
-            public void onClick(View view) {
-                //처음(0):내글 제외
-                //1:내글만
-                refreshdata();
-                if(mywalkcheck==0){
-                    mywalk.setTextColor(Color.BLUE);
-                    mywalkcheck=1;
-                    mapsync();
-                }
-                else if(mywalkcheck==1){
-                    mywalk.setTextColor(Color.RED);
-                    mywalkcheck=2;
-                    mapsync();
-                }
-                else if(mywalkcheck==2){
-                    mywalk.setTextColor(Color.MAGENTA);
-                    mywalkcheck=3;
-                    mapsync();
-                }
-                else if(mywalkcheck==3){
-                    mywalk.setTextColor(Color.WHITE);
-                    mywalkcheck=0;
-                    mapsync();
-                }
+            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+                mywalkcheck=i;
+                Log.d("보기설정",mywalkcheck+":"+viewmode.getSelectedItem());
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> adapterView) {
+
             }
         });
 
@@ -238,6 +223,15 @@ public class WalkFragment extends Fragment implements OnMapReadyCallback{
             public void onClick(View view) {
                 //checkandsendreq에서 refreshdata까지 수행
                 checkandsendreq();
+            }
+        });
+
+        userImage.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent=new Intent(getActivity(),UserProfileActivity.class);
+                intent.putExtra("userid",idlist.get(docuidlist.indexOf(curdocu)));
+                startActivity(intent);
             }
         });
 

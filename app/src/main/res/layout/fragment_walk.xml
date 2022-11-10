@@ -25,6 +25,7 @@
                 android:orientation="horizontal">
 
                 <LinearLayout
+                    android:paddingLeft="3dp"
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
                     android:layout_weight="1"
@@ -43,7 +44,7 @@
                         android:id="@+id/spinner_sex_walkmap"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginLeft="20dp"
+                        android:layout_marginLeft="5dp"
                         android:entries="@array/array_sex" />
 
                 </LinearLayout>
@@ -54,6 +55,7 @@
                     android:background="@color/greenboxline" />
 
                 <LinearLayout
+                    android:paddingLeft="3dp"
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
                     android:layout_weight="1"
@@ -72,22 +74,43 @@
                         android:id="@+id/spinner_age_walkmap"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginLeft="20dp"
+                        android:layout_marginLeft="5dp"
                         android:entries="@array/array_age" />
+
+                </LinearLayout>
+
+                <View
+                    android:layout_width="3dp"
+                    android:layout_height="match_parent"
+                    android:background="@color/greenboxline" />
+
+                <LinearLayout
+                    android:paddingLeft="3dp"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:gravity="center"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="보기"
+                        android:textColor="@color/black"
+                        android:textSize="16dp"
+                        android:textStyle="bold" />
+
+                    <Spinner
+                        android:id="@+id/spinner_viewmode_walkmap"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="5dp"
+                        android:entries="@array/array_viewmode" />
 
                 </LinearLayout>
 
             </LinearLayout>
 
-            <ImageButton
-                android:theme="@style/Theme.WalkingMate"
-                android:layout_gravity="center"
-                android:id="@+id/refresh_walkingmap"
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:layout_weight="1"
-                android:background="@drawable/button_blueripple"
-                android:src="@drawable/icon_refresh" />
 
         </LinearLayout>
 
@@ -248,15 +271,15 @@
                 android:orientation="horizontal">
 
 
-                <Button
+
+                <ImageButton
+                    android:theme="@style/Theme.WalkingMate"
                     android:layout_marginHorizontal="20dp"
-                    android:textColor="@color/white"
-                    android:textSize="20dp"
-                    android:background="@drawable/plusbtn"
-                    android:id="@+id/seemy_walkview"
+                    android:src="@drawable/icon_refresh_white"
+                    android:background="@drawable/button_blueripple"
+                    android:id="@+id/refresh_walkingmap"
                     android:layout_width="50dp"
-                    android:layout_height="50dp"
-                    android:text="MY"/>
+                    android:layout_height="50dp"/>
 
                 <ImageButton
                     android:background="@drawable/greenbtn"

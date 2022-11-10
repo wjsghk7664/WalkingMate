@@ -3,6 +3,7 @@ package com.example.walkingmate;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.drawerlayout.widget.DrawerLayout;
 
 import android.content.Context;
 import android.content.Intent;
@@ -10,7 +11,9 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
@@ -23,6 +26,7 @@ import android.widget.TextView;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.google.android.material.navigation.NavigationView;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -53,7 +57,7 @@ import java.util.Map;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
-public class ChatActivity extends AppCompatActivity {
+public class ChatActivity extends AppCompatActivity implements DrawerLayout.DrawerListener {
     DatabaseReference dr= FirebaseDatabase.getInstance().getReference("Chatrooms");
     FirebaseFirestore db=FirebaseFirestore.getInstance();
     CollectionReference user=db.collection("users");
@@ -73,8 +77,13 @@ public class ChatActivity extends AppCompatActivity {
     UserData userData;
 
     MsgAdapter msgAdapter;
+    UserAdapter userAdapter;
 
     String starttime="0";
+
+    DrawerLayout drawerLayout;
+    ListView userlist;
+    TextView roomtitle;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -83,10 +92,19 @@ public class ChatActivity extends AppCompatActivity {
         getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN);
         Log.d("채팅방","activity시작");
 
+        roomtitle=findViewById(R.id.chat_title);
+
+        drawerLayout=findViewById(R.id.ChatLayout);
+        drawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
+        userlist=findViewById(R.id.chatuserlist);
+
+
         userData=UserData.loadData(this);
 
         Intent intent=getIntent();
         roomid=intent.getStringExtra("roomid");
+
+        settitle(roomid);
 
         //자기 프로필은 필요없으니 제외
         users=intent.getStringArrayListExtra("userids");
@@ -96,10 +114,19 @@ public class ChatActivity extends AppCompatActivity {
         checkuser();
         loadlocalprofile();
 
+        findViewById(R.id.menu_chat).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                drawerLayout.openDrawer(Gravity.RIGHT);
+            }
+        });
+
         msg=findViewById(R.id.msg);
         sendmsg=findViewById(R.id.sendmsg);
         msglist=findViewById(R.id.msglist);
 
+        userAdapter=new UserAdapter(this);
+        userlist.setAdapter(userAdapter);
         msgAdapter=new MsgAdapter(this,roomid,userData.userid);
         msglist.setAdapter(msgAdapter);
         if(msgAdapter.getCount()>0){
@@ -114,6 +141,22 @@ public class ChatActivity extends AppCompatActivity {
             public void onClick(View view) {
                 sendmsgs();
                 msg.getText().clear();
+            }
+        });
+    }
+
+    public void settitle(String roomid){
+        dr.child(roomid).child("roomname").addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                String title=snapshot.getValue().toString();
+                Log.d("채팅방명",title);
+                roomtitle.setText(title);
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
             }
         });
     }
@@ -295,6 +338,7 @@ public class ChatActivity extends AppCompatActivity {
                                         @Override
                                         public void run() {
                                             msgAdapter.notifyDataSetChanged();
+                                            userAdapter.notifyDataSetChanged();
                                         }
                                     });
 
@@ -323,6 +367,8 @@ public class ChatActivity extends AppCompatActivity {
         String min=time.substring(10,12);
         return String.format("%s/%s/%s %s:%s",y,m,d,h,min);
     }
+
+
 
     public class MsgAdapter extends BaseAdapter {
 
@@ -361,7 +407,7 @@ public class ChatActivity extends AppCompatActivity {
         public View getView(int position, View convertView, ViewGroup parent) {
             View view;
             TextView msgitem,timeitem,username;
-            CircleImageView userimg;
+            CircleImageView userimg = null;
             if(comments.get(position).userid.equals(userid)){
                 view=layoutInflater.inflate(R.layout.layout_mymsg,null);
                 msgitem=view.findViewById(R.id.msg_mine);
@@ -402,28 +448,21 @@ public class ChatActivity extends AppCompatActivity {
 
             msgitem.setText(comments.get(position).msg);
             timeitem.setText(gettime(comments.get(position).time));
+            if(userimg!=null){
+                userimg.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        Intent intent=new Intent(ChatActivity.this, UserProfileActivity.class);
+                        intent.putExtra("userid",comments.get(position).userid);
+                        startActivity(intent);
+                    }
+                });
+            }
+
 
             return view;
         }
 
-        //아래는 매번 모든 값을 가져와서 취소
-        /*public void getmsg(){
-            DatabaseReference dr= FirebaseDatabase.getInstance().getReference("Chatrooms");
-            dr.child(roomid).child("comments").addValueEventListener(new ValueEventListener() {
-                @Override
-                public void onDataChange(@NonNull DataSnapshot snapshot) {
-                    for(DataSnapshot dataSnapshot:snapshot.getChildren()){
-                        comments.add(dataSnapshot.getValue(ChatRoom.Comment.class));
-                    }
-                    notifyDataSetChanged();
-                }
-
-                @Override
-                public void onCancelled(@NonNull DatabaseError error) {
-
-                }
-            });
-        }*/
 
         //이건 추가된것만 가져오므로 선택
         //startAt으로 기존 것은 안가져오게 설정
@@ -466,6 +505,80 @@ public class ChatActivity extends AppCompatActivity {
             dr.child(roomid).child("comments").orderByChild("time").startAfter(starttime).addChildEventListener(childEventListener);
         }
     }
+
+    public class UserAdapter extends BaseAdapter {
+
+        LayoutInflater layoutInflater;
+        Context context;
+
+        public UserAdapter(Context context){
+            this.context=context;
+            layoutInflater=LayoutInflater.from(context);
+        }
+
+        @Override
+        public int getCount() {
+            return users.size();
+        }
+
+        @Override
+        public Object getItem(int i) {
+            return null;
+        }
+
+        @Override
+        public long getItemId(int i) {
+            return i;
+        }
+
+        @Override
+        public View getView(int position, View convertView, ViewGroup parent) {
+            View view=layoutInflater.inflate(R.layout.layout_chatuser,null);
+            View emptyview=layoutInflater.inflate(R.layout.list_layout_empty,null);
+            if(usernames.size()==0){
+                return emptyview;
+            }
+            String userid=users.get(position);
+            CircleImageView circleImageView=view.findViewById(R.id.userimg_chatlist);
+            TextView usernametxt=view.findViewById(R.id.name_chatlist);
+            LinearLayout body=view.findViewById(R.id.chatuserlist_body);
+            body.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    Intent intent=new Intent(ChatActivity.this, UserProfileActivity.class);
+                    intent.putExtra("userid",userid);
+                    startActivity(intent);
+                }
+            });
+            circleImageView.setImageBitmap(userimgs.get(userid));
+            usernametxt.setText(usernames.get(userid));
+
+            Log.d("유저리스트 콜",usernames.get(userid)+"");
+
+            return view;
+        }
+    }
+
+    @Override
+    public void onDrawerSlide(@NonNull View drawerView, float slideOffset) {
+
+    }
+
+    @Override
+    public void onDrawerOpened(@NonNull View drawerView) {
+        userAdapter.notifyDataSetChanged();
+    }
+
+    @Override
+    public void onDrawerClosed(@NonNull View drawerView) {
+
+    }
+
+    @Override
+    public void onDrawerStateChanged(int newState) {
+
+    }
+
 
     @Override
     protected void onStop() {
