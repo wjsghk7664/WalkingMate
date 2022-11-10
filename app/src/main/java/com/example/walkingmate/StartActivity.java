@@ -292,7 +292,7 @@ public class StartActivity extends AppCompatActivity {
                     JSONObject object = new JSONObject(jsonObject.getString("response"));
                     String id = object.getString("id");
                     String nickname = object.getString("nickname");
-                    String name = object.getString("name");
+                    String name = "name";
                     String age = object.getString("age");
                     String gender = object.getString("gender");
                     String birthyear = object.getString("birthyear");
