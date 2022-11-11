@@ -29,12 +29,14 @@ import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.BaseAdapter;
+import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -87,6 +89,7 @@ public class FeedWrite_Activity extends AppCompatActivity implements OnMapReadyC
     ImageView imageback;
     ListView listView;
     EditText record;
+    Switch openset;
 
     FrameLayout imagebacklayout;
 
@@ -113,6 +116,8 @@ public class FeedWrite_Activity extends AppCompatActivity implements OnMapReadyC
     ArrayList<String> imgurls=new ArrayList<>();
 
     String fileName;
+
+    boolean isOpen=false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -175,6 +180,14 @@ public class FeedWrite_Activity extends AppCompatActivity implements OnMapReadyC
         steptxt.setText(stepstr);
         timetxt.setText(timestr);
         datetxt.setText(datestr);
+
+        openset=findViewById(R.id.openset);
+        openset.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
+                isOpen=b;
+            }
+        });
 
 
 
@@ -316,6 +329,7 @@ public class FeedWrite_Activity extends AppCompatActivity implements OnMapReadyC
         data.put("year",year);
         data.put("month",month);
         data.put("day",day);
+        data.put("isOpen",isOpen);
 
         feedlist.document(documentID).set(data);
 

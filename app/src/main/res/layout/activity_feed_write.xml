@@ -178,7 +178,16 @@
                         <View
                             android:background="@color/transparent"
                             android:layout_width="match_parent"
-                            android:layout_height="150dp"/>
+                            android:layout_height="100dp">
+
+                        </View>
+
+                        <Switch
+                            android:layout_gravity="center"
+                            android:id="@+id/openset"
+                            android:layout_width="150dp"
+                            android:layout_height="50dp"
+                            android:text="공개 설정" />
 
                         <Button
                             android:id="@+id/finish_feedwrtie"

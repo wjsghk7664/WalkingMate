@@ -59,6 +59,8 @@ public class FeedActivity extends Activity {
     BtnAdapter btnAdapter;
     FeedAdapter feedAdapter;
 
+    String others=null;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -75,9 +77,11 @@ public class FeedActivity extends Activity {
 
         Intent getIntent=getIntent();
 
-        //미작성인지 작성인지 체크, true면 미작성
+        //미작성인지 작성인지 체크, 1이면 미작성, 2이면 작성
         iswrite=getIntent.getIntExtra("iswrite",1);
         Log.d("피드_종류",iswrite+"");
+
+        others=getIntent.getStringExtra("others");
 
 
         int y,m,d; String ys,ms,ds;
@@ -150,15 +154,23 @@ public class FeedActivity extends Activity {
         ArrayList<String> resulttime=new ArrayList<>();
         ArrayList<String> docuid=new ArrayList<>();
 
+        String userid=userData.userid;
+        if(others!=null){
+            userid=others;
+        }
+
         if(year==9999){
             Log.d("피드리스트","모든날 진입");
-            walklist.whereEqualTo("userid",userData.userid).get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+            walklist.whereEqualTo("userid",userid).get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
                         @Override
                         public void onComplete(@NonNull Task<QuerySnapshot> task) {
                             for(int i=0; i<task.getResult().size(); ++i){
-                                result.add((String) task.getResult().getDocuments().get(i).get("title"));
-                                resulttime.add((String) task.getResult().getDocuments().get(i).get("writetime"));
-                                docuid.add((String) task.getResult().getDocuments().get(i).getId());
+                                if(task.getResult().getDocuments().get(i).get("isOpen")==null||(Boolean) task.getResult().getDocuments().get(i).get("isOpen")){
+                                    result.add((String) task.getResult().getDocuments().get(i).get("title"));
+                                    resulttime.add((String) task.getResult().getDocuments().get(i).get("writetime"));
+                                    docuid.add((String) task.getResult().getDocuments().get(i).getId());
+                                }
+
                             }
                             if(result.size()==0){
                                 isFeedexist[0] =false;
