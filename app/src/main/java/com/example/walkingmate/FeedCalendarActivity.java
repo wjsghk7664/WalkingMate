@@ -511,7 +511,7 @@ public class FeedCalendarActivity extends AppCompatActivity implements Navigatio
         CollectionReference feeddata=fb.collection("feedlist");
         ArrayList<CalendarDay> result=new ArrayList<>();
 
-        feeddata.whereEqualTo("year", year).whereEqualTo("month",month).get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+        feeddata.whereEqualTo("year", year).whereEqualTo("month",month).whereEqualTo("userid",userData.userid).get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
             @Override
             public void onComplete(@NonNull Task<QuerySnapshot> task) {
                 for(int i=0; i<task.getResult().size(); ++i){
