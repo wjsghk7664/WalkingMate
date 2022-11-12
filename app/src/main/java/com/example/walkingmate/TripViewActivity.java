@@ -343,7 +343,7 @@ public class TripViewActivity extends AppCompatActivity implements OnMapReadyCal
                 userinfo.setText(info);
 
                 if(!document.getString("title").equals("없음")){
-                    usertitle.setText("["+document.getString("title")+"]");
+                    usertitle.setText(document.getString("title"));
                 }
                 else{
                     usertitle.setText("");

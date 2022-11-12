@@ -65,20 +65,6 @@ public class ChatFragment extends Fragment {
         Log.d("테스트","ocv");
         View view=inflater.inflate(R.layout.fragment_chat, container, false);
 
-        view.findViewById(R.id.addroom).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                addChatrooms();
-            }
-        });
-
-        view.findViewById(R.id.addevery).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                addEveryChatrooms();
-            }
-        });
-
         userData=UserData.loadData(getActivity());
 
 
@@ -142,7 +128,7 @@ public class ChatFragment extends Fragment {
 
     //나중에 사용자들 목록을 usertmp에 넣는식으로만 수정하면 될듯
     //추가 되므로 로컬에도 저장
-    public void addChatrooms(){
+    /*public void addChatrooms(){
         SimpleDateFormat sdf=new SimpleDateFormat("HHmmss");
         Date date=new Date(System.currentTimeMillis());
 
@@ -158,28 +144,7 @@ public class ChatFragment extends Fragment {
         saverooms(tmp);
 
         dr.child(tmp.roomid).setValue(tmp);
-    }
-
-    public void addEveryChatrooms(){
-        SimpleDateFormat sdf=new SimpleDateFormat("HHmmss");
-        Date date=new Date(System.currentTimeMillis());
-
-        ChatRoom tmp=new ChatRoom();
-        tmp.roomid=sdf.format(date);
-        Log.d("채팅룸 아이디",tmp.roomid);
-        tmp.roomname="testevery";
-        Map<String,Boolean> usertmp=new HashMap<>();
-        usertmp.put("ob_ua6RyFxqm66pBjej9gJ0VDyatPHLDu81RRis__xY",true);
-        usertmp.put("qy-LTaqG2gfFXY3JbNJmRVInup3ensNQBhEBjPou-DM",true);
-        usertmp.put("SsNtgRDgtZSjD0GI37M476ixp0p9d7NjKmN9SHlX04o", true);
-        usertmp.put("t8hCqWDoYJUZsmTK0FW0EWfZJjO2LkIOJYqqyM22FJU", true);
-        usertmp.put("C7VynmLzbvX9yXxViYZZxMQQpqeASDbQKg6XFuAnivY", true);
-        tmp.userids=usertmp;
-
-        saverooms(tmp);
-
-        dr.child(tmp.roomid).setValue(tmp);
-    }
+    }*/
 
     public ArrayList<String> getlocalChatroomslist(){
         String path=getActivity().getFilesDir().getAbsolutePath() + "/messages/";
