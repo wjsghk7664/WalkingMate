@@ -46,7 +46,7 @@ public class TripFragment extends Fragment implements SwipeRefreshLayout.OnRefre
     TripAdapter tripAdapter;
 
     ImageButton addtrip,scrollup;
-    String curitem="0";
+    String curitem="30001112093121";
 
     ArrayList<String> tripdocuids=new ArrayList<>();
     HashMap<String, String> userids=new HashMap<>();
@@ -55,6 +55,9 @@ public class TripFragment extends Fragment implements SwipeRefreshLayout.OnRefre
     HashMap<String, ArrayList<String>> locations=new HashMap<>();
     HashMap<String, String> writetimes=new HashMap<>();
     HashMap<String, String> writers=new HashMap<>();
+
+    boolean addbool=false;//최하단 스크롤시 getlist여러번 실행되는 오류막기위한 불리안
+    boolean backbool=false;//게시물 추가후 돌아왔을때 새로고침시 중복실행 막기위한 불리안
 
 
     @Override
@@ -71,6 +74,7 @@ public class TripFragment extends Fragment implements SwipeRefreshLayout.OnRefre
             @Override
             public void onClick(View view) {
                 startActivity(new Intent(getActivity(),TripwriteActivity.class));
+                backbool=true;
             }
         });
 
@@ -83,7 +87,13 @@ public class TripFragment extends Fragment implements SwipeRefreshLayout.OnRefre
         scrollup.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                triplist.smoothScrollToPosition(0);
+                if(tripdocuids.size()>40){
+                    triplist.setSelection(0);
+                }
+                else{
+                    triplist.smoothScrollToPosition(0);
+                }
+
             }
         });
 
@@ -91,7 +101,11 @@ public class TripFragment extends Fragment implements SwipeRefreshLayout.OnRefre
             @Override
             public void onScrollStateChanged(AbsListView absListView, int i) {
                 if(!triplist.canScrollVertically(1)){
-                    getlist();
+                    if(!addbool){
+                        addbool=true;
+                        getlist();
+                    }
+
                 }
             }
 
@@ -105,18 +119,21 @@ public class TripFragment extends Fragment implements SwipeRefreshLayout.OnRefre
     }
 
     public void refreshs(){
-        curitem="0";
+        curitem="30001112093121";
         tripdocuids.clear();
+        userids.clear();
         titles.clear();
         dates.clear();
         locations.clear();
         writetimes.clear();
+        writers.clear();
         getlist();
     }
 
     //필터 추가시 쿼리적용
     public void getlist(){
-        tripdata.whereGreaterThan("writetime",curitem).orderBy("writetime", Query.Direction.DESCENDING).limit(15).get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+        Log.d("여행 최하단 게시물 시작전",curitem);
+        tripdata.whereLessThan("writetime",curitem).orderBy("writetime", Query.Direction.DESCENDING).limit(15).get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
             @Override
             public void onComplete(@NonNull Task<QuerySnapshot> task) {
                 if(!task.getResult().isEmpty()){
@@ -134,6 +151,7 @@ public class TripFragment extends Fragment implements SwipeRefreshLayout.OnRefre
                         writetimes.put(document.getId(), (String) document.get("writetime"));
                     }
                     curitem=writetimes.get(tripdocuids.get(tripdocuids.size()-1));
+                    Log.d("여행 최하단 게시물",curitem);
                     for(String s:tripdocuids){
                         users.document(userids.get(s)).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
                             @Override
@@ -144,6 +162,13 @@ public class TripFragment extends Fragment implements SwipeRefreshLayout.OnRefre
                             }
                         });
                     }
+                    if(addbool){
+                        addbool=false;
+                    }
+                    if(backbool){
+                        backbool=false;
+                    }
+
                     Log.d("여행리스트수",tripdocuids.size()+"");
                 }
             }
@@ -163,10 +188,16 @@ public class TripFragment extends Fragment implements SwipeRefreshLayout.OnRefre
     @Override
     public void onRefresh() {
         refreshs();
-        Log.d("여행 유저명",writers.values().toString());
         swipeRefreshLayout.setRefreshing(false);
     }
 
+    @Override
+    public void onResume() {
+        super.onResume();
+        if(backbool){
+            refreshs();
+        }
+    }
 
     public class TripAdapter extends BaseAdapter {
 
@@ -206,6 +237,7 @@ public class TripFragment extends Fragment implements SwipeRefreshLayout.OnRefre
                 public void onClick(View view) {
                     Intent intent=new Intent(getActivity(),TripViewActivity.class);
                     intent.putExtra("docuid",tripdocuids.get(position));
+                    intent.putExtra("date",dates.get(tripdocuids.get(position)));
                     startActivity(intent);
                 }
             });

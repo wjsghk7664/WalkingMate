@@ -109,7 +109,9 @@ public class ChatFragment extends Fragment {
                         if(chatRoom.roomid.equals(tmpc.roomid)){
                             //새 유저가 들어온 경우
                             if(tmpc.userids.size()!=chatRoom.userids.size()){
+                                Log.d("챗룸 이름",tmpc.roomname+",인원 체크"+tmpc.userids.size()+","+chatRoom.userids.size());
                                 updateroom(tmpc);
+
                             }
                             checkroom=true;
                             idx=chatRooms.indexOf(chatRoom);
@@ -247,6 +249,7 @@ public class ChatFragment extends Fragment {
                     users.put(roominfo[i+2],true);
                 }
                 tmpchatroom.userids=users;
+                Log.d("챗룸 생성 인원수",users.size()+": "+users.toString());
                 tmpchatroom.roomid=s.replace("room.txt","");
                 resultrooms.add(tmpchatroom);
                 Log.d("로컬채팅룸 불러오기",tmpchatroom.roomid);
@@ -260,6 +263,7 @@ public class ChatFragment extends Fragment {
 
     //수락으로 새 유저가 들어오는 경우 업데이트
     public void updateroom(ChatRoom chatRoom){
+        Log.d("챗룸 업데이트 시작",chatRoom.roomname);
         String folder= getActivity().getFilesDir().getAbsolutePath() + "/messages/";
         String filename=chatRoom.roomid+"room.txt";
         File file_path;
@@ -270,20 +274,21 @@ public class ChatFragment extends Fragment {
                 Log.d("채팅 데이터 저장","경로 생성");
             }
             File files=new File(folder+filename);
-            if(!files.exists()){
-                FileWriter fileWriter=new FileWriter(folder+filename,false);
-                String firstline=chatRoom.roomname+"@"+chatRoom.userids.size()+"@";
-                for(String s:chatRoom.userids.keySet()){
-                    firstline+=s+"@";
-                }
-                firstline+="\n";
-                fileWriter.write(firstline);
-                Log.d("채팅룸 저장",chatRoom.roomid);
-                fileWriter.close();
+
+            FileWriter fileWriter=new FileWriter(folder+filename,false);
+            String firstline=chatRoom.roomname+"@"+chatRoom.userids.size()+"@";
+            for(String s:chatRoom.userids.keySet()){
+                firstline+=s+"@";
             }
+            Log.d("챗룸 저장",firstline);
+            firstline+="\n";
+            fileWriter.write(firstline);
+            Log.d("채팅룸 저장",chatRoom.roomid);
+            fileWriter.close();
 
         }catch(Exception e){
             e.printStackTrace();
+            Log.d("챗룸 업데이트 에러",e.toString());
         }
     }
 
@@ -357,6 +362,8 @@ public class ChatFragment extends Fragment {
         String folder= getActivity().getFilesDir().getAbsolutePath() + "/messages/";
         String pathroom=folder+roomid+"room.txt";
         String pathmessage=folder+roomid+"message.txt";
+        ArrayList<String> pathimgs=scanimgs(roomid);
+        Log.d("챗룸 삭제",pathimgs.toString());
 
         try{
             File fileroom=new File(pathroom);
@@ -367,9 +374,56 @@ public class ChatFragment extends Fragment {
             if(filemsg.exists()){
                 filemsg.delete();
             }
+            if(pathimgs.size()>0){
+                for(int i=0; i<pathimgs.size(); ++i){
+                    File fileimg=new File(folder+pathimgs.get(i));
+                    if(fileimg.exists()){
+                        fileimg.delete();
+                        Log.d("파일 삭제",fileimg.getName());
+                    }
+                }
+
+            }
         }catch (Exception e){
             e.printStackTrace();
         }
+    }
+
+    public ArrayList<String> scanimgs(String roomid){
+        String path=getActivity().getFilesDir().getAbsolutePath()+ "/messages/";
+        File f;
+        File[] files;
+        ArrayList<String> filenames=new ArrayList<>();
+
+        try{
+            f=new File(path);
+
+            //디렉토리가 없으면 null반환
+            if(!f.isDirectory()){
+                return filenames;
+            }
+            files = f.listFiles(new FileFilter() {
+                @Override
+                public boolean accept(File file) {
+                    return file.getName().toLowerCase(Locale.US).startsWith(roomid.toLowerCase(Locale.US));
+                }
+            });
+            //파일이 없으면 null반환
+            if(files.length == 0){
+                Log.d("챗룸 삭제 스캔","파일없음");
+                return filenames;
+            }
+
+            for(int i=0; i<files.length; ++i){
+                if(files[i].getName().contains(".jpg")){
+                    filenames.add(files[i].getName());
+                }
+            }
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+
+        return filenames;
     }
 
     public class ChatroomAdapter extends BaseAdapter {
