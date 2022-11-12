@@ -453,7 +453,7 @@ public class FeedCalendarActivity extends AppCompatActivity implements Navigatio
             usertitlestr="[칭호를 설정해주세요]";
         }
         else{
-            usertitlestr="["+userData.title+"]";
+            usertitlestr=userData.title;
         }
         usertitle.setText(usertitlestr);
         username.setText(userData.appname);

@@ -16,6 +16,7 @@ import android.provider.DocumentsContract;
 import android.provider.MediaStore;
 import android.util.Log;
 import android.view.View;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
@@ -28,6 +29,8 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.firestore.auth.User;
@@ -37,6 +40,8 @@ import com.google.firebase.storage.UploadTask;
 
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
+import java.text.ParseException;
+import java.util.ArrayList;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
@@ -45,6 +50,8 @@ public class EditUserProfileActivity extends AppCompatActivity {
     FirebaseFirestore db = FirebaseFirestore.getInstance();
     FirebaseStorage storage=FirebaseStorage.getInstance();
     StorageReference storageReference=storage.getReference();
+    CollectionReference challenge=db.collection("challenge");
+    CollectionReference user= db.collection("users");
 
     UserData userData;
 
@@ -55,6 +62,8 @@ public class EditUserProfileActivity extends AppCompatActivity {
     CircleImageView circleImageView;
     TextView curappname,loading;
 
+    ArrayAdapter<String> spinneradapter;
+
     Bitmap curimg;
 
     String appname,finalappname,profileImagebig,profileImagesmall;
@@ -62,10 +71,14 @@ public class EditUserProfileActivity extends AppCompatActivity {
 
     Uri downloadUribig, downloadUrismall;
 
+    ArrayList<String> titles=new ArrayList<>();
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_edit_user_profile);
+
+        titles.add("없음");
 
         userData=UserData.loadData(this);
         appname="";
@@ -91,6 +104,9 @@ public class EditUserProfileActivity extends AppCompatActivity {
             curimg=BitmapFactory.decodeResource(getApplicationContext().getResources(),R.drawable.blank_profile);
         }
         circleImageView.setImageBitmap(curimg);
+
+        settitles();
+
 
         back.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -145,6 +161,116 @@ public class EditUserProfileActivity extends AppCompatActivity {
             public void onClick(View view) {
                 loading.setVisibility(View.VISIBLE);
                 uploadImage();
+            }
+        });
+    }
+
+    public void settitles(){
+        user.document(userData.userid).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                Long rel= (Long) task.getResult().get("reliability");
+                challenge.document(userData.userid).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                        DocumentSnapshot document=task.getResult();
+                        Long step=document.getLong("step");
+                        Long seq= document.getLong("feedseq");
+                        Long meet=document.getLong("meet");
+                        String stepn,reln,seqn,meetn;
+                        if(step<100000){
+                            stepn="";
+                        }
+                        else if(step<300000){
+                            stepn="[브론즈]";
+                        }
+                        else if(step<500000){
+                            stepn="[실버]";
+                        }
+                        else if(step<700000){
+                            stepn="[골드]";
+                        }
+                        else if(step<1000000){
+                            stepn="[다이아]";
+                        }
+                        else{
+                            stepn="[챔피언]";
+                        }
+
+                        if(rel<55){
+                            reln="";
+                        }
+                        else if(rel<65){
+                            reln="[브론즈]";
+                        }
+                        else if(rel<75){
+                            reln="[실버]";
+                        }
+                        else if(rel<85){
+                            reln="[골드]";
+                        }
+                        else if(rel<95){
+                            reln="[다이아]";
+                        }
+                        else{
+                            reln="[챔피언]";
+                        }
+
+                        if(seq<2){
+                            seqn="";
+                        }
+                        else if(seq<4){
+                            seqn="[브론즈]";
+                        }
+                        else if(seq<7){
+                            seqn="[실버]";
+                        }
+                        else if(seq<10){
+                            seqn="[골드]";
+                        }
+                        else if(seq<15){
+                            seqn="[다이아]";
+                        }
+                        else{
+                            seqn="[챔피언]";
+                        }
+
+                        if(meet<3){
+                            meetn="";
+                        }
+                        else if(meet<5){
+                            meetn="[브론즈]";
+                        }
+                        else if(meet<10){
+                            meetn="[실버]";
+                        }
+                        else if(meet<20){
+                            meetn="[골드]";
+                        }
+                        else if(meet<40){
+                            meetn="[다이아]";
+                        }
+                        else{
+                            meetn="[챔피언]";
+                        }
+                        if(!stepn.equals("")){
+                            titles.add(stepn+"건강한 워커");
+                        }
+                        if(!reln.equals("")){
+                            titles.add(reln+"믿음직한 워커");
+                        }
+                        if(!seqn.equals("")){
+                            titles.add(seqn+"꾸준한 워커");
+                        }
+                        if(!meetn.equals("")){
+                            titles.add(meetn+"사교적인 워커");
+                        }
+
+                        spinneradapter=new ArrayAdapter<String>(EditUserProfileActivity.this, android.R.layout.simple_spinner_item, titles);
+                        spinneradapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+                        usertitle.setAdapter(spinneradapter);
+                    }
+                });
             }
         });
     }
@@ -226,7 +352,7 @@ public class EditUserProfileActivity extends AppCompatActivity {
                                                 userData.profileImagebig=profileImagebig;
                                                 userData.profileImagesmall=profileImagesmall;
                                                 UserData.saveBitmapToJpeg(bitmap,smallbitmap,EditUserProfileActivity.this);
-                                                //userData.title=title;
+                                                userData.title= (String) usertitle.getSelectedItem();
 
                                                 db.collection("users").document(userData.userid).set(UserData.getHashmap(userData)).addOnSuccessListener(new OnSuccessListener<Void>() {
                                                     @Override

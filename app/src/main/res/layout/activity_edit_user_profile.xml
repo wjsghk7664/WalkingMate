@@ -92,6 +92,12 @@
 
             </LinearLayout>
 
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:gravity="bottom|center"
+                android:text="*칭호 목록은 도전과제창에 들어갈 시 업데이트됩니다." />
+
 
         </LinearLayout>
 

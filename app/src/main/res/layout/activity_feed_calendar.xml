@@ -173,7 +173,7 @@
         app:menu="@menu/mypagemenu"
         android:background="@color/blurorange"
         app:itemTextColor="@color/white"
-        app:itemIconSize="70dp"
+        app:itemIconSize="50dp"
         app:itemIconTint="@color/white"
         app:itemVerticalPadding="10dp"
         android:theme="@style/NavigationDrawerStyle"
