@@ -8,8 +8,8 @@
     android:background="@color/white" >
 
     <LinearLayout
-        android:id="@+id/profile_main"
         android:visibility="invisible"
+        android:id="@+id/profile_main"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical">
@@ -86,10 +86,10 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_gravity="center"
-                            android:layout_marginLeft="50dp"
+                            android:layout_marginLeft="60dp"
                             android:layout_marginTop="10dp"
                             android:text="닉네임"
-                            android:textSize="25dp"
+                            android:textSize="30dp"
                             android:textStyle="bold" />
 
 
@@ -101,24 +101,27 @@
                         android:layout_weight="0.2">
 
                         <TextView
+                            android:textSize="20dp"
                             android:id="@+id/gender_profile"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:layout_marginLeft="50dp"
+                            android:layout_marginLeft="40dp"
                             android:text="여자" />
 
                         <TextView
+                            android:textSize="20dp"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginLeft="10dp"
                             android:text="/" />
 
                         <TextView
+                            android:textSize="20dp"
                             android:id="@+id/age_profile"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginLeft="10dp"
-                            android:text="24" />
+                            android:text="20 -29" />
 
                     </LinearLayout>
 
@@ -131,7 +134,7 @@
                             android:id="@+id/feed_profile"
                             android:layout_width="70dp"
                             android:layout_height="wrap_content"
-                            android:layout_marginLeft="10dp"
+                            android:layout_marginLeft="20dp"
                             android:background="@drawable/reliable_back"
                             android:text="피드"
                             android:textStyle="bold" />
@@ -163,7 +166,7 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:layout_marginTop="10dp"
-                android:text="review"
+                android:text="신뢰도"
                 android:textSize="22dp"
                 android:textStyle="bold" />
 

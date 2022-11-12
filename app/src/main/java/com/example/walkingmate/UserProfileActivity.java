@@ -199,7 +199,7 @@ public class UserProfileActivity extends AppCompatActivity {
         int Max=250;
         int relhor=(Max*rel)/100;
         int relvermarlef=relhor-4;
-        int heartmarlef=relhor-2;
+        int heartmarlef=relhor-17;
 
         FrameLayout.LayoutParams lp0=new FrameLayout.LayoutParams(getdp(relhor),getdp(30));
         lp0.setMargins(0,getdp(60),0,0);
