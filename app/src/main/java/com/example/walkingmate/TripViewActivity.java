@@ -10,14 +10,19 @@ import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 
+import com.google.firebase.firestore.SetOptions;
 import com.naver.maps.geometry.LatLng;
 import com.naver.maps.geometry.LatLngBounds;
 import com.naver.maps.map.CameraUpdate;
@@ -33,6 +38,8 @@ import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
 import java.util.Map;
 
 import de.hdodenhof.circleimageview.CircleImageView;
@@ -41,6 +48,10 @@ public class TripViewActivity extends AppCompatActivity implements OnMapReadyCal
     FirebaseFirestore fb=FirebaseFirestore.getInstance();
     CollectionReference tripdata=fb.collection("tripdata");
     CollectionReference users=fb.collection("users");
+    CollectionReference tripreq=fb.collection("triprequest");
+    CollectionReference tripuser=fb.collection("tripuser");
+
+    UserData userData;
 
     ArrayList<String> locations=new ArrayList<>();
     ArrayList<LatLng> coords=new ArrayList<>();
@@ -52,10 +63,11 @@ public class TripViewActivity extends AppCompatActivity implements OnMapReadyCal
     PathOverlay pathOverlay=new PathOverlay();
     ArrayList<Marker> markers=new ArrayList<>();
 
-    String docuid, date;
+    String docuid, date,userid;
 
     TextView usertitle, userinfo, datetxt,locationtxt,titletxt,contenttxt;
     CircleImageView userimg;
+    Button mate;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -69,13 +81,99 @@ public class TripViewActivity extends AppCompatActivity implements OnMapReadyCal
         titletxt=findViewById(R.id.title_tripview);
         contenttxt=findViewById(R.id.content_tripview);
         userimg=findViewById(R.id.userimg_tripview);
+        mate=findViewById(R.id.mate_tripview);
 
         Intent getintent=getIntent();
         docuid=getintent.getStringExtra("docuid");
         date=" "+getintent.getStringExtra("date");
+        userid=getintent.getStringExtra("userid");
+
+        userData=UserData.loadData(this);
+        if(userid.equals(userData.userid)){
+            mate.setText("신청자 목록 확인");
+        }
+
+
 
         mapFragment=(MapFragment)getSupportFragmentManager().findFragmentById(R.id.map_tripview);
         getTripdata();
+
+        mate.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if(userid.equals(userData.userid)){
+                    Intent intent=new Intent(TripViewActivity.this,WalkUserListActivity.class);
+                    intent.putExtra("mydocu",docuid);
+                    intent.putExtra("walkname",getintent.getStringExtra("date").split("~")[0]);
+                    intent.putExtra("istrip",true);
+                    startActivity(intent);
+                }
+                else{
+                    checkandsendreq();
+                }
+            }
+        });
+
+    }
+
+    public void checkandsendreq(){
+        tripreq.document(userData.userid).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                ArrayList<String> tmps= (ArrayList<String>) task.getResult().get("requestlist");
+                //요청한적이 없어 문서가 없거나 요청을 안한경우
+                if(tmps==null||!tmps.contains(docuid)){
+                    sendreq();
+                }
+                else{
+                    Toast.makeText(TripViewActivity.this,"이미 요청을 보낸 게시물입니다.",Toast.LENGTH_SHORT).show();
+                }
+
+            }
+        });
+    }
+
+    public void sendreq(){
+        HashMap<String,Object> data=new HashMap<>();
+
+        HashMap<String, Integer> myreq=new HashMap<>();
+        myreq.put(userData.userid,0);
+
+        //userlist는 map-setoption.merge로 업데이트
+        data.put("userlist",myreq);
+        tripuser.document(docuid).set(data, SetOptions.merge()).addOnSuccessListener(new OnSuccessListener<Void>() {
+            @Override
+            public void onSuccess(Void unused) {
+                Log.d("산책 메이트 신청","성공");
+            }
+        });
+
+        data.clear();
+        data.put("requestlist", Arrays.asList(docuid));
+
+        //requestlist는 list-arrayunion으로 업데이트
+        tripreq.document(userData.userid).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                if(!task.getResult().exists()){
+                    tripreq.document(userData.userid).set(data).addOnCompleteListener(new OnCompleteListener<Void>() {
+                        @Override
+                        public void onComplete(@NonNull Task<Void> task) {
+                            Toast.makeText(TripViewActivity.this,"메이트 신청 완료",Toast.LENGTH_SHORT).show();
+                        }
+                    });
+                }
+                else{
+                    tripreq.document(userData.userid).update("requestlist", FieldValue.arrayUnion(docuid)).addOnCompleteListener(new OnCompleteListener<Void>() {
+                        @Override
+                        public void onComplete(@NonNull Task<Void> task) {
+                            Toast.makeText(TripViewActivity.this,"메이트 신청 완료",Toast.LENGTH_SHORT).show();
+                        }
+                    });
+                }
+            }
+        });
+
 
     }
 
@@ -198,6 +296,7 @@ public class TripViewActivity extends AppCompatActivity implements OnMapReadyCal
                         routes.add(tmpll);
                     }
                 }
+
                 title= (String) document.get("title");
                 content= (String) document.get("content");
 
@@ -205,18 +304,18 @@ public class TripViewActivity extends AppCompatActivity implements OnMapReadyCal
                 contenttxt.setText(content);
                 String[] tmpdate=date.split("~");
                 datetxt.setText(tmpdate[0]+" ~\n "+tmpdate[1]);
-                String locationlist=" ";
+                String locationlist="";
                 for(int i=0; i<locations.size(); ++i){
                     String order;
                     if(i==0){
                         order="출발지";
                     }
                     else{
-                        order=(i+1)+"";
+                        order=i+"";
                     }
-                    locationlist+="("+order+")"+locations.get(i)+",\n ";
+                    locationlist+="("+order+")"+locations.get(i)+"\n";
                 }
-                locationlist=locationlist.substring(0,locationlist.length()-3);
+                locationlist=locationlist.substring(0,locationlist.length()-1);
                 locationtxt.setText(locationlist);
 
                 mapFragment.getMapAsync(TripViewActivity.this);
@@ -251,7 +350,7 @@ public class TripViewActivity extends AppCompatActivity implements OnMapReadyCal
                 }
                 String urlstr= (String) document.get("profileImagebig");
                 if(urlstr==null||urlstr.equals("")){
-                    findViewById(R.id.loading_feedview).setVisibility(View.INVISIBLE);
+                    findViewById(R.id.loading_tripview).setVisibility(View.INVISIBLE);
                 }
                 else{
                     new Thread(new Runnable() {
@@ -270,7 +369,7 @@ public class TripViewActivity extends AppCompatActivity implements OnMapReadyCal
                                     @Override
                                     public void run() {
                                         userimg.setImageBitmap(retBitmap);
-                                        findViewById(R.id.loading_feedview).setVisibility(View.INVISIBLE);
+                                        findViewById(R.id.loading_tripview).setVisibility(View.INVISIBLE);
                                     }
                                 });
 

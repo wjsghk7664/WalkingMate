@@ -238,6 +238,7 @@ public class TripFragment extends Fragment implements SwipeRefreshLayout.OnRefre
                     Intent intent=new Intent(getActivity(),TripViewActivity.class);
                     intent.putExtra("docuid",tripdocuids.get(position));
                     intent.putExtra("date",dates.get(tripdocuids.get(position)));
+                    intent.putExtra("userid",userids.get(tripdocuids.get(position)));
                     startActivity(intent);
                 }
             });

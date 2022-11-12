@@ -46,12 +46,13 @@ import java.util.Map;
 
 public class WalkUserListActivity extends Activity {
     FirebaseFirestore fb=FirebaseFirestore.getInstance();
-    CollectionReference walkuser=fb.collection("walkuser");
+    CollectionReference walkuser;
     CollectionReference users=fb.collection("users");
     CollectionReference challenge=fb.collection("challenge");
 
     String docuid;
     String walkname;
+    boolean istrip;
 
     UserData userData;
 
@@ -80,6 +81,14 @@ public class WalkUserListActivity extends Activity {
         Intent getintent=getIntent();
         docuid=getintent.getStringExtra("mydocu");
         walkname=getintent.getStringExtra("walkname");
+        //false면 산책, true면 여행
+        istrip=getintent.getBooleanExtra("istrip",false);
+        if(istrip){
+            walkuser=fb.collection("tripuser");
+        }
+        else{
+            walkuser=fb.collection("walkuser");
+        }
 
         waitlistview=findViewById(R.id.walkuserlist_waiting);
         acceptlistview=findViewById(R.id.walkuserlist_accept);
@@ -326,7 +335,13 @@ public class WalkUserListActivity extends Activity {
 
         String roomnames="";
         if(walkname!=null){
-            roomnames="[산책][개인]"+walkname;
+            if(istrip){
+                roomnames="[여행][개인]"+walkname;
+            }
+            else{
+                roomnames="[산책][개인]"+walkname;
+            }
+
         }
         tmp.roomid=docuid+"@"+userid;
         Log.d("채팅룸 아이디",tmp.roomid);
@@ -390,7 +405,13 @@ public class WalkUserListActivity extends Activity {
 
         String roomnames="";
         if(walkname!=null){
-            roomnames="[산책][수락]"+walkname;
+            if(istrip){
+                roomnames="[여행][수락]"+walkname;
+            }
+            else{
+                roomnames="[산책][수락]"+walkname;
+            }
+
         }
         tmp.roomid=docuid;
         Log.d("채팅룸 아이디",tmp.roomid);
