@@ -7,34 +7,37 @@
     android:orientation="vertical"
     tools:context=".TripViewActivity">
 
-    <TextView
-        android:gravity="center"
-        android:textStyle="bold"
-        android:textSize="40dp"
-        android:textColor="@color/white"
-        android:background="@color/blurblack"
-        android:id="@+id/loading_tripview"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:text="로딩중..." />
-
-    <Button
-        android:textStyle="bold"
-        android:textSize="20dp"
-        android:textColor="@color/white"
-        android:background="@drawable/plusbtn"
-        android:layout_marginHorizontal="10dp"
-        android:layout_marginBottom="20dp"
-        android:layout_gravity="bottom"
-        android:id="@+id/mate_tripview"
-        android:layout_width="match_parent"
-        android:layout_height="30dp"
-        android:text="메이트 신청하기" />
-
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="49dp"
+            android:orientation="horizontal">
+
+            <ImageButton
+                android:id="@+id/back_tripview"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_gravity="center|start"
+                android:layout_marginStart="10dp"
+                android:background="@color/transparent"
+                app:srcCompat="@drawable/arrowback" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_marginLeft="20dp"
+                android:gravity="center|start"
+                android:text="여행 메이트 게시판"
+                android:textColor="@color/black"
+                android:textSize="25dp"
+                android:textStyle="bold" />
+
+
+        </LinearLayout>
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -182,5 +185,29 @@
         </ScrollView>
 
     </LinearLayout>
+
+    <Button
+        android:textStyle="bold"
+        android:textSize="20dp"
+        android:textColor="@color/white"
+        android:background="@drawable/plusbtn"
+        android:layout_marginHorizontal="10dp"
+        android:layout_marginBottom="20dp"
+        android:layout_gravity="bottom"
+        android:id="@+id/mate_tripview"
+        android:layout_width="match_parent"
+        android:layout_height="30dp"
+        android:text="메이트 신청하기" />
+
+    <TextView
+        android:gravity="center"
+        android:textStyle="bold"
+        android:textSize="40dp"
+        android:textColor="@color/white"
+        android:background="@color/blurblack"
+        android:id="@+id/loading_tripview"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:text="로딩중..." />
 
 </FrameLayout>

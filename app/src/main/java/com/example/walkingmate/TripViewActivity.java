@@ -98,6 +98,13 @@ public class TripViewActivity extends AppCompatActivity implements OnMapReadyCal
         mapFragment=(MapFragment)getSupportFragmentManager().findFragmentById(R.id.map_tripview);
         getTripdata();
 
+        findViewById(R.id.back_tripview).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                finish();
+            }
+        });
+
         mate.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {

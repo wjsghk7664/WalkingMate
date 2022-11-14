@@ -73,6 +73,7 @@ public class UserProfileActivity extends AppCompatActivity {
         if(userData.userid.equals(userid)){
             block.setVisibility(View.INVISIBLE);
             feed.setVisibility(View.INVISIBLE);
+            report.setVisibility(View.INVISIBLE);
         }
 
 
@@ -148,7 +149,7 @@ public class UserProfileActivity extends AppCompatActivity {
                 if(!document.get("title").equals("없음")){
                     title.setText((String)document.get("title"));
                 }
-                Long rel=document.getLong("reliability");
+                Long rel=Math.round(document.getDouble("reliability"));
 
                 String urlstr=document.getString("profileImagebig");
                 if((urlstr!=null)&&(!urlstr.equals(""))){

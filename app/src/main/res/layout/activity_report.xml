@@ -101,6 +101,7 @@
                     android:visibility="invisible" />
 
                 <Button
+                    android:paddingHorizontal="15dp"
                     android:id="@+id/send_report"
                     android:layout_width="wrap_content"
                     android:layout_height="50dp"

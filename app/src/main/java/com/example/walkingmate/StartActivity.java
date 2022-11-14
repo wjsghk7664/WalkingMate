@@ -321,7 +321,7 @@ public class StartActivity extends AppCompatActivity {
                                 (String) task.getResult().get("profileImagesmall"),
                                 (String) task.getResult().get("appname"), model.getNickname(),model.getName(),model.getAge(),
                                 model.getGender(),model.getBirthyear(),(String) task.getResult().get("title"),
-                                (Long)task.getResult().get("reliability"));
+                                (Double)task.getResult().get("reliability"));
                         UserData.saveData(userDatatmp,StartActivity.this);
 
                         new Thread(new Runnable() {

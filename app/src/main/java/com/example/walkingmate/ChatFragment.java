@@ -228,11 +228,11 @@ public class ChatFragment extends Fragment {
 
     //수락으로 새 유저가 들어오는 경우 업데이트
     public void updateroom(ChatRoom chatRoom){
-        Log.d("챗룸 업데이트 시작",chatRoom.roomname);
-        String folder= getActivity().getFilesDir().getAbsolutePath() + "/messages/";
-        String filename=chatRoom.roomid+"room.txt";
-        File file_path;
         try{
+            Log.d("챗룸 업데이트 시작",chatRoom.roomname);
+            String folder= getActivity().getFilesDir().getAbsolutePath() + "/messages/";
+            String filename=chatRoom.roomid+"room.txt";
+            File file_path;
             file_path=new File(folder);
             if(!file_path.isDirectory()){
                 file_path.mkdirs();
@@ -258,10 +258,10 @@ public class ChatFragment extends Fragment {
     }
 
     public void saverooms(ChatRoom chatRoom){
-        String folder= getActivity().getFilesDir().getAbsolutePath() + "/messages/";
-        String filename=chatRoom.roomid+"room.txt";
-        File file_path;
         try{
+            String folder= getActivity().getFilesDir().getAbsolutePath() + "/messages/";
+            String filename=chatRoom.roomid+"room.txt";
+            File file_path;
             file_path=new File(folder);
             if(!file_path.isDirectory()){
                 file_path.mkdirs();

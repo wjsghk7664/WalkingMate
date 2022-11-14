@@ -19,6 +19,11 @@
             android:icon="@drawable/white_arrow"
             android:title="프로필 설정"
             />
+        <item
+            android:id="@+id/schedules"
+            android:icon="@drawable/white_arrow"
+            android:title="약속 목록"
+            />
     </group>
 
     <group

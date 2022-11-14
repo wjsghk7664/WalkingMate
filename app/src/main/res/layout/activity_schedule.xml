@@ -1,0 +1,160 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".ScheduleActivity">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:orientation="horizontal">
+
+            <ImageButton
+                android:id="@+id/back_schedule"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_gravity="center|start"
+                android:layout_marginStart="10dp"
+                android:background="@color/transparent"
+                app:srcCompat="@drawable/arrowback" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_marginLeft="20dp"
+                android:gravity="center|start"
+                android:text="약속 목록"
+                android:textColor="@color/black"
+                android:textSize="25dp"
+                android:textStyle="bold" />
+
+
+        </LinearLayout>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="@color/gray" />
+
+        <ListView
+            android:id="@+id/schedule_list"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="14"
+            android:divider="@null"
+            android:dividerHeight="0dp" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:background="@color/white"
+        android:visibility="invisible"
+        android:id="@+id/maplayout_schedule"
+        android:layout_marginHorizontal="30dp"
+        android:layout_gravity="center"
+        android:layout_width="match_parent"
+        android:layout_height="300dp"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:background="@drawable/empty_gray_no_radius"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <TextView
+                android:textStyle="bold"
+                android:gravity="center"
+                android:textColor="@color/black"
+                android:textSize="20dp"
+                android:layout_weight="1"
+                android:id="@+id/title_map_schedule"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="[여행]2020/11/14 11:11" />
+
+            <ImageButton
+                android:id="@+id/close_map_schedule"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:background="@color/gray"
+                android:src="@drawable/cancel_xml" />
+        </LinearLayout>
+
+        <fragment
+            android:id="@+id/map_schedule"
+            android:name="com.naver.maps.map.MapFragment"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            tools:layout="@android:layout/activity_list_item" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:visibility="invisible"
+        android:background="@color/white"
+        android:id="@+id/userlistlayout_schedule"
+        android:layout_marginHorizontal="30dp"
+        android:layout_gravity="center"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:background="@drawable/empty_gray_no_radius"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <TextView
+                android:textStyle="bold"
+                android:gravity="center"
+                android:textColor="@color/black"
+                android:textSize="20dp"
+                android:layout_weight="1"
+                android:id="@+id/title_user_schedule"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="[여행]2020/11/14 11:11" />
+
+            <ImageButton
+                android:id="@+id/close_user_schedule"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:background="@color/gray"
+                android:src="@drawable/cancel_xml" />
+
+        </LinearLayout>
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+            <ListView
+                android:id="@+id/userlist_schedule"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+            <TextView
+                android:gravity="center"
+                android:id="@+id/loading_userlist_schedule"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:text="로딩중..."
+                android:textStyle="bold"
+                android:textSize="30dp"
+                android:textColor="@color/white"
+                android:background="@color/blurblack"/>
+
+        </FrameLayout>
+
+
+    </LinearLayout>
+
+
+</FrameLayout>
