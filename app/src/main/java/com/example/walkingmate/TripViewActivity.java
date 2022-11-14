@@ -23,6 +23,7 @@ import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 import com.google.firebase.firestore.SetOptions;
+import com.google.firebase.firestore.auth.User;
 import com.naver.maps.geometry.LatLng;
 import com.naver.maps.geometry.LatLngBounds;
 import com.naver.maps.map.CameraUpdate;
@@ -293,13 +294,13 @@ public class TripViewActivity extends AppCompatActivity implements OnMapReadyCal
                 DocumentSnapshot document=task.getResult();
                 locations= (ArrayList<String>) document.get("locations_name");
                 for(Map<String,Object> map:(ArrayList<Map<String,Object>>)document.get("locations_coordinate")){
-                    LatLng tmpll=new LatLng((Double) map.get("latitude"), (Double) map.get("longitude"));
+                    LatLng tmpll=new LatLng(UserData.setdouble(map.get("latitude")) , UserData.setdouble(map.get("longitude")));
                     coords.add(tmpll);
                 }
                 ArrayList<Map<String,Object>> tmproute= (ArrayList<Map<String, Object>>) document.get("route");
                 if(tmproute.size()>0){
                     for(Map<String,Object> map:tmproute){
-                        LatLng tmpll=new LatLng((Double) map.get("latitude"), (Double) map.get("longitude"));
+                        LatLng tmpll=new LatLng(UserData.setdouble(map.get("latitude")), UserData.setdouble(map.get("longitude")));
                         routes.add(tmpll);
                     }
                 }

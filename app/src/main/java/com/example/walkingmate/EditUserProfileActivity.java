@@ -169,7 +169,7 @@ public class EditUserProfileActivity extends AppCompatActivity {
         user.document(userData.userid).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
             @Override
             public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-                double rel= (Double) task.getResult().get("reliability");
+                double rel= task.getResult().getDouble("reliability");
                 challenge.document(userData.userid).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
                     @Override
                     public void onComplete(@NonNull Task<DocumentSnapshot> task) {

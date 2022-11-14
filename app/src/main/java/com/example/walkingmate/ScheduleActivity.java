@@ -153,7 +153,7 @@ public class ScheduleActivity extends AppCompatActivity implements OnMapReadyCal
         ArrayList<LatLng> locations=new ArrayList<>();
         for(int i=0; i<curSchdule.locations.size(); ++i){
             Map<String,Object> locs=curSchdule.locations.get(i);
-            LatLng tmp=new LatLng((Double) locs.get("latitude"), (Double) locs.get("longitude"));
+            LatLng tmp=new LatLng(UserData.setdouble(locs.get("latitude")), UserData.setdouble(locs.get("longitude")));
             locations.add(tmp);
         }
 

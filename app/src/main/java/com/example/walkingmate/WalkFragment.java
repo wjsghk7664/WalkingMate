@@ -639,7 +639,7 @@ public class WalkFragment extends Fragment implements OnMapReadyCallback{
                                             locationlist.add((String) document.get("location_name"));
 
                                             Map<String, Object> tmpmap= (Map<String, Object>) document.get("location_coord");
-                                            LatLng tmplatlng=new LatLng((Double) tmpmap.get("latitude"), (Double) tmpmap.get("longitude"));
+                                            LatLng tmplatlng=new LatLng(UserData.setdouble(tmpmap.get("latitude")), UserData.setdouble(tmpmap.get("longitude"))) ;
                                             Log.d("산책_게시물좌표",tmplatlng.toString());
 
                                             //카메라 범위에 벗어나면 제외는 Onmapready에서 처리
@@ -684,7 +684,7 @@ public class WalkFragment extends Fragment implements OnMapReadyCallback{
                     Marker marker=new Marker();
 
                     Map<String, Object> tmpmap= (Map<String, Object>) document.get("location_coord");
-                    LatLng tmplatlng=new LatLng((Double) tmpmap.get("latitude"), (Double) tmpmap.get("longitude"));
+                    LatLng tmplatlng=new LatLng(UserData.setdouble(tmpmap.get("latitude")), UserData.setdouble(tmpmap.get("longitude")));
                     mycoordlist.add(tmplatlng);
                     mydocuidlist.add(document.getId());
                     mydaylist.add(String.format("%04d년 %02d월 %02d일",document.get("year"),document.get("month"),document.get("day")));

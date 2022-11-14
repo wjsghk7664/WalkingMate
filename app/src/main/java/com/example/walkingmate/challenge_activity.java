@@ -150,7 +150,7 @@ public class challenge_activity extends AppCompatActivity {
         user.document(userData.userid).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
             @Override
             public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-                rel= (Double) task.getResult().get("reliability");
+                rel= task.getResult().getDouble("reliability");
                 challenge.document(userData.userid).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
                     @Override
                     public void onComplete(@NonNull Task<DocumentSnapshot> task) {

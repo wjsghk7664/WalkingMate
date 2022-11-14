@@ -294,4 +294,15 @@ public class UserData {
         Log.d("이미지리사이즈",(result==null)+"");
         return result;
     }
+
+
+    public static Double setdouble(Object num){
+        if(num.getClass().getName().equals("java.lang.Long")){
+            Double result=Double.parseDouble(num+"");
+            return result;
+        }
+        else{
+            return (Double) num;
+        }
+    }
 }
