@@ -49,6 +49,8 @@ public class StartActivity extends AppCompatActivity {
 
     TextView StartText,permlist;
 
+    boolean checkback=false;
+
     Button permissionbtn;
 
     String reqperm;
@@ -97,6 +99,7 @@ public class StartActivity extends AppCompatActivity {
             mOAuthLoginButton.setVisibility(View.INVISIBLE);
             permissionbtn.setVisibility(View.VISIBLE);
             permlist.setVisibility(View.VISIBLE);
+            checkback=true;
         }
         else{
             String useridcheck= UserData.scanUserData(this);
@@ -154,6 +157,8 @@ public class StartActivity extends AppCompatActivity {
         initData();
     }
 
+
+
     @Override
     protected void onResume() {
         super.onResume();
@@ -163,7 +168,10 @@ public class StartActivity extends AppCompatActivity {
             permlist.setVisibility(View.VISIBLE);
         }
         else{
-            mOAuthLoginButton.setVisibility(View.VISIBLE);
+            if(checkback){
+                mOAuthLoginButton.setVisibility(View.VISIBLE);
+            }
+
             permissionbtn.setVisibility(View.INVISIBLE);
             permlist.setVisibility(View.INVISIBLE);
         }
@@ -321,7 +329,7 @@ public class StartActivity extends AppCompatActivity {
                                 (String) task.getResult().get("profileImagesmall"),
                                 (String) task.getResult().get("appname"), model.getNickname(),model.getName(),model.getAge(),
                                 model.getGender(),model.getBirthyear(),(String) task.getResult().get("title"),
-                                (Long)task.getResult().get("reliability"));
+                                task.getResult().getDouble("reliability"));
                         UserData.saveData(userDatatmp,StartActivity.this);
 
                         new Thread(new Runnable() {

@@ -41,9 +41,9 @@ public class UserData {
 
     //타이틀은 없으면 "없음"으로
     String title;
-    Long reliability;
+    double reliability;
 
-    public UserData(String userid, String profileImagebig,String profileImagesmall, String appname, String nickname, String name, String age, String gender, String birthyear, String title, Long reliability) {
+    public UserData(String userid, String profileImagebig,String profileImagesmall, String appname, String nickname, String name, String age, String gender, String birthyear, String title, double reliability) {
         this.userid = userid;
         this.profileImagebig = profileImagebig;
         this.profileImagesmall=profileImagesmall;
@@ -179,7 +179,7 @@ public class UserData {
 
     public static UserData decode(String userDataString){
         String[] result=userDataString.split("@");
-        return new UserData(result[0],result[1],result[2],result[3],result[4],result[5],result[6],result[7],result[8],result[9],Long.parseLong(result[10]));
+        return new UserData(result[0],result[1],result[2],result[3],result[4],result[5],result[6],result[7],result[8],result[9],Double.parseDouble(result[10]));
     }
 
 
@@ -293,5 +293,16 @@ public class UserData {
         }
         Log.d("이미지리사이즈",(result==null)+"");
         return result;
+    }
+
+
+    public static Double setdouble(Object num){
+        if(num.getClass().getName().equals("java.lang.Long")){
+            Double result=Double.parseDouble(num+"");
+            return result;
+        }
+        else{
+            return (Double) num;
+        }
     }
 }

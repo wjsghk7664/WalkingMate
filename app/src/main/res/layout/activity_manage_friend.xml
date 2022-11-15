@@ -35,10 +35,6 @@
                 android:textStyle="bold"
                 android:textColor="@color/black"
                 android:text="차단 유저 관리" />
-            <View
-                android:layout_width="0dp"
-                android:layout_height="0dp"
-                android:layout_weight="1"/>
 
 
 

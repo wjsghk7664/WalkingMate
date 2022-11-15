@@ -225,7 +225,7 @@ public class SettingProfileActivity extends AppCompatActivity {
                                                 user.put("profileImagebig",profileImagebig);
                                                 user.put("profileImagesmall",profileImagesmall);
                                                 user.put("title","없음");
-                                                user.put("reliability",50);
+                                                user.put("reliability",50.0);
 
                                                 db.collection("users").document(userid).set(user).addOnSuccessListener(new OnSuccessListener<Void>() {
                                                     @Override

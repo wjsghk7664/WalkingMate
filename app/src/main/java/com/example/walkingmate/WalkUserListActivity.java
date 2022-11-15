@@ -38,20 +38,26 @@ import com.google.firebase.firestore.SetOptions;
 
 import org.checkerframework.checker.units.qual.A;
 
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
 public class WalkUserListActivity extends Activity {
     FirebaseFirestore fb=FirebaseFirestore.getInstance();
-    CollectionReference walkuser=fb.collection("walkuser");
+    CollectionReference walkuser;
     CollectionReference users=fb.collection("users");
     CollectionReference challenge=fb.collection("challenge");
+    CollectionReference schedule=fb.collection("schedule");
+    CollectionReference datalist;
 
     String docuid;
     String walkname;
+    boolean istrip;
 
     UserData userData;
 
@@ -80,6 +86,16 @@ public class WalkUserListActivity extends Activity {
         Intent getintent=getIntent();
         docuid=getintent.getStringExtra("mydocu");
         walkname=getintent.getStringExtra("walkname");
+        //false면 산책, true면 여행
+        istrip=getintent.getBooleanExtra("istrip",false);
+        if(istrip){
+            walkuser=fb.collection("tripuser");
+            datalist=fb.collection("tripdata");
+        }
+        else{
+            walkuser=fb.collection("walkuser");
+            datalist=fb.collection("walkdata");
+        }
 
         waitlistview=findViewById(R.id.walkuserlist_waiting);
         acceptlistview=findViewById(R.id.walkuserlist_accept);
@@ -286,6 +302,7 @@ public class WalkUserListActivity extends Activity {
                                         waituserprofile.remove(position);
                                         notifyDataSetChanged();
                                         acceptAdapter.notifyDataSetChanged();
+                                        scheduleGen();
                                     }
                                 });
                             }
@@ -326,7 +343,13 @@ public class WalkUserListActivity extends Activity {
 
         String roomnames="";
         if(walkname!=null){
-            roomnames="[산책][개인]"+walkname;
+            if(istrip){
+                roomnames="[여행][개인]"+walkname;
+            }
+            else{
+                roomnames="[산책][개인]"+walkname;
+            }
+
         }
         tmp.roomid=docuid+"@"+userid;
         Log.d("채팅룸 아이디",tmp.roomid);
@@ -345,17 +368,28 @@ public class WalkUserListActivity extends Activity {
                     if(snapshot.getValue(ChatRoom.class).userids.get(userData.userid).equals(false)){
                         Map<String,Object> tmpuser=new HashMap<>();
                         tmpuser.put(userData.userid,true);
-                        dr.child(tmp.roomid).child("userids").updateChildren(tmpuser);
+                        dr.child(tmp.roomid).child("userids").updateChildren(tmpuser).addOnCompleteListener(new OnCompleteListener<Void>() {
+                            @Override
+                            public void onComplete(@NonNull Task<Void> task) {
+                                Log.d("채팅방 생성","이미 존재하는 채팅방-해당 채팅방으로 이동");
+                                Intent intent=new Intent(WalkUserListActivity.this,ChatActivity.class);
+                                intent.putExtra("roomid",tmp.roomid);
+                                ArrayList<String> tmpid=new ArrayList<>();
+                                tmpid.add(userid);
+                                intent.putExtra("userids",tmpid);
+                                startActivity(intent);
+                            }
+                        });
                     }
-
-
-                    Log.d("채팅방 생성","이미 존재하는 채팅방-해당 채팅방으로 이동");
-                    Intent intent=new Intent(WalkUserListActivity.this,ChatActivity.class);
-                    intent.putExtra("roomid",tmp.roomid);
-                    ArrayList<String> tmpid=new ArrayList<>();
-                    tmpid.add(userid);
-                    intent.putExtra("userids",tmpid);
-                    startActivity(intent);
+                    else{
+                        Log.d("채팅방 생성","이미 존재하는 채팅방-해당 채팅방으로 이동");
+                        Intent intent=new Intent(WalkUserListActivity.this,ChatActivity.class);
+                        intent.putExtra("roomid",tmp.roomid);
+                        ArrayList<String> tmpid=new ArrayList<>();
+                        tmpid.add(userid);
+                        intent.putExtra("userids",tmpid);
+                        startActivity(intent);
+                    }
                 }
                 else{
                     Log.d("채팅방 생성","새 채팅방 생성 후 이동");
@@ -390,7 +424,13 @@ public class WalkUserListActivity extends Activity {
 
         String roomnames="";
         if(walkname!=null){
-            roomnames="[산책][수락]"+walkname;
+            if(istrip){
+                roomnames="[여행][수락]"+walkname;
+            }
+            else{
+                roomnames="[산책][수락]"+walkname;
+            }
+
         }
         tmp.roomid=docuid;
         Log.d("채팅룸 아이디",tmp.roomid);
@@ -421,6 +461,76 @@ public class WalkUserListActivity extends Activity {
 
             }
         });
+    }
+
+    //acceptuser 변경 이후 시점에 추가 하기: 변경된 값 기반으로 설정하는것이기 때문에
+    public void scheduleGen(){
+        datalist.document(docuid).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                DocumentSnapshot document=task.getResult();
+                Map<String,Object> docu=new HashMap<>();
+                Map<String,Object> addfield=new HashMap<>();
+                try {
+                    addfield.put("start",getdateStart(document.get("year"),document.get("month"),document.get("day"),document.get("hour"),document.get("minute")));
+                } catch (ParseException e) {
+                    e.printStackTrace();
+                }
+                try {
+                    addfield.put("end",getdateEnd(document.get("year"),document.get("month"),document.get("day"),document.get("hour"),document.get("minute"),document.get("takentime")));
+                } catch (ParseException e) {
+                    e.printStackTrace();
+                }
+                String name;
+                if(istrip){
+                    name="[여행]"+walkname;
+                }
+                else{
+                    name="[산책]"+walkname;
+                }
+                addfield.put("name",name);
+                if(istrip){
+                    addfield.put("locations",document.get("locations_coordinate"));
+                }
+                else{
+                    ArrayList<Object> tmp=new ArrayList<>();
+                    tmp.add(document.get("location_coord"));
+                    addfield.put("locations",tmp);
+                }
+
+                ArrayList<String> acceptuserrefix=new ArrayList<>();
+                acceptuserrefix.add(userData.userid);
+                acceptuserrefix.addAll(acceptuser);
+
+                addfield.put("users",acceptuserrefix);
+                addfield.put("type",istrip);
+                addfield.put("total",acceptuserrefix.size()-1); //나 제외 평가자수
+                docu.put(docuid,addfield);
+
+                for(String s: acceptuser){
+                    schedule.document(s).set(docu, SetOptions.merge());
+                }
+                schedule.document(userData.userid).set(docu, SetOptions.merge());
+
+            }
+        });
+
+    }
+
+    public String getdateStart(Object y, Object m, Object d, Object h, Object min) throws ParseException {
+        SimpleDateFormat sdf=new SimpleDateFormat("yyyy/MM/dd HH:mm");
+        String start=String.format("%04d/%02d/%02d %02d:%02d",y,m,d,h,min);
+        return start;
+    }
+
+    public String getdateEnd(Object y, Object m, Object d, Object h, Object min, Object taken) throws ParseException {
+        SimpleDateFormat sdf=new SimpleDateFormat("yyyy/MM/dd HH:mm");
+        String start=String.format("%04d/%02d/%02d %02d:%02d",y,m,d,h,min);
+        Date date=sdf.parse(start);
+        Calendar calendar=Calendar.getInstance();
+        calendar.setTime(date);
+        calendar.add(Calendar.MINUTE,Long.valueOf((Long) Optional.ofNullable(taken).orElse(0L)).intValue());
+        return sdf.format(calendar.getTime());
     }
 
 

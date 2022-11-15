@@ -1,9 +1,213 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:orientation="vertical"
     tools:context=".TripViewActivity">
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="49dp"
+            android:orientation="horizontal">
+
+            <ImageButton
+                android:id="@+id/back_tripview"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_gravity="center|start"
+                android:layout_marginStart="10dp"
+                android:background="@color/transparent"
+                app:srcCompat="@drawable/arrowback" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_marginLeft="20dp"
+                android:gravity="center|start"
+                android:text="여행 메이트 게시판"
+                android:textColor="@color/black"
+                android:textSize="25dp"
+                android:textStyle="bold" />
+
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="200dp"
+            android:orientation="vertical">
+            <fragment
+                android:id="@+id/map_tripview"
+                android:name="com.naver.maps.map.MapFragment"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                tools:layout="@android:layout/activity_list_item" />
+
+        </LinearLayout>
+
+        <ScrollView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <LinearLayout
+                    android:padding="5dp"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <de.hdodenhof.circleimageview.CircleImageView
+                        android:layout_gravity="center"
+                        android:id="@+id/userimg_tripview"
+                        android:layout_width="150dp"
+                        android:layout_height="150dp"
+                        android:background="@android:color/transparent"
+                        android:src="@drawable/blank_profile"
+                        app:civ_border_color="@color/orange"
+                        app:civ_border_overlay="true"
+                        app:civ_border_width="3dp" />
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="center"
+                        android:orientation="vertical"
+                        android:padding="10dp">
+
+                        <TextView
+                            android:id="@+id/usertitle_tripview"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="[칭호]" />
+
+                        <TextView
+                            android:id="@+id/userinfo_tripview"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="5dp"
+                            android:text="이름 (남성/20-29)" />
+
+                        <LinearLayout
+                            android:layout_marginTop="5dp"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal">
+
+                            <TextView
+                                android:layout_gravity="top"
+                                android:id="@+id/textView2"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:drawableLeft="@drawable/calendar_icon"
+                                android:text=" " />
+
+                            <TextView
+                                android:layout_gravity="center"
+                                android:id="@+id/date_tripview"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:text="10/4 - 10/10"
+                                android:textSize="15dp" />
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:layout_marginTop="5dp"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal">
+
+                            <TextView
+                                android:layout_gravity="top"
+                                android:id="@+id/textView3"
+                                android:drawableLeft="@drawable/pinclick_pin_xml"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text=" " />
+
+                            <TextView
+                                android:layout_gravity="center"
+                                android:id="@+id/locations_tripview"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+
+                                android:text="장소1, 장소2, 장소3"
+                                android:textSize="15dp" />
+                        </LinearLayout>
+
+                    </LinearLayout>
+                </LinearLayout>
+
+                <View
+
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:background="@color/brightgray" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:id="@+id/title_tripview"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:paddingHorizontal="10dp"
+                        android:paddingVertical="5dp"
+                        android:text="여행 게시물 제목란"
+                        android:textColor="@color/black"
+                        android:textSize="25dp"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:id="@+id/content_tripview"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="40dp"
+                        android:paddingHorizontal="10dp"
+                        android:paddingTop="20dp"
+                        android:text="TextView"
+                        android:textColor="@color/black"
+                        android:textSize="20dp" />
+                </LinearLayout>
+            </LinearLayout>
+        </ScrollView>
+
+    </LinearLayout>
+
+    <Button
+        android:textStyle="bold"
+        android:textSize="20dp"
+        android:textColor="@color/white"
+        android:background="@drawable/plusbtn"
+        android:layout_marginHorizontal="10dp"
+        android:layout_marginBottom="20dp"
+        android:layout_gravity="bottom"
+        android:id="@+id/mate_tripview"
+        android:layout_width="match_parent"
+        android:layout_height="30dp"
+        android:text="메이트 신청하기" />
+
+    <TextView
+        android:gravity="center"
+        android:textStyle="bold"
+        android:textSize="40dp"
+        android:textColor="@color/white"
+        android:background="@color/blurblack"
+        android:id="@+id/loading_tripview"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:text="로딩중..." />
+
+</FrameLayout>

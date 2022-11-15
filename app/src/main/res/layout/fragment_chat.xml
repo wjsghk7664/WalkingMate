@@ -12,34 +12,11 @@
         android:layout_height="match_parent"
         android:orientation="vertical">
 
-        <LinearLayout
-            android:gravity="center"
-            android:layout_weight="1"
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:orientation="horizontal">
-
-            <Button
-                android:id="@+id/addevery"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="전체추가" />
-
-            <Button
-                android:id="@+id/addroom"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="챗룸추가" />
-
-        </LinearLayout>
 
         <ListView
-            android:layout_weight="12"
             android:id="@+id/ChatroomList"
             android:layout_width="match_parent"
-            android:layout_height="0dp" />
+            android:layout_height="match_parent" />
     </LinearLayout>
 
 </FrameLayout>

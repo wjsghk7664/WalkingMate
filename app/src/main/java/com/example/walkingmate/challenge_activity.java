@@ -30,7 +30,8 @@ public class challenge_activity extends AppCompatActivity {
     CollectionReference user=fb.collection("users");
     CollectionReference feed=fb.collection("feedlist");
 
-    Long step,rel,seq,meet;
+    Long step,seq,meet;
+    double rel;
 
     UserData userData;
 
@@ -149,7 +150,7 @@ public class challenge_activity extends AppCompatActivity {
         user.document(userData.userid).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
             @Override
             public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-                rel= (Long) task.getResult().get("reliability");
+                rel= task.getResult().getDouble("reliability");
                 challenge.document(userData.userid).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
                     @Override
                     public void onComplete(@NonNull Task<DocumentSnapshot> task) {
@@ -323,7 +324,7 @@ public class challenge_activity extends AppCompatActivity {
 
         stxt.setText(String.format("건강한 워커 (%d/5) - %d걸음",stepn,step));
         qtxt.setText(String.format("꾸준한 워커 (%d/5) - %d주",seqn,seq));
-        rtxt.setText(String.format("믿음직한 워커 (%d/5) - %d점" ,reln,rel));
+        rtxt.setText(String.format("믿음직한 워커 (%d/5) - %.1f점" ,reln,rel));
         mtxt.setText(String.format("사교적인 워커 (%d/5) - %d번",meetn,meet));
 
     }

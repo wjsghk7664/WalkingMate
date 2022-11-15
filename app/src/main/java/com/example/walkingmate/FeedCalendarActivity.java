@@ -424,7 +424,7 @@ public class FeedCalendarActivity extends AppCompatActivity implements Navigatio
         int horih,mainh,relitxt;
 
         userData=UserData.loadData(this);
-        Long relivalue=userData.reliability;
+        double relivalue=userData.reliability;
         int relimax=headerview.findViewById(R.id.reliable_background).getHeight();
         Log.d("높이",relimax+"");
         mainh= (int) ((relimax*relivalue)/100);
@@ -445,7 +445,7 @@ public class FeedCalendarActivity extends AppCompatActivity implements Navigatio
         lp2.setMargins(getdp(35),0,0,relitxt);
         lp2.gravity= Gravity.BOTTOM;
         userreliable_txt.setLayoutParams(lp2);
-        userreliable_txt.setText(relivalue.toString());
+        userreliable_txt.setText(Math.round(relivalue)+"");
 
         //사이드바 프로필 설정
         String usertitlestr;
@@ -453,7 +453,7 @@ public class FeedCalendarActivity extends AppCompatActivity implements Navigatio
             usertitlestr="[칭호를 설정해주세요]";
         }
         else{
-            usertitlestr="["+userData.title+"]";
+            usertitlestr=userData.title;
         }
         usertitle.setText(usertitlestr);
         username.setText(userData.appname);
@@ -586,6 +586,10 @@ public class FeedCalendarActivity extends AppCompatActivity implements Navigatio
         else if(id==R.id.settingprofile){
             intent=new Intent(this, EditUserProfileActivity.class);
             setProfileResult.launch(intent);
+        }
+        else if(id==R.id.schedules){
+            intent=new Intent(this,ScheduleActivity.class);
+            startActivity(intent);
         }
         return true;
     }

@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:paddingVertical="10dp"
+        android:layout_margin="10dp"
+        android:background="@drawable/gray_empty"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <TextView
+            android:textColor="@color/black"
+            android:textStyle="bold"
+            android:textSize="20dp"
+            android:gravity="center"
+            android:id="@+id/title_scheduleaf"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="약속 제목(채팅 제목과 동일)" />
+
+        <View
+            android:layout_marginTop="5dp"
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="@color/black"/>
+
+
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+
+            <Button
+                android:textStyle="bold"
+                android:textColor="@color/white"
+                android:textSize="20dp"
+                android:background="@drawable/orangebtn"
+                android:layout_margin="10dp"
+                android:id="@+id/review_schedule"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="리뷰 작성" />
+            <Button
+                android:textStyle="bold"
+                android:textColor="@color/white"
+                android:textSize="20dp"
+                android:background="@drawable/orangebtn"
+                android:layout_margin="10dp"
+                android:id="@+id/delete_schedule"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="삭제" />
+        </LinearLayout>
+    </LinearLayout>
+
+</LinearLayout>
