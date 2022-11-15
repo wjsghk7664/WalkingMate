@@ -43,10 +43,21 @@
                 android:background="@drawable/orangebtn"
                 android:layout_margin="10dp"
                 android:id="@+id/review_schedule"
-                android:layout_width="wrap_content"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:text="리뷰 작성" />
+            <Button
+                android:textStyle="bold"
+                android:textColor="@color/white"
+                android:textSize="20dp"
+                android:background="@drawable/orangebtn"
+                android:layout_margin="10dp"
+                android:id="@+id/delete_schedule"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="삭제" />
         </LinearLayout>
     </LinearLayout>
 

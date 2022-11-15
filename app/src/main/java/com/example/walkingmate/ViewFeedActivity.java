@@ -61,7 +61,7 @@ public class ViewFeedActivity extends AppCompatActivity implements OnMapReadyCal
 
     TextView distxt,steptxt,timetxt, datetxt, curpage, contenttxt;
     ListView listView;
-    ImageButton weatherbtn,emotionbtn;
+    ImageButton weatherbtn,emotionbtn, back;
 
     MapFragment mapFragmentFeed;
     ArrayList<imageFragment> fragments=new ArrayList<>();
@@ -100,6 +100,14 @@ public class ViewFeedActivity extends AppCompatActivity implements OnMapReadyCal
 
         weatherbtn=findViewById(R.id.weather_feedview);
         emotionbtn=findViewById(R.id.emotion_feedview);
+        back=findViewById(R.id.back_feedview);
+
+        back.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                finish();
+            }
+        });
 
         Intent getFeed=getIntent();
         String fileName=getFeed.getStringExtra("filename");

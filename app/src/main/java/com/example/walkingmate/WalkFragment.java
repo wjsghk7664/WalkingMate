@@ -195,6 +195,7 @@ public class WalkFragment extends Fragment implements OnMapReadyCallback{
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
                 mywalkcheck=i;
+                refresh.performClick();
                 Log.d("보기설정",mywalkcheck+":"+viewmode.getSelectedItem());
             }
 

@@ -45,13 +45,32 @@
             android:layout_height="1dp"
             android:background="@color/gray" />
 
-        <ListView
-            android:id="@+id/schedule_list"
+        <FrameLayout
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_weight="14"
-            android:divider="@null"
-            android:dividerHeight="0dp" />
+            android:orientation="vertical">
+
+            <TextView
+                android:visibility="invisible"
+                android:paddingTop="10dp"
+                android:gravity="center|top"
+                android:textStyle="bold"
+                android:textSize="30dp"
+                android:textColor="@color/black"
+                android:id="@+id/nulltext_schedule"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:text="약속 목록이 비어있습니다." />
+
+            <ListView
+                android:id="@+id/schedule_list"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:divider="@null"
+                android:dividerHeight="0dp" />
+        </FrameLayout>
+
     </LinearLayout>
 
     <LinearLayout

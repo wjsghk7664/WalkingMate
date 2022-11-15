@@ -246,7 +246,7 @@ public class ScheduleActivity extends AppCompatActivity implements OnMapReadyCal
             View emptyview=layoutInflater.inflate(R.layout.list_layout_empty,null);
 
             TextView title,time;
-            Button review,chat,location, user;
+            Button review,chat,location, user,delete;
 
             String docuid=docuids.get(position);
             Scheduledocu tmpdocu=schedules.get(docuid);
@@ -260,9 +260,11 @@ public class ScheduleActivity extends AppCompatActivity implements OnMapReadyCal
             name+= tmpdocu.start;
             try {
                 if(checkend(tmpdocu.end)){
+                    Log.d("약속 완료아이템",docuid);
                     view=layoutInflater.inflate(R.layout.layout_schedule_af,null);
                     review=view.findViewById(R.id.review_schedule);
                     title=view.findViewById(R.id.title_scheduleaf);
+                    delete=view.findViewById(R.id.delete_schedule);
 
                     title.setText(name);
 
@@ -278,6 +280,13 @@ public class ScheduleActivity extends AppCompatActivity implements OnMapReadyCal
                             maplayout.setVisibility(View.INVISIBLE);
                             loadinguser.setVisibility(View.VISIBLE);
                             getuserdata();
+                        }
+                    });
+
+                    delete.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            removeschedule(docuid);
                         }
                     });
                 }
@@ -336,6 +345,13 @@ public class ScheduleActivity extends AppCompatActivity implements OnMapReadyCal
 
             return view;
         }
+    }
+
+    public void removeschedule(String docuid){
+        docuids.remove(docuid);
+        schedules.remove(docuid);
+        schedule.document(userData.userid).update(docuid,FieldValue.delete());
+        scheduleAdapter.notifyDataSetChanged();
     }
 
     public void getuserdata(){
@@ -570,11 +586,8 @@ public class ScheduleActivity extends AppCompatActivity implements OnMapReadyCal
                         ArrayList<String> userstmp=curSchdule.users;
                         userstmp.remove(userid);
                         if(userstmp.size()==1){
-                            schedule.document(userData.userid).update(curdocuid, FieldValue.delete());
-                            curSchdule.users=userstmp;
-                            userimgs.remove(userid);
-                            usernames.remove(userid);
-                            userAdapter.notifyDataSetChanged();
+                            removeschedule(curdocuid);
+                            closeuser.performClick();
                         }
                         else{
                             schedule.document(userData.userid).update(curdocuid+".users",userstmp);
@@ -630,21 +643,27 @@ public class ScheduleActivity extends AppCompatActivity implements OnMapReadyCal
             @Override
             public void onComplete(@NonNull Task<DocumentSnapshot> task) {
                 DocumentSnapshot documents=task.getResult();
-                for(String s:documents.getData().keySet()){
-                    docuids.add(s);
+                if(documents.exists()&&documents.getData().size()>0){
+                    for(String s:documents.getData().keySet()){
+                        docuids.add(s);
+                    }
+                    Log.d("문서 목록",docuids.toString());
+                    for(String s:docuids){
+                        HashMap<String,Object> document= (HashMap<String, Object>) documents.get(s);
+                        Scheduledocu tmpschedule= new Scheduledocu(document);
+                        schedules.put(s,tmpschedule);
+                    }
+                    try {
+                        setorder();
+                    } catch (ParseException e) {
+                        e.printStackTrace();
+                    }
+                    scheduleAdapter.notifyDataSetChanged();
                 }
-                Log.d("문서 목록",docuids.toString());
-                for(String s:docuids){
-                    HashMap<String,Object> document= (HashMap<String, Object>) documents.get(s);
-                    Scheduledocu tmpschedule= new Scheduledocu(document);
-                    schedules.put(s,tmpschedule);
+                else{
+                    findViewById(R.id.nulltext_schedule).setVisibility(View.VISIBLE);
                 }
-                try {
-                    setorder();
-                } catch (ParseException e) {
-                    e.printStackTrace();
-                }
-                scheduleAdapter.notifyDataSetChanged();
+
             }
         });
     }

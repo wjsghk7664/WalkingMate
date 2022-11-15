@@ -121,6 +121,13 @@ public class ChatActivity extends AppCompatActivity implements DrawerLayout.Draw
             }
         });
 
+        findViewById(R.id.back_chat).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                finish();
+            }
+        });
+
         msg=findViewById(R.id.msg);
         sendmsg=findViewById(R.id.sendmsg);
         msglist=findViewById(R.id.msglist);
@@ -534,7 +541,7 @@ public class ChatActivity extends AppCompatActivity implements DrawerLayout.Draw
         @Override
         public View getView(int position, View convertView, ViewGroup parent) {
             View view=layoutInflater.inflate(R.layout.layout_chatuser,null);
-            View emptyview=layoutInflater.inflate(R.layout.list_layout_empty,null);
+            View emptyview=layoutInflater.inflate(R.layout.empty_layout,null);
             if(usernames.size()==0){
                 return emptyview;
             }
