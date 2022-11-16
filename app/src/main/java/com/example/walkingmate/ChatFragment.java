@@ -16,6 +16,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -425,7 +426,7 @@ public class ChatFragment extends Fragment {
             }
             LinearLayout chatroombody=view.findViewById(R.id.body_chatroom);
             TextView chatroomname=view.findViewById(R.id.chatroomname);
-            Button outrooms=view.findViewById(R.id.outroom);
+            ImageButton outrooms=view.findViewById(R.id.outroom);
             TextView lastmsg=view.findViewById(R.id.lastmsg);
             TextView usernum=view.findViewById(R.id.usernum);
 

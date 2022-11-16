@@ -372,6 +372,10 @@ public class WalkFragment extends Fragment implements OnMapReadyCallback{
         walkreq.document(userData.userid).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
             @Override
             public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                if(!task.isSuccessful()){
+                    Log.d("파이어베이스에러",1+"");
+                    return;
+                }
                 DocumentSnapshot document=task.getResult();
                 ArrayList<String> docuids= (ArrayList<String>) document.get("requestlist");
                 if(docuids!=null){
@@ -398,6 +402,10 @@ public class WalkFragment extends Fragment implements OnMapReadyCallback{
         walkdata.document(curdocu).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
             @Override
             public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                if(!task.isSuccessful()){
+                    Log.d("파이어베이스에러",2+"");
+                    return;
+                }
                 if(task.getResult().exists()){
                     walkreq.document(userData.userid).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
                         @Override
@@ -445,6 +453,10 @@ public class WalkFragment extends Fragment implements OnMapReadyCallback{
         walkreq.document(userData.userid).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
             @Override
             public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                if(!task.isSuccessful()){
+                    Log.d("파이어베이스에러",3+"");
+                    return;
+                }
                 if(!task.getResult().exists()){
                     walkreq.document(userData.userid).set(data).addOnCompleteListener(new OnCompleteListener<Void>() {
                         @Override
@@ -474,7 +486,6 @@ public class WalkFragment extends Fragment implements OnMapReadyCallback{
             @Override
             public void onComplete(@NonNull Task<DocumentSnapshot> task) {
                 DocumentSnapshot document=task.getResult();
-
                 String titlestr,userstr;
                 if(document.get("title").equals("없음")){
                     titlestr="";
@@ -576,6 +587,10 @@ public class WalkFragment extends Fragment implements OnMapReadyCallback{
         block.document(userData.userid).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
             @Override
             public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                if(!task.isSuccessful()){
+                    Log.d("파이어베이스에러",4+"");
+                    return;
+                }
                 if(task.getResult().exists()){
                     DocumentSnapshot document=task.getResult();
                     for(String s:(ArrayList<String>)document.get("userid")){
@@ -692,6 +707,10 @@ public class WalkFragment extends Fragment implements OnMapReadyCallback{
         walkdata.whereEqualTo("userid",userData.userid).get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
             @Override
             public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                if(!task.isSuccessful()){
+                    Log.d("파이어베이스에러",5+"");
+                    return;
+                }
                 for(DocumentSnapshot document: task.getResult()){
                     Marker marker=new Marker();
 

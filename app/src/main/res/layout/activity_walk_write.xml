@@ -116,12 +116,13 @@
             android:layout_weight="1">
 
             <TextView
+                android:id="@+id/textView5"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginLeft="20dp"
                 android:text="출발 시간"
                 android:textColor="@color/black"
                 android:textSize="17dp"
-                android:layout_marginLeft="20dp"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
@@ -133,7 +134,17 @@
             android:layout_height="0dp"
             android:layout_weight="1"
             android:orientation="horizontal"
-            android:background="@drawable/layout_divider">
+            >
+
+            <Button
+                android:layout_marginVertical="5dp"
+                android:layout_marginLeft="10dp"
+                android:id="@+id/selectdate_walkwrite"
+                android:layout_width="wrap_content"
+                android:layout_height="40dp"
+                android:background="@drawable/greenbtn"
+                android:text="날짜 선택"
+                android:textColor="@color/white" />
 
             <EditText
                 android:id="@+id/year_walk"
@@ -197,6 +208,26 @@
                 android:textSize="16dp"
                 android:textStyle="bold"
                 android:textColor="@color/black"/>
+
+
+
+        </LinearLayout>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:orientation="horizontal"
+            android:background="@drawable/layout_divider">
+
+            <Button
+                android:layout_marginVertical="5dp"
+                android:layout_marginLeft="10dp"
+                android:id="@+id/selecttime_walkwrite"
+                android:layout_width="wrap_content"
+                android:layout_height="40dp"
+                android:background="@drawable/greenbtn"
+                android:text="시간 선택"
+                android:textColor="@color/white" />
 
             <EditText
                 android:id="@+id/hour_walk"
@@ -360,7 +391,7 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:layout_weight="2"
+            android:layout_weight="1"
             android:orientation="horizontal">
 
         </LinearLayout>

@@ -9,6 +9,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
+import android.media.Image;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -18,6 +19,7 @@ import android.view.Window;
 import android.view.WindowManager;
 import android.widget.BaseAdapter;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -397,9 +399,9 @@ public class WalkUserListActivity extends Activity {
                 return emptyview;
             }
             TextView textView=view.findViewById(R.id.user_walkwait);
-            Button accept=view.findViewById(R.id.accept_walkwait);
-            Button reject=view.findViewById(R.id.reject_walkwait);
-            Button chat=view.findViewById(R.id.chat_walkwait);
+            ImageButton accept=view.findViewById(R.id.accept_walkwait);
+            ImageButton reject=view.findViewById(R.id.reject_walkwait);
+            ImageButton chat=view.findViewById(R.id.chat_walkwait);
 
             LinearLayout body=view.findViewById(R.id.body_walkwait);
             body.setOnClickListener(new View.OnClickListener() {
@@ -719,9 +721,9 @@ public class WalkUserListActivity extends Activity {
                 return emptyview;
             }
             TextView textView=view.findViewById(R.id.user_walkwait);
-            Button accept=view.findViewById(R.id.accept_walkwait);
-            Button reject=view.findViewById(R.id.reject_walkwait);
-            Button chat=view.findViewById(R.id.chat_walkwait);
+            ImageButton accept=view.findViewById(R.id.accept_walkwait);
+            ImageButton reject=view.findViewById(R.id.reject_walkwait);
+            ImageButton chat=view.findViewById(R.id.chat_walkwait);
 
             LinearLayout body=view.findViewById(R.id.body_walkwait);
             body.setOnClickListener(new View.OnClickListener() {

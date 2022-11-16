@@ -126,6 +126,20 @@ public class TripwriteActivity extends AppCompatActivity implements OnMapReadyCa
             }
         });
 
+        findViewById(R.id.selectdate_tripwrite).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                getDateResult.launch(new Intent(TripwriteActivity.this,DateSelector.class));
+            }
+        });
+
+        findViewById(R.id.selecttime_tripwrite).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                getTimeResult.launch(new Intent(TripwriteActivity.this,TimeSelector.class));
+            }
+        });
+
         finish.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -320,6 +334,29 @@ public class TripwriteActivity extends AppCompatActivity implements OnMapReadyCa
                                 });
                             }
                         }).start();
+                    }
+                }
+            });
+
+    private final ActivityResultLauncher<Intent> getDateResult= registerForActivityResult(
+            new ActivityResultContracts.StartActivityForResult(),
+            result -> {
+                if(result.getResultCode() ==RESULT_OK){
+                    if(result.getData()!=null){
+                        yeartxt.setText(result.getData().getIntExtra("mYear",2022)+"");
+                        montxt.setText(result.getData().getIntExtra("mMonth",12)+"");
+                        daytxt.setText(result.getData().getIntExtra("mDay",1)+"");
+                    }
+                }
+            });
+
+    private final ActivityResultLauncher<Intent> getTimeResult= registerForActivityResult(
+            new ActivityResultContracts.StartActivityForResult(),
+            result -> {
+                if(result.getResultCode() ==RESULT_OK){
+                    if(result.getData()!=null){
+                        hourtxt.setText(result.getData().getIntExtra("mHour",12)+"");
+                        mintxt.setText(result.getData().getIntExtra("mMinute",11)+"");
                     }
                 }
             });

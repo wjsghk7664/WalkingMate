@@ -20,6 +20,7 @@ import android.view.WindowManager;
 import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -71,7 +72,7 @@ public class ChatActivity extends AppCompatActivity implements DrawerLayout.Draw
     HashMap<String, String> usernames=new HashMap<>();
 
     EditText msg;
-    Button sendmsg;
+    ImageButton sendmsg;
     ListView msglist;
 
     UserData userData;

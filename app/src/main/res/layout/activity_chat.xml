@@ -30,7 +30,7 @@
             <TextView
                 android:textColor="@color/black"
                 android:textStyle="bold"
-                android:textSize="20dp"
+                android:textSize="18dp"
                 android:paddingLeft="10dp"
                 android:gravity="center|start"
                 android:id="@+id/chat_title"
@@ -120,9 +120,10 @@
             android:background="@color/brightgray"/>
 
         <ListView
+            android:layout_weight="12"
             android:id="@+id/chatuserlist"
             android:layout_width="match_parent"
-            android:layout_height="600dp"
+            android:layout_height="0dp"
             android:layout_marginVertical="10dp"
             android:divider="@null"
             android:dividerHeight="0dp" />
@@ -132,22 +133,23 @@
             android:layout_height="1dp"
             android:background="@color/brightgray"/>
 
-        <androidx.constraintlayout.widget.ConstraintLayout
+        <LinearLayout
+            android:layout_weight="1"
+            android:gravity="left|center"
             android:layout_width="match_parent"
-            android:layout_height="50dp">
+            android:layout_height="0dp"
+            android:orientation="vertical">
+
 
             <ImageButton
+                android:layout_marginLeft="10dp"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:src="@drawable/icon_logout_xml"
                 android:background="@color/transparent"
-                android:layout_marginTop="10dp"
-                android:layout_marginEnd="5dp"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"/>
+                android:src="@drawable/icon_logout_xml"/>
 
 
-        </androidx.constraintlayout.widget.ConstraintLayout>
+        </LinearLayout>
 
 
     </LinearLayout>

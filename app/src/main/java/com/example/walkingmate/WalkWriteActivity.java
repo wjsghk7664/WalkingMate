@@ -28,6 +28,7 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.naver.maps.geometry.LatLng;
 
 import java.lang.reflect.Field;
+import java.sql.Time;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
@@ -119,6 +120,20 @@ public class WalkWriteActivity extends AppCompatActivity {
             }
         });
 
+       findViewById(R.id.selectdate_walkwrite).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                getDateResult.launch(new Intent(WalkWriteActivity.this,DateSelector.class));
+            }
+        });
+
+       findViewById(R.id.selecttime_walkwrite).setOnClickListener(new View.OnClickListener() {
+           @Override
+           public void onClick(View view) {
+               getTimeResult.launch(new Intent(WalkWriteActivity.this, TimeSelector.class));
+           }
+       });
+
     }
 
     public void sendData(){
@@ -187,6 +202,29 @@ public class WalkWriteActivity extends AppCompatActivity {
                         startloctxt.setVisibility(View.VISIBLE);
                         pin_walk.setVisibility(View.VISIBLE);
                         startloctxt.setText(location);
+                    }
+                }
+            });
+
+    private final ActivityResultLauncher<Intent> getDateResult= registerForActivityResult(
+            new ActivityResultContracts.StartActivityForResult(),
+            result -> {
+                if(result.getResultCode() ==RESULT_OK){
+                    if(result.getData()!=null){
+                        yeartxt.setText(result.getData().getIntExtra("mYear",2022)+"");
+                        montxt.setText(result.getData().getIntExtra("mMonth",12)+"");
+                        daytxt.setText(result.getData().getIntExtra("mDay",1)+"");
+                    }
+                }
+            });
+
+    private final ActivityResultLauncher<Intent> getTimeResult= registerForActivityResult(
+            new ActivityResultContracts.StartActivityForResult(),
+            result -> {
+                if(result.getResultCode() ==RESULT_OK){
+                    if(result.getData()!=null){
+                        hourtxt.setText(result.getData().getIntExtra("mHour",12)+"");
+                        mintxt.setText(result.getData().getIntExtra("mMinute",11)+"");
                     }
                 }
             });

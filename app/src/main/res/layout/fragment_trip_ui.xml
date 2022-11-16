@@ -11,6 +11,13 @@
         android:layout_height="match_parent"
         android:orientation="vertical">
 
+        <Button
+            android:background="@drawable/empty_gray_no_radius"
+            android:id="@+id/search_tripfrag"
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:text="검색 필터 열기" />
+
         <FrameLayout
             android:layout_marginBottom="60dp"
             android:layout_weight="12"
@@ -19,6 +26,7 @@
             android:orientation="vertical">
 
             <LinearLayout
+                android:id="@+id/searchlayout_tripfrag"
                 android:background="@color/white"
                 android:layout_width="match_parent"
                 android:layout_height="300dp"
@@ -266,7 +274,7 @@
 
 
                     <EditText
-                        android:id="@+id/editTextNumber"
+                        android:id="@+id/smon_tripfrag"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:background="@drawable/gray_empty"
@@ -294,11 +302,11 @@
                         android:textSize="15dp"
                         android:layout_marginLeft="5dp"
                         app:layout_constraintBottom_toBottomOf="parent"
-                        app:layout_constraintStart_toEndOf="@+id/editTextNumber"
+                        app:layout_constraintStart_toEndOf="@+id/smon_tripfrag"
                         app:layout_constraintTop_toTopOf="parent" />
 
                     <EditText
-                        android:id="@+id/editTextNumber2"
+                        android:id="@+id/sday_tripfrag"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:background="@drawable/gray_empty"
@@ -326,11 +334,11 @@
                         android:textSize="15dp"
                         android:layout_marginLeft="5dp"
                         app:layout_constraintBottom_toBottomOf="parent"
-                        app:layout_constraintStart_toEndOf="@+id/editTextNumber2"
+                        app:layout_constraintStart_toEndOf="@+id/sday_tripfrag"
                         app:layout_constraintTop_toTopOf="parent" />
 
                     <EditText
-                        android:id="@+id/editTextNumber3"
+                        android:id="@+id/emon_tripfrag"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:background="@drawable/gray_empty"
@@ -357,11 +365,11 @@
                         android:textSize="15dp"
                         android:layout_marginLeft="5dp"
                         app:layout_constraintBottom_toBottomOf="parent"
-                        app:layout_constraintStart_toEndOf="@+id/editTextNumber3"
+                        app:layout_constraintStart_toEndOf="@+id/emon_tripfrag"
                         app:layout_constraintTop_toTopOf="parent" />
 
                     <EditText
-                        android:id="@+id/editTextNumber4"
+                        android:id="@+id/eday_tripfrag"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:background="@drawable/gray_empty"
@@ -389,7 +397,7 @@
                         android:textSize="15dp"
                         android:layout_marginLeft="5dp"
                         app:layout_constraintBottom_toBottomOf="parent"
-                        app:layout_constraintStart_toEndOf="@+id/editTextNumber4"
+                        app:layout_constraintStart_toEndOf="@+id/eday_tripfrag"
                         app:layout_constraintTop_toTopOf="parent" />
 
 

@@ -91,4 +91,7 @@
     <style name="itemDrawerTextStyle">
         <item name="android:textSize">25dp</item><!-- text size in menu-->
     </style>
+
+
+
 </resources>
