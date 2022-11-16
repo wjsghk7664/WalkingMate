@@ -32,15 +32,31 @@
                     app:srcCompat="@drawable/arrowback" />
 
                 <TextView
+                    android:layout_gravity="center"
                     android:id="@+id/feedview_date"
                     android:gravity="center|start"
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
-                    android:layout_marginLeft="20dp"
-                    android:textSize="25dp"
+                    android:layout_marginLeft="10dp"
+                    android:textSize="22dp"
                     android:textStyle="bold"
                     android:textColor="@color/black"
                     android:text="날짜" />
+
+                <Button
+                    android:visibility="invisible"
+                    android:textSize="20dp"
+                    android:textColor="@color/gray"
+                    android:textStyle="bold"
+                    android:id="@+id/delete_viewfeed"
+                    android:layout_width="50dp"
+                    android:layout_height="50dp"
+                    android:layout_weight="1"
+                    android:gravity="right|center"
+                    android:paddingRight="5dp"
+                    android:layout_gravity="center"
+                    android:background="@color/transparent"
+                    android:text="삭제" />
 
             </LinearLayout>
 
@@ -138,12 +154,13 @@
                             android:layout_width="match_parent"
                             android:layout_height="100dp"
                             android:background="@color/transparent"/>
-
                         <Switch
-                            android:layout_gravity="center"
+                            android:visibility="invisible"
+                            android:layout_marginLeft="10dp"
                             android:id="@+id/openset_viewfeed"
                             android:layout_width="150dp"
                             android:layout_height="50dp"
+                            android:layout_gravity="center"
                             android:text="공개 설정" />
 
                     </LinearLayout>

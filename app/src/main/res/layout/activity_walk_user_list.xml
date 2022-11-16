@@ -8,7 +8,7 @@
 
     <LinearLayout
         android:layout_width="350dp"
-        android:layout_height="match_parent"
+        android:layout_height="450dp"
         android:orientation="vertical">
 
         <TextView
@@ -46,6 +46,15 @@
             android:listSelector="@color/transparent"
             android:layout_width="match_parent"
             android:layout_height="150dp" />
+        <Button
+            android:textStyle="bold"
+            android:textSize="25dp"
+            android:textColor="@color/black"
+            android:background="@color/transparent"
+            android:id="@+id/delete_walk"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="게시물 삭제" />
     </LinearLayout>
 
 </LinearLayout>

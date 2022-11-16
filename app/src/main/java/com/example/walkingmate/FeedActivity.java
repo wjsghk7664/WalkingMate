@@ -66,6 +66,7 @@ public class FeedActivity extends Activity {
     String others=null;
 
     boolean backfromfeedwrite=false;
+    boolean backfromfeedview=false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -156,6 +157,16 @@ public class FeedActivity extends Activity {
         super.onResume();
         if(iswrite==1&&backfromfeedwrite){
             backfromfeedwrite=false;
+            Intent gofeed=new Intent(this, FeedActivity.class);
+            gofeed.putExtra("year",y);
+            gofeed.putExtra("month",m);
+            gofeed.putExtra("day",d);
+            gofeed.putExtra("iswrite",iswrite);
+            startActivity(gofeed);
+            finish();
+        }
+        if(iswrite!=1&&backfromfeedview){
+            backfromfeedview=false;
             Intent gofeed=new Intent(this, FeedActivity.class);
             gofeed.putExtra("year",y);
             gofeed.putExtra("month",m);
@@ -369,6 +380,7 @@ public class FeedActivity extends Activity {
                     if(!isFeedexist){
                         return;
                     }
+                    backfromfeedview=true;
                     String filename=docuid.get(position);
                     Intent goFeedwrite=new Intent(FeedActivity.this, ViewFeedActivity.class);
                     goFeedwrite.putExtra("filename",filename);

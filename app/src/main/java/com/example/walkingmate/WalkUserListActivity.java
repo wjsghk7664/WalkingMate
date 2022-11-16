@@ -1,11 +1,11 @@
 package com.example.walkingmate;
 
 import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.fragment.app.Fragment;
+import androidx.appcompat.app.AlertDialog;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
@@ -15,11 +15,13 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
+import android.view.WindowManager;
 import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
@@ -32,11 +34,10 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.firestore.SetOptions;
-
-import org.checkerframework.checker.units.qual.A;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -44,6 +45,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
@@ -54,6 +56,7 @@ public class WalkUserListActivity extends Activity {
     CollectionReference challenge=fb.collection("challenge");
     CollectionReference schedule=fb.collection("schedule");
     CollectionReference datalist;
+    CollectionReference request;
 
     String docuid;
     String walkname;
@@ -71,6 +74,10 @@ public class WalkUserListActivity extends Activity {
     ArrayList<String> acceptuserprofile=new ArrayList<>();
     WaitAdapter waitAdapter;
     AcceptAdapter acceptAdapter;
+
+    LinearLayout askdel;
+    TextView title_askdel;
+    Button del,cancel;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -91,10 +98,12 @@ public class WalkUserListActivity extends Activity {
         if(istrip){
             walkuser=fb.collection("tripuser");
             datalist=fb.collection("tripdata");
+            request=fb.collection("triprequest");
         }
         else{
             walkuser=fb.collection("walkuser");
             datalist=fb.collection("walkdata");
+            request=fb.collection("walkrequest");
         }
 
         waitlistview=findViewById(R.id.walkuserlist_waiting);
@@ -108,8 +117,151 @@ public class WalkUserListActivity extends Activity {
 
         getlist();
 
+        askdel=findViewById(R.id.askdel_walkuserlist);
+        del=findViewById(R.id.delete_walkuser);
+        cancel=findViewById(R.id.cancel_walkuser);
+        title_askdel=findViewById(R.id.title_askdel);
+
+        title_askdel.setText(walkname);
+
+        findViewById(R.id.delete_walk).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                askdel.setVisibility(View.VISIBLE);
+            }
+        });
+
+        cancel.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                askdel.setVisibility(View.INVISIBLE);
+            }
+        });
+
+        del.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                deletewalk();
+            }
+        });
 
 
+    }
+
+    //신청 대기 혹은 수락 유저가 한명도 없거나 예상 종료시간이 지난 경우 삭제 가능
+    public void deletewalk(){
+        walkuser.document(docuid).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                Map<String,Long> userlist= (Map<String, Long>) task.getResult().get("userlist");
+                //신청 유저가 없거나 수락, 대기유저가 없는경우. userlist가 존재하는 경우 삭제
+                if(userlist!=null){
+                    Log.d("삭제컨디션 확인",userlist.values()+":"+userlist.values().contains(1l)+","+userlist.values().contains(0l));
+                }
+                if(userlist==null||!(userlist.values().contains(1l)||userlist.values().contains(0l))){
+                    walkuser.document(docuid).delete().addOnCompleteListener(new OnCompleteListener<Void>() {
+                        @Override
+                        public void onComplete(@NonNull Task<Void> task) {
+                            datalist.document(docuid).delete().addOnCompleteListener(new OnCompleteListener<Void>() {
+                                @Override
+                                public void onComplete(@NonNull Task<Void> task) {
+                                    if(userlist!=null){
+                                        int[] checkend={0};
+                                        for(String usercontains:userlist.keySet()){
+                                            request.document(usercontains).update("requestlist", FieldValue.arrayRemove(docuid)).addOnCompleteListener(new OnCompleteListener<Void>() {
+                                                @Override
+                                                public void onComplete(@NonNull Task<Void> task) {
+                                                    checkend[0]++;
+                                                    if(checkend[0]==userlist.size()){
+                                                        Log.d("requset삭제",usercontains+","+checkend[0]);
+                                                        Toast.makeText(getApplicationContext(),"삭제 완료",Toast.LENGTH_SHORT).show();
+                                                        finish();
+                                                    }
+                                                }
+                                            });
+                                        }
+                                    }
+                                    else{
+                                        Toast.makeText(getApplicationContext(),"삭제 완료",Toast.LENGTH_SHORT).show();
+                                        finish();
+                                    }
+
+                                }
+                            });
+                        }
+                    });
+                }
+                //신청 유저가 존재하는경우
+                else{
+                    datalist.document(docuid).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                        @Override
+                        public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                            DocumentSnapshot document=task.getResult();
+                            String end="";
+                            try {
+                                end=getdateEnd(document.get("year"),document.get("month"),document.get("day"),
+                                        document.get("hour"),document.get("minute"),document.get("takentime"));
+
+                                //종료된 게시물:requset까지 체크후 삭제
+                                if(checkend(end)){
+                                    //리스트에서 삭제
+                                    datalist.document(docuid).delete().addOnCompleteListener(new OnCompleteListener<Void>() {
+                                        @Override
+                                        public void onComplete(@NonNull Task<Void> task) {
+                                            //게시물 신청유저 목록 삭제
+                                            walkuser.document(docuid).delete().addOnCompleteListener(new OnCompleteListener<Void>() {
+                                                @Override
+                                                public void onComplete(@NonNull Task<Void> task) {
+                                                    //신청 유저 목록 기반 삭제 진행
+                                                    if(userlist!=null){
+                                                        int[] checkend={0};
+                                                        for(String usercontains:userlist.keySet()){
+                                                            request.document(usercontains).update("requestlist", FieldValue.arrayRemove(docuid)).addOnCompleteListener(new OnCompleteListener<Void>() {
+                                                                @Override
+                                                                public void onComplete(@NonNull Task<Void> task) {
+                                                                    checkend[0]++;
+                                                                    if(checkend[0]==userlist.size()){
+                                                                        Log.d("requset삭제",usercontains+","+checkend[0]);
+                                                                        Toast.makeText(getApplicationContext(),"삭제 완료",Toast.LENGTH_SHORT).show();
+                                                                        finish();
+                                                                    }
+                                                                }
+                                                            });
+                                                        }
+                                                    }
+                                                    else{
+                                                        Toast.makeText(getApplicationContext(),"삭제 완료",Toast.LENGTH_SHORT).show();
+                                                        finish();
+                                                    }
+                                                }
+                                            });
+                                        }
+                                    });
+                                }
+                                else{
+                                    Toast.makeText(getApplicationContext(),"삭제가 불가능한 게시물입니다.",Toast.LENGTH_SHORT).show();
+                                }
+                            } catch (ParseException e) {
+                                e.printStackTrace();
+                            }
+                        }
+                    });
+                }
+            }
+        });
+    }
+
+    public boolean checkend(String end) throws ParseException {
+        SimpleDateFormat sdf=new SimpleDateFormat("yyyy/MM/dd HH:mm");
+        Date now=new Date();
+        Date enddate=sdf.parse(end);
+        int result=enddate.compareTo(now);
+        if(result<0){
+            return true;//종료시간 지남
+        }
+        else{
+            return false;//종료 이전
+        }
     }
 
     public void getlist(){

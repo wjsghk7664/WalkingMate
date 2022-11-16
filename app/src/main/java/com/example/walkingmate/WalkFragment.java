@@ -395,20 +395,31 @@ public class WalkFragment extends Fragment implements OnMapReadyCallback{
     }
 
     public void checkandsendreq(){
-        walkreq.document(userData.userid).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+        walkdata.document(curdocu).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
             @Override
             public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-                ArrayList<String> tmps= (ArrayList<String>) task.getResult().get("requestlist");
-                //요청한적이 없어 문서가 없거나 요청을 안한경우
-                if(tmps==null||!tmps.contains(curdocu)){
-                    sendreq();
+                if(task.getResult().exists()){
+                    walkreq.document(userData.userid).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                        @Override
+                        public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                            ArrayList<String> tmps= (ArrayList<String>) task.getResult().get("requestlist");
+                            //요청한적이 없어 문서가 없거나 요청을 안한경우
+                            if(tmps==null||!tmps.contains(curdocu)){
+                                sendreq();
+                            }
+                            else{
+                                Toast.makeText(getActivity(),"이미 요청을 보낸 게시물입니다.",Toast.LENGTH_SHORT).show();
+                            }
+
+                        }
+                    });
                 }
                 else{
-                    Toast.makeText(getActivity(),"이미 요청을 보낸 게시물입니다.",Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getActivity(),"존재하지 않는 게시물입니다.",Toast.LENGTH_SHORT).show();
                 }
-
             }
         });
+
     }
 
 

@@ -1,12 +1,14 @@
 package com.example.walkingmate;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.FragmentActivity;
 import androidx.viewpager2.adapter.FragmentStateAdapter;
 import androidx.viewpager2.widget.ViewPager2;
 
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -122,6 +124,47 @@ public class ViewFeedActivity extends AppCompatActivity implements OnMapReadyCal
             }
         });
 
+        findViewById(R.id.delete_viewfeed).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                final LinearLayout deldialog=(LinearLayout) View.inflate(ViewFeedActivity.this,R.layout.dialog_checkdelete, null);
+                TextView dialogtitle=deldialog.findViewById(R.id.title_deletedialog);
+                dialogtitle.setText(title);
+                AlertDialog.Builder adbuilder=new AlertDialog.Builder(ViewFeedActivity.this);
+                AlertDialog alertDialog=adbuilder.setView(deldialog).setPositiveButton("삭제", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        feeddata.document(docuid).delete().addOnCompleteListener(new OnCompleteListener<Void>() {
+                            @Override
+                            public void onComplete(@NonNull Task<Void> task) {
+                                feedlist.document(docuid).delete().addOnCompleteListener(new OnCompleteListener<Void>() {
+                                    @Override
+                                    public void onComplete(@NonNull Task<Void> task) {
+                                        Toast.makeText(getApplicationContext(),"삭제완료",Toast.LENGTH_SHORT).show();
+                                        finish();
+                                    }
+                                });
+                            }
+                        });
+                    }
+                }).setNegativeButton("취소", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        return;
+                    }
+                }).create();
+                alertDialog.getWindow().setFlags(WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE, WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE);
+                alertDialog.show();
+                alertDialog.getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LOW_PROFILE
+                        | View.SYSTEM_UI_FLAG_FULLSCREEN
+                        | View.SYSTEM_UI_FLAG_LAYOUT_STABLE
+                        | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
+                        | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
+                        | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION);
+                alertDialog.getWindow().clearFlags(WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE);
+            }
+        });
+
         openset=findViewById(R.id.openset_viewfeed);
         openset.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
@@ -181,11 +224,13 @@ public class ViewFeedActivity extends AppCompatActivity implements OnMapReadyCal
                 weather=(String)documentSnapshot.get("weather");
                 emotion=(String)documentSnapshot.get("emotion");
 
-                //본인 아니면 공개여부 수정 버튼 비활성화
+                //본인이면 공개여부 수정버튼,삭제버튼 활성화
                 useridcheck=documentSnapshot.getString("userid");
-                if(!userData.userid.equals(useridcheck)){
-                    openset.setVisibility(View.INVISIBLE);
+                if(userData.userid.equals(useridcheck)){
+                    openset.setVisibility(View.VISIBLE);
+                    findViewById(R.id.delete_viewfeed).setVisibility(View.VISIBLE);
                 }
+
 
                 Log.d("문서 유저아이디",useridcheck);
 
