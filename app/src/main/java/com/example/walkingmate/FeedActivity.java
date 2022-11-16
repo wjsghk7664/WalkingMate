@@ -1,6 +1,8 @@
 package com.example.walkingmate;
 
 import static com.example.walkingmate.R.id.feedListView;
+import static com.example.walkingmate.R.id.month;
+import static com.example.walkingmate.R.id.year;
 
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
@@ -59,7 +61,11 @@ public class FeedActivity extends Activity {
     BtnAdapter btnAdapter;
     FeedAdapter feedAdapter;
 
+    int y,m,d; String ys,ms,ds;
+
     String others=null;
+
+    boolean backfromfeedwrite=false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -84,7 +90,7 @@ public class FeedActivity extends Activity {
         others=getIntent.getStringExtra("others");
 
 
-        int y,m,d; String ys,ms,ds;
+
         y=getIntent.getIntExtra("year",9999);
         m=getIntent.getIntExtra("month",0);
         d=getIntent.getIntExtra("day",0);
@@ -145,7 +151,23 @@ public class FeedActivity extends Activity {
 
     }
 
-    public void receiveData(int year,int month,int day){
+    @Override
+    protected void onResume() {
+        super.onResume();
+        if(iswrite==1&&backfromfeedwrite){
+            backfromfeedwrite=false;
+            Intent gofeed=new Intent(this, FeedActivity.class);
+            gofeed.putExtra("year",y);
+            gofeed.putExtra("month",m);
+            gofeed.putExtra("day",d);
+            gofeed.putExtra("iswrite",iswrite);
+            startActivity(gofeed);
+            finish();
+        }
+
+    }
+
+    public void receiveData(int year, int month, int day){
         FirebaseFirestore fb=FirebaseFirestore.getInstance();
         CollectionReference walklist=fb.collection("feedlist");
         final boolean[] isFeedexist = {true};
@@ -165,7 +187,9 @@ public class FeedActivity extends Activity {
                         @Override
                         public void onComplete(@NonNull Task<QuerySnapshot> task) {
                             for(int i=0; i<task.getResult().size(); ++i){
-                                if(task.getResult().getDocuments().get(i).get("isOpen")==null||(Boolean) task.getResult().getDocuments().get(i).get("isOpen")){
+                                //isOpen설정 없는 구 데이터이거나 오픈 설정이 되어 있거나 내 데이터인경우 추가
+                                if(task.getResult().getDocuments().get(i).get("isOpen")==null||(Boolean) task.getResult().getDocuments().get(i).get("isOpen")||
+                                task.getResult().getDocuments().get(i).get("userid").equals(userData.userid)){
                                     result.add((String) task.getResult().getDocuments().get(i).get("title"));
                                     resulttime.add((String) task.getResult().getDocuments().get(i).get("writetime"));
                                     docuid.add((String) task.getResult().getDocuments().get(i).getId());
@@ -254,6 +278,7 @@ public class FeedActivity extends Activity {
                     if(!isFeedexist){
                         return;
                     }
+                    backfromfeedwrite=true;
                     String filename=data.get(position);
                     Intent goFeedwrite=new Intent(FeedActivity.this, FeedWrite_Activity.class);
                     goFeedwrite.putExtra("filename",filename);

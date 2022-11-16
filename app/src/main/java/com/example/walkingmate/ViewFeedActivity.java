@@ -18,12 +18,14 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.BaseAdapter;
+import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -53,15 +55,22 @@ public class ViewFeedActivity extends AppCompatActivity implements OnMapReadyCal
 
     FirebaseFirestore fb=FirebaseFirestore.getInstance();
     CollectionReference feeddata=fb.collection("feed");
+    CollectionReference feedlist=fb.collection("feedlist");
 
     FeedData feedData;
     ArrayList<String> imgurls=new ArrayList<>();
-    String title,content,weather,emotion;
+    String title,content,weather,emotion, useridcheck, docuid;
+
+    Switch openset;
+
+    boolean checkset=false;
+    boolean initmsg=false;
 
 
     TextView distxt,steptxt,timetxt, datetxt, curpage, contenttxt;
     ListView listView;
     ImageButton weatherbtn,emotionbtn, back;
+
 
     MapFragment mapFragmentFeed;
     ArrayList<imageFragment> fragments=new ArrayList<>();
@@ -81,6 +90,8 @@ public class ViewFeedActivity extends AppCompatActivity implements OnMapReadyCal
 
     int curposition=0;
 
+    UserData userData;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -88,6 +99,8 @@ public class ViewFeedActivity extends AppCompatActivity implements OnMapReadyCal
         setContentView(R.layout.activity_view_feed);
 
         getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN);
+
+        userData=UserData.loadData(this);
 
         imagebacklayout=findViewById(R.id.image_feedview);
 
@@ -109,6 +122,39 @@ public class ViewFeedActivity extends AppCompatActivity implements OnMapReadyCal
             }
         });
 
+        openset=findViewById(R.id.openset_viewfeed);
+        openset.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
+                feeddata.document(docuid).update("isOpen",b).addOnCompleteListener(new OnCompleteListener<Void>() {
+                    @Override
+                    public void onComplete(@NonNull Task<Void> task) {
+                        feedlist.document(docuid).update("isOpen",b).addOnCompleteListener(new OnCompleteListener<Void>() {
+                            @Override
+                            public void onComplete(@NonNull Task<Void> task) {
+                                String setting="비공개";
+                                if(b){
+                                    setting="공개";
+                                }
+                                if(initmsg){
+                                    Toast.makeText(ViewFeedActivity.this, "공개 여부 설정: "+setting,Toast.LENGTH_SHORT).show();
+                                }
+                                else{
+                                    initmsg=true;
+                                }
+
+                            }
+                        });
+                    }
+                }).addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Log.d("공개설정에러",e.toString());
+                    }
+                });
+            }
+        });
+
         Intent getFeed=getIntent();
         String fileName=getFeed.getStringExtra("filename");
 
@@ -127,12 +173,26 @@ public class ViewFeedActivity extends AppCompatActivity implements OnMapReadyCal
             @Override
             public void onComplete(@NonNull Task<DocumentSnapshot> task) {
                 DocumentSnapshot documentSnapshot=task.getResult();
+                docuid=documentSnapshot.getId();
                 feedData =FeedData.decodeFeed((String) documentSnapshot.get("feeddata"));
                 imgurls= (ArrayList<String>) documentSnapshot.get("images");
                 title = (String) documentSnapshot.get("title");
                 content= (String) documentSnapshot.get("content");
                 weather=(String)documentSnapshot.get("weather");
                 emotion=(String)documentSnapshot.get("emotion");
+
+                //본인 아니면 공개여부 수정 버튼 비활성화
+                useridcheck=documentSnapshot.getString("userid");
+                if(!userData.userid.equals(useridcheck)){
+                    openset.setVisibility(View.INVISIBLE);
+                }
+
+                Log.d("문서 유저아이디",useridcheck);
+
+                openset.setChecked(documentSnapshot.getBoolean("isOpen"));
+                checkset=true;
+
+
 
                 if(imgurls.size()==0){
                     findViewById(R.id.loading_feedview).setVisibility(View.INVISIBLE);

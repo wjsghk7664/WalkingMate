@@ -139,6 +139,13 @@
                             android:layout_height="100dp"
                             android:background="@color/transparent"/>
 
+                        <Switch
+                            android:layout_gravity="center"
+                            android:id="@+id/openset_viewfeed"
+                            android:layout_width="150dp"
+                            android:layout_height="50dp"
+                            android:text="공개 설정" />
+
                     </LinearLayout>
                 </LinearLayout>
             </ScrollView>
