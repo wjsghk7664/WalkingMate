@@ -64,11 +64,12 @@
         android:layout_weight="1"
         android:orientation="vertical">
 
-        <Button
+        <ImageButton
             android:id="@+id/outroom"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="나가기" />
+            android:src="@drawable/icon_logout_xml"
+            android:background="@color/transparent"/>
     </LinearLayout>
 
 </LinearLayout>
