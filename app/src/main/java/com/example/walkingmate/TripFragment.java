@@ -9,14 +9,19 @@ import androidx.fragment.app.Fragment;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 
+import android.provider.MediaStore;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AbsListView;
 import android.widget.BaseAdapter;
+import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.ImageButton;
 import android.widget.ListView;
+import android.widget.RadioButton;
+import android.widget.RadioGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -61,17 +66,40 @@ public class TripFragment extends Fragment implements SwipeRefreshLayout.OnRefre
     boolean backbool=false;//게시물 추가후 돌아왔을때 새로고침시 중복실행 막기위한 불리안
     boolean checkin=false;
 
+    View rootview;
+
+    boolean searchopen=false;
+
+    ArrayList<String> Selectedlocation=new ArrayList<>();
+
+    CheckBox r1,r2,r3,r4,r5,r6,r7,r8,r9,r10,r11,r12,r13,r14,r15,r16;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View view= inflater.inflate(R.layout.fragment_trip, container, false);
+        rootview= inflater.inflate(R.layout.fragment_trip, container, false);
 
-        swipeRefreshLayout=view.findViewById(R.id.refresh_triplist);
+        swipeRefreshLayout=rootview.findViewById(R.id.refresh_triplist);
         swipeRefreshLayout.setOnRefreshListener(this::onRefresh);
 
-        triplist=view.findViewById(R.id.triplist);
-        addtrip=view.findViewById(R.id.add_triplist);
+        rootview.findViewById(R.id.search_tripfrag).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                int visible;
+                if(searchopen){
+                    visible=View.INVISIBLE;
+                    searchopen=false;
+                }
+                else{
+                    visible=View.VISIBLE;
+                    searchopen=true;
+                }
+                rootview.findViewById(R.id.searchlayout_tripfrag).setVisibility(visible);
+            }
+        });
+
+        triplist=rootview.findViewById(R.id.triplist);
+        addtrip=rootview.findViewById(R.id.add_triplist);
         addtrip.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -80,7 +108,7 @@ public class TripFragment extends Fragment implements SwipeRefreshLayout.OnRefre
             }
         });
 
-        scrollup=view.findViewById(R.id.up_triplist);
+        scrollup=rootview.findViewById(R.id.up_triplist);
 
         tripAdapter=new TripAdapter(getContext());
         triplist.setAdapter(tripAdapter);
@@ -117,8 +145,29 @@ public class TripFragment extends Fragment implements SwipeRefreshLayout.OnRefre
             }
         });
 
-        return view;
+
+        r1=rootview.findViewById(R.id.radio1);
+        r1.setChecked(true);
+        r1.setOnClickListener(checkboxlistener);
+
+
+
+        return rootview;
     }
+
+    CheckBox.OnClickListener checkboxlistener=new View.OnClickListener() {
+        @Override
+        public void onClick(View view) {
+            boolean ischecked=((CheckBox)view).isChecked();
+            String location=((CheckBox)view).getText().toString();
+            if(ischecked){
+                Toast.makeText(getContext(),"추가"+location,Toast.LENGTH_SHORT).show();
+            }
+            else{
+                Toast.makeText(getContext(),"제거"+location,Toast.LENGTH_SHORT).show();
+            }
+        }
+    };
 
     public void refreshs(){
         curitem="30001112093121";
@@ -134,6 +183,11 @@ public class TripFragment extends Fragment implements SwipeRefreshLayout.OnRefre
 
     //필터 추가시 쿼리적용
     public void getlist(){
+
+
+
+
+
         Log.d("여행 최하단 게시물 시작전",curitem);
         tripdata.whereLessThan("writetime",curitem).orderBy("writetime", Query.Direction.DESCENDING).limit(15).get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
             @Override

@@ -69,7 +69,7 @@
                             android:layout_weight="1">
 
                             <RadioButton
-                                android:id="@+id/radioButton8"
+                                android:id="@+id/radio1"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:text="전체"
@@ -79,33 +79,33 @@
                                 app:layout_constraintTop_toTopOf="parent" />
 
                             <RadioButton
-                                android:id="@+id/radioButton9"
+                                android:id="@+id/radio2"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:text="서울/경기"
                                 android:layout_marginLeft="20dp"
                                 app:layout_constraintBottom_toBottomOf="parent"
-                                app:layout_constraintStart_toEndOf="@+id/radioButton8"
+                                app:layout_constraintStart_toEndOf="@+id/radio1"
                                 app:layout_constraintTop_toTopOf="parent" />
 
                             <RadioButton
-                                android:id="@+id/radioButton10"
+                                android:id="@+id/radio3"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:text="인천"
                                 android:layout_marginLeft="20dp"
                                 app:layout_constraintBottom_toBottomOf="parent"
-                                app:layout_constraintStart_toEndOf="@+id/radioButton9"
+                                app:layout_constraintStart_toEndOf="@+id/radio2"
                                 app:layout_constraintTop_toTopOf="parent" />
 
                             <RadioButton
-                                android:id="@+id/radioButton11"
+                                android:id="@+id/radio4"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:text="강원도"
                                 android:layout_marginLeft="20dp"
                                 app:layout_constraintBottom_toBottomOf="parent"
-                                app:layout_constraintStart_toEndOf="@+id/radioButton10"
+                                app:layout_constraintStart_toEndOf="@+id/radio3"
                                 app:layout_constraintTop_toTopOf="parent" />
 
                         </androidx.constraintlayout.widget.ConstraintLayout>
@@ -116,7 +116,7 @@
                             android:layout_weight="1">
 
                             <RadioButton
-                                android:id="@+id/radioButton12"
+                                android:id="@+id/radio5"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:text="충청남도"
@@ -126,33 +126,33 @@
                                 app:layout_constraintTop_toTopOf="parent" />
 
                             <RadioButton
-                                android:id="@+id/radioButton13"
+                                android:id="@+id/radio6"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:text="충청북도"
                                 android:layout_marginLeft="20dp"
                                 app:layout_constraintBottom_toBottomOf="parent"
-                                app:layout_constraintStart_toEndOf="@+id/radioButton12"
+                                app:layout_constraintStart_toEndOf="@+id/radio5"
                                 app:layout_constraintTop_toTopOf="parent" />
 
                             <RadioButton
-                                android:id="@+id/radioButton14"
+                                android:id="@+id/radio7"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:text="전라남도"
                                 android:layout_marginLeft="20dp"
                                 app:layout_constraintBottom_toBottomOf="parent"
-                                app:layout_constraintStart_toEndOf="@+id/radioButton13"
+                                app:layout_constraintStart_toEndOf="@+id/radio6"
                                 app:layout_constraintTop_toTopOf="parent" />
 
                             <RadioButton
-                                android:id="@+id/radioButton15"
+                                android:id="@+id/radio8"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:text="전라북도"
                                 android:layout_marginLeft="20dp"
                                 app:layout_constraintBottom_toBottomOf="parent"
-                                app:layout_constraintStart_toEndOf="@+id/radioButton14"
+                                app:layout_constraintStart_toEndOf="@+id/radio7"
                                 app:layout_constraintTop_toTopOf="parent" />
                         </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -162,7 +162,7 @@
                             android:layout_weight="1">
 
                             <RadioButton
-                                android:id="@+id/radioButton18"
+                                android:id="@+id/radio9"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:text="경상남도"
@@ -172,33 +172,33 @@
                                 app:layout_constraintTop_toTopOf="parent" />
 
                             <RadioButton
-                                android:id="@+id/radioButton19"
+                                android:id="@+id/radio10"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:text="경상북도"
                                 android:layout_marginLeft="20dp"
                                 app:layout_constraintBottom_toBottomOf="parent"
-                                app:layout_constraintStart_toEndOf="@+id/radioButton18"
+                                app:layout_constraintStart_toEndOf="@+id/radio9"
                                 app:layout_constraintTop_toTopOf="parent" />
 
                             <RadioButton
-                                android:id="@+id/radioButton20"
+                                android:id="@+id/radio11"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:text="부산"
                                 android:layout_marginLeft="20dp"
                                 app:layout_constraintBottom_toBottomOf="parent"
-                                app:layout_constraintStart_toEndOf="@+id/radioButton19"
+                                app:layout_constraintStart_toEndOf="@+id/radio10"
                                 app:layout_constraintTop_toTopOf="parent" />
 
                             <RadioButton
-                                android:id="@+id/radioButton21"
+                                android:id="@+id/radio12"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:text="대구"
                                 android:layout_marginLeft="20dp"
                                 app:layout_constraintBottom_toBottomOf="parent"
-                                app:layout_constraintStart_toEndOf="@+id/radioButton20"
+                                app:layout_constraintStart_toEndOf="@+id/radio11"
                                 app:layout_constraintTop_toTopOf="parent" />
                         </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -208,7 +208,7 @@
                             android:layout_weight="1">
 
                             <RadioButton
-                                android:id="@+id/radioButton23"
+                                android:id="@+id/radio13"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:text="광주"
@@ -218,33 +218,33 @@
                                 app:layout_constraintTop_toTopOf="parent" />
 
                             <RadioButton
-                                android:id="@+id/radioButton24"
+                                android:id="@+id/radio14"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:text="대전"
                                 android:layout_marginLeft="20dp"
                                 app:layout_constraintBottom_toBottomOf="parent"
-                                app:layout_constraintStart_toEndOf="@+id/radioButton23"
+                                app:layout_constraintStart_toEndOf="@+id/radio13"
                                 app:layout_constraintTop_toTopOf="parent" />
 
                             <RadioButton
-                                android:id="@+id/radioButton25"
+                                android:id="@+id/radio15"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:text="울산"
                                 android:layout_marginLeft="20dp"
                                 app:layout_constraintBottom_toBottomOf="parent"
-                                app:layout_constraintStart_toEndOf="@+id/radioButton24"
+                                app:layout_constraintStart_toEndOf="@+id/radio14"
                                 app:layout_constraintTop_toTopOf="parent" />
 
                             <RadioButton
-                                android:id="@+id/radioButton26"
+                                android:id="@+id/radio16"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:text="제주도"
                                 android:layout_marginLeft="20dp"
                                 app:layout_constraintBottom_toBottomOf="parent"
-                                app:layout_constraintStart_toEndOf="@+id/radioButton25"
+                                app:layout_constraintStart_toEndOf="@+id/radio15"
                                 app:layout_constraintTop_toTopOf="parent" />
                         </androidx.constraintlayout.widget.ConstraintLayout>
 

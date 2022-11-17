@@ -74,6 +74,9 @@
     </LinearLayout>
 
     <LinearLayout
+        android:clickable="true"
+        android:focusable="true"
+        android:focusableInTouchMode="true"
         android:background="@color/white"
         android:visibility="invisible"
         android:id="@+id/maplayout_schedule"
@@ -118,6 +121,9 @@
     </LinearLayout>
 
     <LinearLayout
+        android:clickable="true"
+        android:focusable="true"
+        android:focusableInTouchMode="true"
         android:visibility="invisible"
         android:background="@color/white"
         android:id="@+id/userlistlayout_schedule"
