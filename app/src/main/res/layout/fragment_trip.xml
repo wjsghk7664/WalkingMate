@@ -20,6 +20,7 @@
             android:orientation="vertical">
 
             <LinearLayout
+                android:visibility="invisible"
                 android:id="@+id/searchlayout_tripfrag"
                 android:background="@color/white"
                 android:layout_width="match_parent"

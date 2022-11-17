@@ -19,6 +19,8 @@ public class TimeSelector extends AppCompatActivity {
         setContentView(R.layout.activity_time_selector);
 
         time_picker=findViewById(R.id.time_picker);
+        mHour=time_picker.getHour();
+        mMinute=time_picker.getMinute();
         time_picker.setOnTimeChangedListener(new TimePicker.OnTimeChangedListener() {
             @Override
             public void onTimeChanged(TimePicker timePicker, int i, int i1) {

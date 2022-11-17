@@ -48,6 +48,7 @@ import de.hdodenhof.circleimageview.CircleImageView;
 public class TripViewActivity extends AppCompatActivity implements OnMapReadyCallback {
     FirebaseFirestore fb=FirebaseFirestore.getInstance();
     CollectionReference tripdata=fb.collection("tripdata");
+    CollectionReference tripdatalist=fb.collection("tripdatalist");
     CollectionReference users=fb.collection("users");
     CollectionReference tripreq=fb.collection("triprequest");
     CollectionReference tripuser=fb.collection("tripuser");
@@ -97,7 +98,12 @@ public class TripViewActivity extends AppCompatActivity implements OnMapReadyCal
 
 
         mapFragment=(MapFragment)getSupportFragmentManager().findFragmentById(R.id.map_tripview);
-        getTripdata();
+        try{
+            getTripdata();
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+
 
         findViewById(R.id.back_tripview).setOnClickListener(new View.OnClickListener() {
             @Override
@@ -183,6 +189,19 @@ public class TripViewActivity extends AppCompatActivity implements OnMapReadyCal
         });
 
 
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        tripdatalist.document(docuid).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                if(!task.getResult().exists()){
+                    finish();
+                }
+            }
+        });
     }
 
     @Override
@@ -292,45 +311,48 @@ public class TripViewActivity extends AppCompatActivity implements OnMapReadyCal
             @Override
             public void onComplete(@NonNull Task<DocumentSnapshot> task) {
                 DocumentSnapshot document=task.getResult();
-                locations= (ArrayList<String>) document.get("locations_name");
-                for(Map<String,Object> map:(ArrayList<Map<String,Object>>)document.get("locations_coordinate")){
-                    LatLng tmpll=new LatLng(UserData.setdouble(map.get("latitude")) , UserData.setdouble(map.get("longitude")));
-                    coords.add(tmpll);
+                if(!document.exists()){
+                    Log.d("에러 컨트롤",1+"");
                 }
-                ArrayList<Map<String,Object>> tmproute= (ArrayList<Map<String, Object>>) document.get("route");
-                if(tmproute.size()>0){
-                    for(Map<String,Object> map:tmproute){
-                        LatLng tmpll=new LatLng(UserData.setdouble(map.get("latitude")), UserData.setdouble(map.get("longitude")));
-                        routes.add(tmpll);
+                else{
+                    locations= (ArrayList<String>) document.get("locations_name");
+                    for(Map<String,Object> map:(ArrayList<Map<String,Object>>)document.get("locations_coordinate")){
+                        LatLng tmpll=new LatLng(UserData.setdouble(map.get("latitude")) , UserData.setdouble(map.get("longitude")));
+                        coords.add(tmpll);
                     }
+                    ArrayList<Map<String,Object>> tmproute= (ArrayList<Map<String, Object>>) document.get("route");
+                    if(tmproute.size()>0){
+                        for(Map<String,Object> map:tmproute){
+                            LatLng tmpll=new LatLng(UserData.setdouble(map.get("latitude")), UserData.setdouble(map.get("longitude")));
+                            routes.add(tmpll);
+                        }
+                    }
+
+                    title= (String) document.get("title");
+                    content= (String) document.get("content");
+
+                    titletxt.setText(title);
+                    contenttxt.setText(content);
+                    String[] tmpdate=date.split("~");
+                    datetxt.setText(tmpdate[0]+" ~\n "+tmpdate[1]);
+                    String locationlist="";
+                    for(int i=0; i<locations.size(); ++i){
+                        String order;
+                        if(i==0){
+                            order="출발지";
+                        }
+                        else{
+                            order=i+"";
+                        }
+                        locationlist+="("+order+")"+locations.get(i)+"\n";
+                    }
+                    locationlist=locationlist.substring(0,locationlist.length()-1);
+                    locationtxt.setText(locationlist);
+
+                    mapFragment.getMapAsync(TripViewActivity.this);
+
+                    setuserdata((String) document.get("userid"));
                 }
-
-                title= (String) document.get("title");
-                content= (String) document.get("content");
-
-                titletxt.setText(title);
-                contenttxt.setText(content);
-                String[] tmpdate=date.split("~");
-                datetxt.setText(tmpdate[0]+" ~\n "+tmpdate[1]);
-                String locationlist="";
-                for(int i=0; i<locations.size(); ++i){
-                    String order;
-                    if(i==0){
-                        order="출발지";
-                    }
-                    else{
-                        order=i+"";
-                    }
-                    locationlist+="("+order+")"+locations.get(i)+"\n";
-                }
-                locationlist=locationlist.substring(0,locationlist.length()-1);
-                locationtxt.setText(locationlist);
-
-                mapFragment.getMapAsync(TripViewActivity.this);
-
-                setuserdata((String) document.get("userid"));
-
-
             }
         });
     }
@@ -359,6 +381,7 @@ public class TripViewActivity extends AppCompatActivity implements OnMapReadyCal
                 String urlstr= (String) document.get("profileImagebig");
                 if(urlstr==null||urlstr.equals("")){
                     findViewById(R.id.loading_tripview).setVisibility(View.INVISIBLE);
+                    mate.setVisibility(View.VISIBLE);
                 }
                 else{
                     new Thread(new Runnable() {
@@ -378,6 +401,7 @@ public class TripViewActivity extends AppCompatActivity implements OnMapReadyCal
                                     public void run() {
                                         userimg.setImageBitmap(retBitmap);
                                         findViewById(R.id.loading_tripview).setVisibility(View.INVISIBLE);
+                                        mate.setVisibility(View.VISIBLE);
                                     }
                                 });
 

@@ -59,6 +59,7 @@ public class WalkUserListActivity extends Activity {
     CollectionReference schedule=fb.collection("schedule");
     CollectionReference datalist;
     CollectionReference request;
+    CollectionReference tripdatalist=fb.collection("tripdatalist");
 
     String docuid;
     String walkname;
@@ -167,6 +168,14 @@ public class WalkUserListActivity extends Activity {
                             datalist.document(docuid).delete().addOnCompleteListener(new OnCompleteListener<Void>() {
                                 @Override
                                 public void onComplete(@NonNull Task<Void> task) {
+                                    if(istrip){
+                                        tripdatalist.document(docuid).delete().addOnCompleteListener(new OnCompleteListener<Void>() {
+                                            @Override
+                                            public void onComplete(@NonNull Task<Void> task) {
+                                                Log.d("여행 리스트 삭제",docuid);
+                                            }
+                                        });
+                                    }
                                     if(userlist!=null){
                                         int[] checkend={0};
                                         for(String usercontains:userlist.keySet()){
@@ -195,6 +204,7 @@ public class WalkUserListActivity extends Activity {
                 }
                 //신청 유저가 존재하는경우
                 else{
+                    Log.d("삭제 체크","신청유저 존재");
                     datalist.document(docuid).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
                         @Override
                         public void onComplete(@NonNull Task<DocumentSnapshot> task) {
@@ -210,6 +220,14 @@ public class WalkUserListActivity extends Activity {
                                     datalist.document(docuid).delete().addOnCompleteListener(new OnCompleteListener<Void>() {
                                         @Override
                                         public void onComplete(@NonNull Task<Void> task) {
+                                            if(istrip){
+                                                tripdatalist.document(docuid).delete().addOnCompleteListener(new OnCompleteListener<Void>() {
+                                                    @Override
+                                                    public void onComplete(@NonNull Task<Void> task) {
+                                                        Log.d("여행 리스트 삭제",docuid);
+                                                    }
+                                                });
+                                            }
                                             //게시물 신청유저 목록 삭제
                                             walkuser.document(docuid).delete().addOnCompleteListener(new OnCompleteListener<Void>() {
                                                 @Override
@@ -237,6 +255,11 @@ public class WalkUserListActivity extends Activity {
                                                     }
                                                 }
                                             });
+                                        }
+                                    }).addOnFailureListener(new OnFailureListener() {
+                                        @Override
+                                        public void onFailure(@NonNull Exception e) {
+                                            Log.d("게시물 삭제 실패_리스트",e.toString());
                                         }
                                     });
                                 }
@@ -394,7 +417,7 @@ public class WalkUserListActivity extends Activity {
         @Override
         public View getView(int position, View convertView, ViewGroup parent) {
             View view=layoutInflater.inflate(R.layout.listlayout_walkwait,null);
-            View emptyview=layoutInflater.inflate(R.layout.list_layout_empty,null);
+            View emptyview=layoutInflater.inflate(R.layout.empty_layout,null);
             if(waituser.size()==0){
                 return emptyview;
             }
@@ -716,7 +739,7 @@ public class WalkUserListActivity extends Activity {
         @Override
         public View getView(int position, View convertView, ViewGroup parent) {
             View view=layoutInflater.inflate(R.layout.listlayout_walkwait,null);
-            View emptyview=layoutInflater.inflate(R.layout.list_layout_empty,null);
+            View emptyview=layoutInflater.inflate(R.layout.empty_layout,null);
             if(acceptuser.size()==0){
                 return emptyview;
             }

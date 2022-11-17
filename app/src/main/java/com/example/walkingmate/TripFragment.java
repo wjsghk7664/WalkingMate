@@ -18,6 +18,7 @@ import android.widget.BaseAdapter;
 import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -58,6 +59,7 @@ public class TripFragment extends Fragment implements SwipeRefreshLayout.OnRefre
 
     boolean addbool=false;//최하단 스크롤시 getlist여러번 실행되는 오류막기위한 불리안
     boolean backbool=false;//게시물 추가후 돌아왔을때 새로고침시 중복실행 막기위한 불리안
+    boolean checkin=false;
 
 
     @Override
@@ -197,6 +199,25 @@ public class TripFragment extends Fragment implements SwipeRefreshLayout.OnRefre
         if(backbool){
             refreshs();
         }
+        if(checkin){
+            checkdelete();
+            checkin=false;
+        }
+
+    }
+
+    public void checkdelete(){
+        for(String s:tripdocuids){
+            tripdata.document(s).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                @Override
+                public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                    if(!task.getResult().exists()){
+                        tripdocuids.remove(s);
+                        tripAdapter.notifyDataSetChanged();
+                    }
+                }
+            });
+        }
     }
 
     public class TripAdapter extends BaseAdapter {
@@ -226,22 +247,42 @@ public class TripFragment extends Fragment implements SwipeRefreshLayout.OnRefre
         @Override
         public View getView(int position, View convertView, ViewGroup parent) {
             View view = layoutInflater.inflate(R.layout.layout_triplist, null);
-            View emptyview=layoutInflater.inflate(R.layout.list_layout_empty,null);
+            View emptyview=layoutInflater.inflate(R.layout.empty_layout,null);
             if(tripdocuids.size()==0){
                 return emptyview;
             }
 
             View bodyView = view.findViewById(R.id.trip_body);
-            bodyView.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    Intent intent=new Intent(getActivity(),TripViewActivity.class);
-                    intent.putExtra("docuid",tripdocuids.get(position));
-                    intent.putExtra("date",dates.get(tripdocuids.get(position)));
-                    intent.putExtra("userid",userids.get(tripdocuids.get(position)));
-                    startActivity(intent);
-                }
-            });
+            try{
+                bodyView.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        tripdata.document(tripdocuids.get(position)).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                            @Override
+                            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                                if(!task.getResult().exists()){
+                                    Toast.makeText(getActivity(),"존재하지 않는 게시물입니다.",Toast.LENGTH_SHORT).show();
+                                    tripdocuids.remove(tripdocuids.get(position));
+                                    notifyDataSetChanged();
+                                    return;
+                                }
+                                else{
+                                    checkin=true;
+                                    Intent intent=new Intent(getActivity(),TripViewActivity.class);
+                                    intent.putExtra("docuid",tripdocuids.get(position));
+                                    intent.putExtra("date",dates.get(tripdocuids.get(position)));
+                                    intent.putExtra("userid",userids.get(tripdocuids.get(position)));
+                                    startActivity(intent);
+                                }
+                            }
+                        });
+
+                    }
+                });
+            }catch (Exception e){
+                e.printStackTrace();
+            }
+
 
             TextView title=view.findViewById(R.id.trip_title);
             TextView datetxt=view.findViewById(R.id.trip_date);
