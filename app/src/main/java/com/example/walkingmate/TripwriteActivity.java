@@ -254,7 +254,7 @@ public class TripwriteActivity extends AppCompatActivity implements OnMapReadyCa
         data.put("takentime", taken);
         data.put("locations_name",locnames);
         data.put("startlocation",getStartlocation(locnames.get(0)));
-        data.put("starttime",getstartdatestr(year,mon,day,hour,min));
+        data.put("starttime",getstartdatestr(year,mon,day));
         data.put("endtime",getenddatestr(year,mon,day,hour,min,taken));
         data.put("blockgender",blockgender);
 
@@ -276,9 +276,8 @@ public class TripwriteActivity extends AppCompatActivity implements OnMapReadyCa
         });
     }
 
-    public String getstartdatestr(Object y, Object m, Object d, Object h, Object min) throws ParseException {
-        SimpleDateFormat sdf=new SimpleDateFormat("yyyy/MM/dd HH:mm");
-        String start=String.format("%04d/%02d/%02d %02d:%02d",y,m,d,h,min);
+    public String getstartdatestr(Object y, Object m, Object d) throws ParseException {
+        String start=String.format("%04d/%02d/%02d",y,m,d);
         return start;
     }
 
@@ -289,7 +288,7 @@ public class TripwriteActivity extends AppCompatActivity implements OnMapReadyCa
         Calendar calendar=Calendar.getInstance();
         calendar.setTime(date);
         calendar.add(Calendar.MINUTE, (Integer) taken);
-        return sdf.format(calendar.getTime());
+        return sdf.format(calendar.getTime()).split(" ")[0];
     }
 
     //현재 시간을 힌트로 표시

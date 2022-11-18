@@ -1,9 +1,13 @@
 package com.example.walkingmate;
 
+import static android.app.Activity.RESULT_OK;
+
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
@@ -18,7 +22,9 @@ import android.widget.AbsListView;
 import android.widget.BaseAdapter;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
+import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
@@ -84,6 +90,10 @@ public class TripFragment extends Fragment implements SwipeRefreshLayout.OnRefre
 
     boolean nomore=true;
 
+    ImageButton startcalendar,endcalendar;
+    EditText syear,smonth,sday,eyear,emonth,eday;
+
+    String startstr,endstr;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -93,8 +103,37 @@ public class TripFragment extends Fragment implements SwipeRefreshLayout.OnRefre
         swipeRefreshLayout=rootview.findViewById(R.id.refresh_triplist);
         swipeRefreshLayout.setOnRefreshListener(this::onRefresh);
 
+        startstr="1000/01/01";
+        endstr="9999/12/31";
+
         sex=rootview.findViewById(R.id.spinner_sex_tripfrag);
         age=rootview.findViewById(R.id.spinner_age_tripfrag);
+
+        startcalendar=rootview.findViewById(R.id.start_tripfrag);
+        endcalendar=rootview.findViewById(R.id.end_tripfrag);
+        syear=rootview.findViewById(R.id.year_start);
+        smonth=rootview.findViewById(R.id.month_start);
+        sday=rootview.findViewById(R.id.day_start);
+        eyear=rootview.findViewById(R.id.year_end);
+        emonth=rootview.findViewById(R.id.month_end);
+        eday=rootview.findViewById(R.id.day_end);
+
+        startcalendar.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                getstartResult.launch(new Intent(getActivity(),DateSelector.class));
+            }
+        });
+
+        endcalendar.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                getendResult.launch(new Intent(getActivity(),DateSelector.class));
+            }
+        });
+
+
+
 
         userData=UserData.loadData(getActivity());
 
@@ -178,10 +217,112 @@ public class TripFragment extends Fragment implements SwipeRefreshLayout.OnRefre
             }
         });
 
+        rootview.findViewById(R.id.finishSetting_tripfrag).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                String tmps,tmpe;
+                tmps=String.format("%s/%s/%s",syear.getText().toString(),smonth.getText().toString(),sday.getText().toString());
+                tmpe=String.format("%s/%s/%s",eyear.getText().toString(),emonth.getText().toString(),eday.getText().toString());
+                //비어있으면 제한선 없는것으로 만들음
+                Log.d("날짜 체크",tmps+","+tmpe);
+                if(tmps.equals("//")){
+                    tmps="1000/01/01";
+                }
+                if(tmpe.equals("//")){
+                    tmpe="9999/12/31";
+                }
+                if(!checkdate(tmps,tmpe)){
+                    Toast.makeText(getActivity(),"잘못된 날짜를 입력하셨습니다.",Toast.LENGTH_SHORT).show();
+                    return;
+                }
+                else{
+                    startstr=tmps;
+                    endstr=tmpe;
+                }
+
+                if(!addbool){
+                    Toast.makeText(getActivity(),"설정 완료되었습니다.",Toast.LENGTH_SHORT).show();
+                    addbool=true;
+                    refreshs();
+                }
+
+
+            }
+        });
+
+        rootview.findViewById(R.id.clearSetting_tripfrag).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                startstr="1000/01/01";
+                endstr="9999/12/31";
+                for(CheckBox checkBox:checkBoxes){
+                    checkBox.setChecked(false);
+                }
+                checkBoxes[0].setChecked(true);
+                Selectedlocation.clear();
+                Selectedlocation.add("전체");
+                syear.setText("");
+                smonth.setText("");
+                sday.setText("");
+                eyear.setText("");
+                emonth.setText("");
+                eday.setText("");
+                sex.setSelection(0);
+                age.setSelection(0);
+            }
+        });
+
 
 
         return rootview;
     }
+
+    //포멧 형식과 전후 관계 체크(시작일과 끝일이 같으면 true;)
+    public boolean checkdate(String start, String end){
+        try{
+            SimpleDateFormat sdf=new SimpleDateFormat("yyyy/MM/dd");
+            sdf.setLenient(false);
+            Date sdate,edate;
+
+            sdate=sdf.parse(start);
+            edate=sdf.parse(end);
+
+            if(edate.before(sdate)){
+                return false;
+            }
+
+        }catch (Exception e){
+            return false;
+        }
+        return true;
+
+    }
+
+
+    private final ActivityResultLauncher<Intent> getstartResult= registerForActivityResult(
+            new ActivityResultContracts.StartActivityForResult(),
+            result -> {
+                if(result.getResultCode() ==RESULT_OK){
+                    if(result.getData()!=null){
+                        syear.setText(result.getData().getIntExtra("mYear",2022)+"");
+                        smonth.setText(result.getData().getIntExtra("mMonth",12)+"");
+                        sday.setText(result.getData().getIntExtra("mDay",1)+"");
+                    }
+                }
+            });
+
+    private final ActivityResultLauncher<Intent> getendResult= registerForActivityResult(
+            new ActivityResultContracts.StartActivityForResult(),
+            result -> {
+                if(result.getResultCode() ==RESULT_OK){
+                    if(result.getData()!=null){
+                        eyear.setText(result.getData().getIntExtra("mYear",2022)+"");
+                        emonth.setText(result.getData().getIntExtra("mMonth",12)+"");
+                        eday.setText(result.getData().getIntExtra("mDay",1)+"");
+                    }
+                }
+            });
+
 
 
     CheckBox.OnClickListener checkboxlistener=new View.OnClickListener() {
@@ -219,10 +360,15 @@ public class TripFragment extends Fragment implements SwipeRefreshLayout.OnRefre
         getlist();
     }
 
-    //차단, 연령대, 성별 체크 (상대 기준)
+    //차단, 연령대, 성별(상대 기준), 날짜 체크
+    //파이어베이스 중복실행 에러로 여러번 들어오는 경우 체크
     public boolean checkfilter(DocumentSnapshot document, ArrayList<String> myblockuser){
         //내 차단목록 체크
         if(myblockuser.contains(document.getString("userid"))){
+            return false;
+        }
+
+        if(tripdocuids.contains(document.getId())){
             return false;
         }
 
@@ -244,6 +390,16 @@ public class TripFragment extends Fragment implements SwipeRefreshLayout.OnRefre
         }
         String genderfilter=document.getString("blockgender");
         if(genderfilter.equals(mygender)){
+            return false;
+        }
+
+        //시작일 체크:설정시작일<=문서 시작일
+        if(!checkdate(startstr,document.getString("starttime"))){
+            return false;
+        }
+
+        //종료일 체크: 문서 종료일<=설정종료일
+        if(!checkdate(document.getString("endtime"),endstr)){
             return false;
         }
 
@@ -289,7 +445,6 @@ public class TripFragment extends Fragment implements SwipeRefreshLayout.OnRefre
         else{
             Log.d("연령 필터","없음");
         }
-
 
         Log.d("여행 쿼리","gen:"+gender+", age:"+ages+", locations:"+Selectedlocation.toString());
         Log.d("여행 최하단 게시물 시작전",curitem);
@@ -373,7 +528,10 @@ public class TripFragment extends Fragment implements SwipeRefreshLayout.OnRefre
                                             }
                                         });
                                     }
-                                    tripdocuids.add("last");
+                                    if(!tripdocuids.contains("last")){
+                                        tripdocuids.add("last");
+                                    }
+
                                     tripAdapter.notifyDataSetChanged();
                                     if(addbool){
                                         addbool=false;
@@ -384,7 +542,9 @@ public class TripFragment extends Fragment implements SwipeRefreshLayout.OnRefre
                                     Log.d("여행리스트수",tripdocuids.size()+"");
                                 }
                                 else{
-                                    tripdocuids.add("last");
+                                    if(!tripdocuids.contains("last")){
+                                        tripdocuids.add("last");
+                                    }
                                     nomore=false;
                                     tripAdapter.notifyDataSetChanged();
                                 }

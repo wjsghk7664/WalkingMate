@@ -382,7 +382,7 @@
 
 
                     <ImageButton
-                        android:id="@+id/start_selectbtn"
+                        android:id="@+id/start_tripfrag"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:src="@drawable/calendar_icon_btn"
@@ -473,7 +473,7 @@
                         android:textColor="@color/black"/>
 
                     <ImageButton
-                        android:id="@+id/end_selectbtn"
+                        android:id="@+id/end_tripfrag"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:src="@drawable/calendar_icon_btn"
@@ -552,31 +552,42 @@
 
                 </LinearLayout>
 
-                <androidx.constraintlayout.widget.ConstraintLayout
+                <LinearLayout
+                    android:gravity="center"
+                    android:orientation="horizontal"
                     android:layout_width="match_parent"
                     android:layout_height="0dp"
                     android:layout_weight="1"
                     android:padding="5dp">
 
                     <Button
+                        android:layout_marginHorizontal="20dp"
+                        android:id="@+id/finishSetting_tripfrag"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        app:layout_constraintBottom_toBottomOf="parent"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toTopOf="parent"
                         android:background="@drawable/orangebtn"
                         android:paddingHorizontal="25dp"
-                        android:text="설정 완료"
+                        android:text="설정 적용"
                         android:textStyle="bold"
                         android:textColor="@color/white"
-                        android:textSize="15dp">
+                        android:textSize="15dp"/>
 
-                    </Button>
+                    <Button
+                        android:layout_marginHorizontal="20dp"
+                        android:id="@+id/clearSetting_tripfrag"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:background="@drawable/orangebtn"
+                        android:paddingHorizontal="25dp"
+                        android:text="설정 초기화"
+                        android:textColor="@color/white"
+                        android:textSize="15dp"
+                        android:textStyle="bold"
+                        />
 
 
 
-                </androidx.constraintlayout.widget.ConstraintLayout>
+                </LinearLayout>
 
             </LinearLayout>
 
