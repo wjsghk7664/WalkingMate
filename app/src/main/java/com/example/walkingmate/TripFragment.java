@@ -361,6 +361,9 @@ public class TripFragment extends Fragment implements SwipeRefreshLayout.OnRefre
                                     curitem=writetimes.get(alldocuids.get(alldocuids.size()-1));
                                     Log.d("여행 최하단 게시물",curitem);
                                     for(String s:tripdocuids){
+                                        if(s.equals("last")){
+                                            continue;
+                                        }
                                         users.document(userids.get(s)).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
                                             @Override
                                             public void onComplete(@NonNull Task<DocumentSnapshot> task) {

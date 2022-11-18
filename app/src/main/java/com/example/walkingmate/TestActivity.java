@@ -179,6 +179,7 @@ public class TestActivity extends AppCompatActivity implements OnMapReadyCallbac
             public void onClick(View view) {
 
                 marker.setPosition(new LatLng(yval,xval));
+                cur=marker.getPosition();
                 searchmove=true;
                 mapFragmentFeed.getMapAsync(TestActivity.this);
                 searchmove=false;
@@ -225,8 +226,8 @@ public class TestActivity extends AppCompatActivity implements OnMapReadyCallbac
                     return;
                 }
                 if(coordlist==null||coordlist.size()==0){
-                    if(markers.size()==0){
-                        Toast.makeText(getApplicationContext(),"목적지를 선택해 주세요.",Toast.LENGTH_SHORT).show();
+                    if(nameList.size()<2){
+                        Toast.makeText(getApplicationContext(),"2개 이상의 목적지를 선택해 주세요.",Toast.LENGTH_SHORT).show();
                     }
                     else {
                         Toast.makeText(getApplicationContext(),"경로 탐색이 지원되지 않는 목적지가 포함되어 있습니다.",Toast.LENGTH_SHORT).show();

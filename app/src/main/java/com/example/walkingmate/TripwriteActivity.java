@@ -156,6 +156,7 @@ public class TripwriteActivity extends AppCompatActivity implements OnMapReadyCa
                     taken=(Integer.parseInt(takendaytxt.getText().toString())*60*24)+
                             (Integer.parseInt(takenhourtxt.getText().toString())*60)+
                             Integer.parseInt(takenmintxt.getText().toString());
+                    Log.d("여행 소요시간",Integer.parseInt(takendaytxt.getText().toString())+","+Integer.parseInt(takenhourtxt.getText().toString())+","+Integer.parseInt(takenmintxt.getText().toString()));
 
                 }catch (NumberFormatException e){
                     e.printStackTrace();
