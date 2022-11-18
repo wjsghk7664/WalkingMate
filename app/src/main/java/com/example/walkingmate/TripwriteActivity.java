@@ -46,10 +46,13 @@ import com.naver.maps.map.util.MarkerIcons;
 
 import org.w3c.dom.Text;
 
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Optional;
 
 public class TripwriteActivity extends AppCompatActivity implements OnMapReadyCallback {
 
@@ -165,7 +168,11 @@ public class TripwriteActivity extends AppCompatActivity implements OnMapReadyCa
                     genderstr=gender.getSelectedItem().toString();
                     titlestr=title.getText().toString();
                     contentstr=contentstxt.getText().toString();
-                    sendData();
+                    try {
+                        sendData();
+                    } catch (ParseException e) {
+                        e.printStackTrace();
+                    }
                     finish();
                 }
                 else{
@@ -184,8 +191,22 @@ public class TripwriteActivity extends AppCompatActivity implements OnMapReadyCa
 
     }
 
+    public String getStartlocation(String starts){
+        String location=starts.split(" ")[0];
+        if(location.equals("서울특별시")||location.equals("경기도")){
+            location="서울/경기";
+        }
+        else if(location.equals("제주특별자치도")){
+            location="제주도";
+        }
+        else if(location.contains("시")){
+            location=location.substring(0,2);
+        }
+        return location;
+    }
 
-    public void sendData(){
+
+    public void sendData() throws ParseException {
         HashMap<String, Object> data=new HashMap<>();
 
         UserData userData=UserData.loadData(TripwriteActivity.this);
@@ -196,6 +217,17 @@ public class TripwriteActivity extends AppCompatActivity implements OnMapReadyCa
         }
         else{
             usergender="여성";
+        }
+
+        String blockgender;
+        if(genderstr.equals("남성")){
+            blockgender="여성";
+        }
+        else if(genderstr.equals("여성")){
+            blockgender="남성";
+        }
+        else{
+            blockgender="무관";
         }
 
         long now = System.currentTimeMillis();
@@ -220,6 +252,10 @@ public class TripwriteActivity extends AppCompatActivity implements OnMapReadyCa
         data.put("minute", min);
         data.put("takentime", taken);
         data.put("locations_name",locnames);
+        data.put("startlocation",getStartlocation(locnames.get(0)));
+        data.put("starttime",getstartdatestr(year,mon,day,hour,min));
+        data.put("endtime",getenddatestr(year,mon,day,hour,min,taken));
+        data.put("blockgender",blockgender);
 
         triplist.document(documentID).set(data);
 
@@ -237,6 +273,22 @@ public class TripwriteActivity extends AppCompatActivity implements OnMapReadyCa
                 Toast.makeText(getApplicationContext(),"작성 실패하였습니다.",Toast.LENGTH_SHORT).show();
             }
         });
+    }
+
+    public String getstartdatestr(Object y, Object m, Object d, Object h, Object min) throws ParseException {
+        SimpleDateFormat sdf=new SimpleDateFormat("yyyy/MM/dd HH:mm");
+        String start=String.format("%04d/%02d/%02d %02d:%02d",y,m,d,h,min);
+        return start;
+    }
+
+    public String getenddatestr(Object y, Object m, Object d, Object h, Object min, Object taken) throws ParseException {
+        SimpleDateFormat sdf=new SimpleDateFormat("yyyy/MM/dd HH:mm");
+        String start=String.format("%04d/%02d/%02d %02d:%02d",y,m,d,h,min);
+        Date date=sdf.parse(start);
+        Calendar calendar=Calendar.getInstance();
+        calendar.setTime(date);
+        calendar.add(Calendar.MINUTE, (Integer) taken);
+        return sdf.format(calendar.getTime());
     }
 
     //현재 시간을 힌트로 표시

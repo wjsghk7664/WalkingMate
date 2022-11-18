@@ -2,12 +2,16 @@ package com.example.walkingmate;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.app.Activity;
 import android.content.Intent;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.view.View;
+import android.view.Window;
 import android.widget.TimePicker;
 
-public class TimeSelector extends AppCompatActivity {
+public class TimeSelector extends Activity {
 
     int mHour=0,mMinute=0;
 
@@ -16,7 +20,10 @@ public class TimeSelector extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.activity_time_selector);
+
+        getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
 
         time_picker=findViewById(R.id.time_picker);
         mHour=time_picker.getHour();

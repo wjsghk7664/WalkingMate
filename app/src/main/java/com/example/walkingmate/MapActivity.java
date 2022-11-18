@@ -389,7 +389,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
     public String getTime(){
         long now = System.currentTimeMillis();
         Date date = new Date(now);
-        SimpleDateFormat sdf=new SimpleDateFormat("yyyy년_MM월_dd일_hh시_mm분");//날짜시간
+        SimpleDateFormat sdf=new SimpleDateFormat("yyyy년_MM월_dd일_HH시_mm분");//날짜시간
         String getTime=sdf.format(date);
         return getTime;
     }

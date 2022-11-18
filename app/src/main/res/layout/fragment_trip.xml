@@ -161,9 +161,10 @@
                             android:id="@+id/radio8"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="전라북도"
                             android:layout_marginLeft="20dp"
+                            android:text="전라북도"
                             app:layout_constraintBottom_toBottomOf="parent"
+                            app:layout_constraintEnd_toEndOf="parent"
                             app:layout_constraintStart_toEndOf="@+id/radio7"
                             app:layout_constraintTop_toTopOf="parent" />
                     </androidx.constraintlayout.widget.ConstraintLayout>
@@ -441,7 +442,7 @@
                             app:layout_constraintTop_toTopOf="parent" />
 
                         <Spinner
-                            android:id="@+id/spinner8"
+                            android:id="@+id/spinner_sex_tripfrag"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:entries="@array/array_sex"
@@ -470,7 +471,7 @@
                             app:layout_constraintTop_toTopOf="parent" />
 
                         <Spinner
-                            android:id="@+id/spinner9"
+                            android:id="@+id/spinner_age_tripfrag"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:entries="@array/array_age"

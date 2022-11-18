@@ -600,6 +600,10 @@ public class WalkFragment extends Fragment implements OnMapReadyCallback{
                 block.whereArrayContains("userid",userData.userid).get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
                     @Override
                     public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                        if(!task.isSuccessful()){
+                            Log.d("파이어베이스에러",42+"");
+                            return;
+                        }
                         if(!task.getResult().getDocuments().isEmpty()){
                             ArrayList<DocumentSnapshot> documents= (ArrayList<DocumentSnapshot>) task.getResult().getDocuments();
                             for(DocumentSnapshot document: documents){
