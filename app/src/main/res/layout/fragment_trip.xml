@@ -30,11 +30,11 @@
                 app:layout_constraintStart_toStartOf="parent"/>
 
             <Spinner
-                android:id="@+id/spinner_viewmode_trip"
+                android:id="@+id/spinner_viewmode_tripfrag"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="10dp"
-                android:entries="@array/array_viewmode"
+                android:entries="@array/array_viewmode_trip"
                 app:layout_constraintStart_toEndOf="@id/text_viewmode"
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintBottom_toBottomOf="parent"/>

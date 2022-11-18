@@ -19,7 +19,9 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AbsListView;
+import android.widget.AdapterView;
 import android.widget.BaseAdapter;
+import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.EditText;
@@ -47,6 +49,7 @@ import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
 
 public class TripFragment extends Fragment implements SwipeRefreshLayout.OnRefreshListener {
@@ -54,17 +57,22 @@ public class TripFragment extends Fragment implements SwipeRefreshLayout.OnRefre
     CollectionReference tripdata=fb.collection("tripdatalist");
     CollectionReference users=fb.collection("users");
     CollectionReference blocklist=fb.collection("blocklist");
+    CollectionReference reqlist=fb.collection("triprequest");
 
     SwipeRefreshLayout swipeRefreshLayout;
 
     ListView triplist;
     TripAdapter tripAdapter;
+    MyTripAdapter mytripAdapter;
+    MyReqTripAdapter myreqtripAdapter;
 
     ImageButton addtrip,scrollup;
     String curitem="30001112093121";
 
-    ArrayList<String> alldocuids=new ArrayList<>();
-    ArrayList<String> tripdocuids=new ArrayList<>();
+    ArrayList<String> alldocuids=new ArrayList<>();//전체 게시물 가져올떄 모든 아이디
+    ArrayList<String> tripdocuids=new ArrayList<>();//필터링된 전체게시물
+    ArrayList<String> mydocuids=new ArrayList<>();//내 게시물
+    ArrayList<String> myreqdocuids=new ArrayList<>();//내가 신청한 게시물
     HashMap<String, String> userids=new HashMap<>();
     HashMap<String,String> titles=new HashMap<>();
     HashMap<String, String> dates=new HashMap<>();
@@ -90,10 +98,15 @@ public class TripFragment extends Fragment implements SwipeRefreshLayout.OnRefre
 
     boolean nomore=true;
 
-    ImageButton startcalendar,endcalendar;
+    ImageButton startcalendar,endcalendar, searchopenbtn;
     EditText syear,smonth,sday,eyear,emonth,eday;
 
+    Button clearSetting;
+
     String startstr,endstr;
+
+    Spinner viewmode;
+    int viewmodenum=2;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -117,6 +130,11 @@ public class TripFragment extends Fragment implements SwipeRefreshLayout.OnRefre
         eyear=rootview.findViewById(R.id.year_end);
         emonth=rootview.findViewById(R.id.month_end);
         eday=rootview.findViewById(R.id.day_end);
+        viewmode=rootview.findViewById(R.id.spinner_viewmode_tripfrag);
+
+        viewmode.setSelection(2);
+
+
 
         startcalendar.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -137,7 +155,8 @@ public class TripFragment extends Fragment implements SwipeRefreshLayout.OnRefre
 
         userData=UserData.loadData(getActivity());
 
-        rootview.findViewById(R.id.search_tripfrag).setOnClickListener(new View.OnClickListener() {
+        searchopenbtn=rootview.findViewById(R.id.search_tripfrag);
+        searchopenbtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 int visible;
@@ -183,8 +202,45 @@ public class TripFragment extends Fragment implements SwipeRefreshLayout.OnRefre
         scrollup=rootview.findViewById(R.id.up_triplist);
 
         tripAdapter=new TripAdapter(getContext());
+        mytripAdapter=new MyTripAdapter(getContext());
+        myreqtripAdapter=new MyReqTripAdapter(getContext());
         triplist.setAdapter(tripAdapter);
         getlist();
+        getmylist();
+        getmyreqlist();
+
+        viewmode.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+                viewmodenum=i;
+                if(viewmodenum!=2){
+                    if(searchopen){
+                        searchopenbtn.performClick();
+                    }
+                    searchopenbtn.setVisibility(View.INVISIBLE);
+                }
+                else{
+                    searchopenbtn.setVisibility(View.VISIBLE);
+                }
+                switch (i){
+                    case 2:
+                        triplist.setAdapter(tripAdapter); break;
+                    case 1:
+                        triplist.setAdapter(myreqtripAdapter); break;
+                    case 0:
+                        Log.d("내 게시물",mydocuids.toString());
+                        triplist.setAdapter(mytripAdapter); break;
+                    default:
+                        triplist.setAdapter(tripAdapter); break;
+
+                }
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> adapterView) {
+
+            }
+        });
 
         scrollup.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -202,6 +258,9 @@ public class TripFragment extends Fragment implements SwipeRefreshLayout.OnRefre
         triplist.setOnScrollListener(new AbsListView.OnScrollListener() {
             @Override
             public void onScrollStateChanged(AbsListView absListView, int i) {
+                if(viewmodenum!=2){
+                    return;
+                }
                 if(!triplist.canScrollVertically(1)){
                     if(!addbool){
                         addbool=true;
@@ -250,7 +309,8 @@ public class TripFragment extends Fragment implements SwipeRefreshLayout.OnRefre
             }
         });
 
-        rootview.findViewById(R.id.clearSetting_tripfrag).setOnClickListener(new View.OnClickListener() {
+        clearSetting=rootview.findViewById(R.id.clearSetting_tripfrag);
+        clearSetting.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 startstr="1000/01/01";
@@ -349,15 +409,22 @@ public class TripFragment extends Fragment implements SwipeRefreshLayout.OnRefre
     public void refreshs(){
         nomore=true;
         curitem="30001112093121";
-        tripdocuids.clear();
+
         userids.clear();
         titles.clear();
         dates.clear();
         locations.clear();
         writetimes.clear();
         writers.clear();
+
+        tripdocuids.clear();
         alldocuids.clear();
+        mydocuids.clear();
+        myreqdocuids.clear();
+
         getlist();
+        getmylist();
+        getmyreqlist();
     }
 
     //차단, 연령대, 성별(상대 기준), 날짜 체크
@@ -556,6 +623,112 @@ public class TripFragment extends Fragment implements SwipeRefreshLayout.OnRefre
         });
     }
 
+    public void getmylist(){
+        Log.d("내 리스트 진입","1");
+        tripdata.whereEqualTo("userid",userData.userid).orderBy("writetime", Query.Direction.DESCENDING).get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                if(!task.isSuccessful()){
+                    Log.d("파이어베이스에러_여행",1+"");
+                    return;
+                }
+                if(!task.getResult().isEmpty()){
+                    Log.d("내 리스트 진입","2");
+                    QuerySnapshot documents=task.getResult();
+                    for(DocumentSnapshot document: documents){
+                        if(mydocuids.contains(document.getId())){
+                            continue;
+                        }
+                        else{
+                            mydocuids.add(document.getId());
+                            titles.put(document.getId(), (String) document.get("title"));
+                            userids.put(document.getId(), (String) document.get("userid"));
+                            try {
+                                dates.put(document.getId(),getdatestr(document.get("year"),document.get("month"),document.get("day"),document.get("hour"),document.get("minute"),document.get("takentime")));
+                            } catch (ParseException e) {
+                                dates.put(document.getId()," ");
+                            }
+                            locations.put(document.getId(), (ArrayList<String>) document.get("locations_name"));
+                            writetimes.put(document.getId(), (String) document.get("writetime"));
+                        }
+                        mytripAdapter.notifyDataSetChanged();
+
+                    }
+                }
+                else{
+                    Log.d("내 리스트 진입","3");
+                    if(mydocuids.size()==0){
+                        mydocuids.add("last");
+                        mytripAdapter.notifyDataSetChanged();
+                        Log.d("내 리스트 진입","4");
+                    }
+                }
+            }
+        });
+    }
+
+    public void getmyreqlist(){
+        Log.d("내 신청 여행 진입체크","0");
+        reqlist.document(userData.userid).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                if(!task.isSuccessful()){
+                    Log.d("파이어베이스에러",1+"");
+                    return;
+                }
+                DocumentSnapshot document=task.getResult();
+                ArrayList<String> docuids= (ArrayList<String>) document.get("requestlist");
+                if(docuids==null||docuids.size()==0){
+                    if(myreqdocuids.size()==0){
+                        Log.d("내 신청 여행 진입체크","1");
+                        myreqdocuids.add("last");
+                        myreqtripAdapter.notifyDataSetChanged();
+                    }
+                }
+                if(docuids!=null){
+                    if(docuids.size()>0){
+                        Log.d("내 신청 여행 진입체크","2");
+                        for(String s:docuids){
+                            tripdata.document(s).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                                @Override
+                                public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                                    if(task.isSuccessful()){
+                                        DocumentSnapshot document=task.getResult();
+
+                                        if(!myreqdocuids.contains(document.getId())){
+                                            myreqdocuids.add(document.getId());
+                                            titles.put(document.getId(), (String) document.get("title"));
+                                            userids.put(document.getId(), (String) document.get("userid"));
+                                            try {
+                                                dates.put(document.getId(),getdatestr(document.get("year"),document.get("month"),document.get("day"),document.get("hour"),document.get("minute"),document.get("takentime")));
+                                            } catch (ParseException e) {
+                                                dates.put(document.getId()," ");
+                                            }
+                                            locations.put(document.getId(), (ArrayList<String>) document.get("locations_name"));
+                                            writetimes.put(document.getId(), (String) document.get("writetime"));
+                                            myreqtripAdapter.notifyDataSetChanged();
+                                            Log.d("내 신청 여행 진입체크","3:"+document.getString("title"));
+
+                                            users.document(document.getString("userid")).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                                                @Override
+                                                public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                                                    Log.d("여행 유저 추가", (String) task.getResult().get("appname"));
+                                                    writers.put(document.getId(), (String) task.getResult().get("appname"));
+                                                    myreqtripAdapter.notifyDataSetChanged();
+                                                }
+                                            });
+                                        }
+                                    }
+                                }
+                            });
+                        }
+                    }
+                }
+
+            }
+        });
+    }
+
     public String getdatestr(Object y, Object m, Object d, Object h, Object min, Object taken) throws ParseException {
         SimpleDateFormat sdf=new SimpleDateFormat("yyyy/MM/dd HH:mm");
         String start=String.format("%04d/%02d/%02d %02d:%02d",y,m,d,h,min);
@@ -596,6 +769,40 @@ public class TripFragment extends Fragment implements SwipeRefreshLayout.OnRefre
                     if(!task.getResult().exists()){
                         tripdocuids.remove(s);
                         tripAdapter.notifyDataSetChanged();
+                    }
+                }
+            });
+        }
+        for(String s:mydocuids){
+            if(s.equals("last")){
+                continue;
+            }
+            tripdata.document(s).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                @Override
+                public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                    if(!task.getResult().exists()){
+                        mydocuids.remove(s);
+                        if(mydocuids.size()==0){
+                            mydocuids.add("last");
+                        }
+                        mytripAdapter.notifyDataSetChanged();
+                    }
+                }
+            });
+        }
+        for(String s:myreqdocuids){
+            if(s.equals("last")){
+                continue;
+            }
+            tripdata.document(s).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                @Override
+                public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                    if(!task.getResult().exists()){
+                        myreqdocuids.remove(s);
+                        if(myreqdocuids.size()==0){
+                            myreqdocuids.add("last");
+                        }
+                        myreqtripAdapter.notifyDataSetChanged();
                     }
                 }
             });
@@ -648,6 +855,11 @@ public class TripFragment extends Fragment implements SwipeRefreshLayout.OnRefre
                 if(!nomore){
                     lasttxt.setText("더 이상 게시물이 존재하지 않습니다.");
                 }
+                else if(alldocuids.size()>0){
+                    String lasttime=String.format("%s/%s/%s 이전 게시물\n클릭하여 추가로 게시물 불러오기",
+                            curitem.substring(0,4),curitem.substring(4,6),curitem.substring(6,8));
+                    lasttxt.setText(lasttime);
+                }
                 return lastview;
             }
 
@@ -693,6 +905,178 @@ public class TripFragment extends Fragment implements SwipeRefreshLayout.OnRefre
             String timetmp=writetimes.get(tripdocuids.get(position));
             writetime.setText(String.format("%s/%s/%s %s:%s",timetmp.substring(0,4),timetmp.substring(4,6),timetmp.substring(6,8),timetmp.substring(8,10),timetmp.substring(10,12)));
             writer.setText(writers.get(tripdocuids.get(position)));
+
+            return view;
+
+        }
+    }
+
+    public class MyTripAdapter extends BaseAdapter {
+
+        LayoutInflater layoutInflater;
+
+
+        public MyTripAdapter(Context context){
+            this.layoutInflater = LayoutInflater.from(context);
+
+        }
+        @Override
+        public int getCount() {
+            return mydocuids.size();
+        }
+
+        @Override
+        public Object getItem(int position) {
+            return null;
+        }
+
+        @Override
+        public long getItemId(int position) {
+            return position;
+        }
+
+        @Override
+        public View getView(int position, View convertView, ViewGroup parent) {
+            View view = layoutInflater.inflate(R.layout.layout_triplist, null);
+            View emptyview=layoutInflater.inflate(R.layout.empty_layout,null);
+            View lastview=layoutInflater.inflate(R.layout.layout_lasttriplist,null);
+            if(mydocuids.size()==0){
+                return emptyview;
+            }
+            if(mydocuids.get(position).equals("last")){
+                TextView lasttxt=lastview.findViewById(R.id.lastviewtxt);
+                lasttxt.setText("게시물이 존재하지 않습니다.");
+                return lastview;
+            }
+
+            View bodyView = view.findViewById(R.id.trip_body);
+            try{
+                bodyView.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        tripdata.document(mydocuids.get(position)).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                            @Override
+                            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                                if(!task.getResult().exists()){
+                                    Toast.makeText(getActivity(),"존재하지 않는 게시물입니다.",Toast.LENGTH_SHORT).show();
+                                    mydocuids.remove(mydocuids.get(position));
+                                    notifyDataSetChanged();
+                                    return;
+                                }
+                                else{
+                                    checkin=true;
+                                    Intent intent=new Intent(getActivity(),TripViewActivity.class);
+                                    intent.putExtra("docuid",mydocuids.get(position));
+                                    intent.putExtra("date",dates.get(mydocuids.get(position)));
+                                    intent.putExtra("userid",userids.get(mydocuids.get(position)));
+                                    startActivity(intent);
+                                }
+                            }
+                        });
+
+                    }
+                });
+            }catch (Exception e){
+                e.printStackTrace();
+            }
+
+
+            TextView title=view.findViewById(R.id.trip_title);
+            TextView datetxt=view.findViewById(R.id.trip_date);
+            TextView writetime=view.findViewById(R.id.trip_writetime);
+            TextView writer=view.findViewById(R.id.trip_writer);
+
+            title.setText(titles.get(mydocuids.get(position)));
+            datetxt.setText(dates.get(mydocuids.get(position)));
+            String timetmp=writetimes.get(mydocuids.get(position));
+            writetime.setText(String.format("%s/%s/%s %s:%s",timetmp.substring(0,4),timetmp.substring(4,6),timetmp.substring(6,8),timetmp.substring(8,10),timetmp.substring(10,12)));
+            writer.setText(userData.appname);
+
+            return view;
+
+        }
+    }
+
+    public class MyReqTripAdapter extends BaseAdapter {
+
+        LayoutInflater layoutInflater;
+
+
+        public MyReqTripAdapter(Context context){
+            this.layoutInflater = LayoutInflater.from(context);
+
+        }
+        @Override
+        public int getCount() {
+            return myreqdocuids.size();
+        }
+
+        @Override
+        public Object getItem(int position) {
+            return null;
+        }
+
+        @Override
+        public long getItemId(int position) {
+            return position;
+        }
+
+        @Override
+        public View getView(int position, View convertView, ViewGroup parent) {
+            View view = layoutInflater.inflate(R.layout.layout_triplist, null);
+            View emptyview=layoutInflater.inflate(R.layout.empty_layout,null);
+            View lastview=layoutInflater.inflate(R.layout.layout_lasttriplist,null);
+            if(myreqdocuids.size()==0){
+                return emptyview;
+            }
+            if(myreqdocuids.get(position).equals("last")){
+                TextView lasttxt=lastview.findViewById(R.id.lastviewtxt);
+                lasttxt.setText("신청한 게시물이 존재하지 않습니다.");
+                return lastview;
+            }
+
+            View bodyView = view.findViewById(R.id.trip_body);
+            try{
+                bodyView.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        tripdata.document(myreqdocuids.get(position)).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                            @Override
+                            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                                if(!task.getResult().exists()){
+                                    Toast.makeText(getActivity(),"존재하지 않는 게시물입니다.",Toast.LENGTH_SHORT).show();
+                                    myreqdocuids.remove(myreqdocuids.get(position));
+                                    notifyDataSetChanged();
+                                    return;
+                                }
+                                else{
+                                    checkin=true;
+                                    Intent intent=new Intent(getActivity(),TripViewActivity.class);
+                                    intent.putExtra("docuid",myreqdocuids.get(position));
+                                    intent.putExtra("date",dates.get(myreqdocuids.get(position)));
+                                    intent.putExtra("userid",userids.get(myreqdocuids.get(position)));
+                                    startActivity(intent);
+                                }
+                            }
+                        });
+
+                    }
+                });
+            }catch (Exception e){
+                e.printStackTrace();
+            }
+
+
+            TextView title=view.findViewById(R.id.trip_title);
+            TextView datetxt=view.findViewById(R.id.trip_date);
+            TextView writetime=view.findViewById(R.id.trip_writetime);
+            TextView writer=view.findViewById(R.id.trip_writer);
+
+            title.setText(titles.get(myreqdocuids.get(position)));
+            datetxt.setText(dates.get(myreqdocuids.get(position)));
+            String timetmp=writetimes.get(myreqdocuids.get(position));
+            writetime.setText(String.format("%s/%s/%s %s:%s",timetmp.substring(0,4),timetmp.substring(4,6),timetmp.substring(6,8),timetmp.substring(8,10),timetmp.substring(10,12)));
+            writer.setText(writers.get(myreqdocuids.get(position)));
 
             return view;
 
