@@ -11,12 +11,48 @@
         android:layout_height="match_parent"
         android:orientation="vertical">
 
-
-        <Button
-            android:id="@+id/search_tripfrag"
+        <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="50dp"
-            android:text="검색 필터"/>
+            android:background="@drawable/walk_boxline">
+
+            <TextView
+                android:id="@+id/text_viewmode"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="보기"
+                android:layout_marginLeft="10dp"
+                android:textColor="@color/black"
+                android:textSize="16dp"
+                android:textStyle="bold"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="parent"/>
+
+            <Spinner
+                android:id="@+id/spinner_viewmode_trip"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="10dp"
+                android:entries="@array/array_viewmode"
+                app:layout_constraintStart_toEndOf="@id/text_viewmode"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"/>
+
+            <ImageButton
+                android:id="@+id/search_tripfrag"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/icon_edit_xml"
+                android:background="@color/transparent"
+                android:layout_marginEnd="20dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
 
         <FrameLayout
             android:layout_marginBottom="60dp"
@@ -41,7 +77,7 @@
                 android:id="@+id/searchlayout_tripfrag"
                 android:background="@color/white"
                 android:layout_width="match_parent"
-                android:layout_height="300dp"
+                android:layout_height="400dp"
                 android:orientation="vertical"
                 android:clickable="true"
                 android:focusable="true"
@@ -72,8 +108,6 @@
                     android:orientation="vertical"
                     android:layout_weight="3"
                     android:background="@drawable/layout_divider">
-
-
 
                     <androidx.constraintlayout.widget.ConstraintLayout
                         android:layout_width="match_parent"
@@ -148,25 +182,26 @@
                             app:layout_constraintTop_toTopOf="parent" />
 
                         <CheckBox
-                            android:id="@+id/radio7"
+                            android:id="@+id/radio14"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="전라남도"
+                            android:text="대전"
                             android:layout_marginLeft="20dp"
                             app:layout_constraintBottom_toBottomOf="parent"
                             app:layout_constraintStart_toEndOf="@+id/radio6"
                             app:layout_constraintTop_toTopOf="parent" />
 
                         <CheckBox
-                            android:id="@+id/radio8"
+                            android:id="@+id/radio15"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
+                            android:text="울산"
                             android:layout_marginLeft="20dp"
-                            android:text="전라북도"
                             app:layout_constraintBottom_toBottomOf="parent"
-                            app:layout_constraintEnd_toEndOf="parent"
-                            app:layout_constraintStart_toEndOf="@+id/radio7"
+                            app:layout_constraintStart_toEndOf="@+id/radio14"
                             app:layout_constraintTop_toTopOf="parent" />
+
+
                     </androidx.constraintlayout.widget.ConstraintLayout>
 
                     <androidx.constraintlayout.widget.ConstraintLayout
@@ -221,33 +256,33 @@
                         android:layout_weight="1">
 
                         <CheckBox
-                            android:id="@+id/radio13"
+                            android:id="@+id/radio7"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="광주"
+                            android:text="전라남도"
                             android:layout_marginLeft="5dp"
                             app:layout_constraintBottom_toBottomOf="parent"
                             app:layout_constraintStart_toStartOf="parent"
                             app:layout_constraintTop_toTopOf="parent" />
 
                         <CheckBox
-                            android:id="@+id/radio14"
+                            android:id="@+id/radio8"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="대전"
                             android:layout_marginLeft="20dp"
+                            android:text="전라북도"
                             app:layout_constraintBottom_toBottomOf="parent"
-                            app:layout_constraintStart_toEndOf="@+id/radio13"
+                            app:layout_constraintStart_toEndOf="@+id/radio7"
                             app:layout_constraintTop_toTopOf="parent" />
 
                         <CheckBox
-                            android:id="@+id/radio15"
+                            android:id="@+id/radio13"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="울산"
+                            android:text="광주"
                             android:layout_marginLeft="20dp"
                             app:layout_constraintBottom_toBottomOf="parent"
-                            app:layout_constraintStart_toEndOf="@+id/radio14"
+                            app:layout_constraintStart_toEndOf="@id/radio8"
                             app:layout_constraintTop_toTopOf="parent" />
 
                         <CheckBox
@@ -257,163 +292,196 @@
                             android:text="제주도"
                             android:layout_marginLeft="20dp"
                             app:layout_constraintBottom_toBottomOf="parent"
-                            app:layout_constraintStart_toEndOf="@+id/radio15"
+                            app:layout_constraintStart_toEndOf="@+id/radio13"
                             app:layout_constraintTop_toTopOf="parent" />
+
+
                     </androidx.constraintlayout.widget.ConstraintLayout>
                 </LinearLayout>
 
-                <androidx.constraintlayout.widget.ConstraintLayout
+                <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="0dp"
                     android:layout_weight="1"
-                    android:gravity="center"
-                    android:background="@drawable/layout_divider">
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical">
 
                     <TextView
                         android:id="@+id/textView4"
-                        android:layout_width="0dp"
+                        android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_weight="2"
-                        android:text="날짜 선택"
+                        android:text="시작 날짜"
                         android:textColor="@color/black"
                         android:textSize="15dp"
                         android:layout_marginLeft="10dp"
-                        android:textStyle="bold"
-                        app:layout_constraintBottom_toBottomOf="parent"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toTopOf="parent" />
+                        android:textStyle="bold"/>
 
 
                     <EditText
-                        android:id="@+id/smon_tripfrag"
+                        android:id="@+id/year_start"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:background="@drawable/gray_empty"
-                        android:ems="3"
-                        android:hint="01"
-                        android:inputType="number"
-                        android:paddingHorizontal="15dp"
-                        android:paddingVertical="5dp"
+                        android:textSize="16dp"
+                        android:textColor="@color/black"
                         android:layout_marginLeft="15dp"
-                        android:textAlignment="center"
-                        android:textColor="@color/black"
-                        android:textSize="15dp"
-                        app:layout_constraintBottom_toBottomOf="parent"
-                        app:layout_constraintStart_toEndOf="@+id/textView4"
-                        app:layout_constraintTop_toTopOf="parent" />
+                        android:ems="4"
+                        android:inputType="numberDecimal"
+                        android:hint="2022"
+                        android:textAlignment="center"/>
 
                     <TextView
-                        android:id="@+id/textView11"
-                        android:layout_width="0dp"
+                        android:id="@+id/년_start"
+                        android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_weight="2"
+                        android:text="년"
+                        android:textSize="16dp"
+                        android:textStyle="bold"
+                        android:textColor="@color/black"/>
+
+                    <EditText
+                        android:id="@+id/month_start"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textSize="16dp"
+                        android:textColor="@color/black"
+                        android:layout_marginLeft="10dp"
+                        android:ems="2"
+                        android:inputType="numberDecimal"
+                        android:hint="10"
+                        android:textAlignment="center"/>
+
+                    <TextView
+                        android:id="@+id/월_start"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
                         android:text="월"
-                        android:textAlignment="center"
-                        android:textColor="@color/black"
-                        android:textSize="15dp"
-                        android:layout_marginLeft="5dp"
-                        app:layout_constraintBottom_toBottomOf="parent"
-                        app:layout_constraintStart_toEndOf="@+id/smon_tripfrag"
-                        app:layout_constraintTop_toTopOf="parent" />
+                        android:textSize="16dp"
+                        android:textStyle="bold"
+                        android:textColor="@color/black"/>
 
                     <EditText
-                        android:id="@+id/sday_tripfrag"
+                        android:id="@+id/day_start"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:background="@drawable/gray_empty"
-                        android:ems="3"
-                        android:hint="01"
-                        android:inputType="number"
-                        android:paddingHorizontal="15dp"
-                        android:paddingVertical="5dp"
-                        android:layout_marginLeft="5dp"
-                        android:textAlignment="center"
+                        android:textSize="16dp"
                         android:textColor="@color/black"
-                        android:textSize="15dp"
-                        app:layout_constraintBottom_toBottomOf="parent"
-                        app:layout_constraintStart_toEndOf="@+id/textView11"
-                        app:layout_constraintTop_toTopOf="parent" />
+                        android:layout_marginLeft="10dp"
+                        android:ems="2"
+                        android:inputType="numberDecimal"
+                        android:hint="20"
+                        android:textAlignment="center"/>
 
                     <TextView
-                        android:id="@+id/textView12"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="2"
-                        android:text="일 ~ "
-                        android:textAlignment="center"
-                        android:textColor="@color/black"
-                        android:textSize="15dp"
-                        android:layout_marginLeft="5dp"
-                        app:layout_constraintBottom_toBottomOf="parent"
-                        app:layout_constraintStart_toEndOf="@+id/sday_tripfrag"
-                        app:layout_constraintTop_toTopOf="parent" />
-
-                    <EditText
-                        android:id="@+id/emon_tripfrag"
+                        android:id="@+id/일_start"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:background="@drawable/gray_empty"
-                        android:ems="3"
-                        android:hint="01"
-                        android:inputType="number"
-                        android:paddingHorizontal="15dp"
-                        android:paddingVertical="5dp"
-                        android:textAlignment="center"
-                        android:textColor="@color/black"
-                        android:textSize="15dp"
-                        app:layout_constraintBottom_toBottomOf="parent"
-                        app:layout_constraintStart_toEndOf="@+id/textView12"
-                        app:layout_constraintTop_toTopOf="parent" />
-
-                    <TextView
-                        android:id="@+id/textView13"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="2"
-                        android:text="월"
-                        android:textAlignment="center"
-                        android:textColor="@color/black"
-                        android:textSize="15dp"
-                        android:layout_marginLeft="5dp"
-                        app:layout_constraintBottom_toBottomOf="parent"
-                        app:layout_constraintStart_toEndOf="@+id/emon_tripfrag"
-                        app:layout_constraintTop_toTopOf="parent" />
-
-                    <EditText
-                        android:id="@+id/eday_tripfrag"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:background="@drawable/gray_empty"
-                        android:ems="3"
-                        android:hint="01"
-                        android:inputType="number"
-                        android:paddingHorizontal="15dp"
-                        android:paddingVertical="5dp"
-                        android:layout_marginLeft="5dp"
-                        android:textAlignment="center"
-                        android:textColor="@color/black"
-                        android:textSize="15dp"
-                        app:layout_constraintBottom_toBottomOf="parent"
-                        app:layout_constraintStart_toEndOf="@+id/textView13"
-                        app:layout_constraintTop_toTopOf="parent" />
-
-                    <TextView
-                        android:id="@+id/textView14"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="2"
                         android:text="일"
-                        android:textAlignment="center"
+                        android:textSize="16dp"
+                        android:textStyle="bold"
+                        android:textColor="@color/black"/>
+
+
+                    <ImageButton
+                        android:id="@+id/start_selectbtn"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:src="@drawable/calendar_icon_btn"
+                        android:background="@color/transparent"
+                        android:layout_marginLeft="15dp"/>
+
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    android:layout_weight="1"
+                    android:gravity="center_vertical"
+                    android:background="@drawable/layout_divider">
+
+                    <TextView
+                        android:id="@+id/textView5"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="종료 날짜"
                         android:textColor="@color/black"
                         android:textSize="15dp"
-                        android:layout_marginLeft="5dp"
-                        app:layout_constraintBottom_toBottomOf="parent"
-                        app:layout_constraintStart_toEndOf="@+id/eday_tripfrag"
-                        app:layout_constraintTop_toTopOf="parent" />
+                        android:layout_marginLeft="10dp"
+                        android:textStyle="bold" />
+
+                    <EditText
+                        android:id="@+id/year_end"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textSize="16dp"
+                        android:textColor="@color/black"
+                        android:layout_marginLeft="15dp"
+                        android:ems="4"
+                        android:inputType="numberDecimal"
+                        android:hint="2022"
+                        android:textAlignment="center"/>
+
+                    <TextView
+                        android:id="@+id/년_end"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="년"
+                        android:textSize="16dp"
+                        android:textStyle="bold"
+                        android:textColor="@color/black"/>
+
+                    <EditText
+                        android:id="@+id/month_end"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textSize="16dp"
+                        android:textColor="@color/black"
+                        android:layout_marginLeft="10dp"
+                        android:ems="2"
+                        android:inputType="numberDecimal"
+                        android:hint="10"
+                        android:textAlignment="center"/>
+
+                    <TextView
+                        android:id="@+id/월_end"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="월"
+                        android:textSize="16dp"
+                        android:textStyle="bold"
+                        android:textColor="@color/black"/>
+
+                    <EditText
+                        android:id="@+id/day_end"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textSize="16dp"
+                        android:textColor="@color/black"
+                        android:layout_marginLeft="10dp"
+                        android:ems="2"
+                        android:inputType="numberDecimal"
+                        android:hint="20"
+                        android:textAlignment="center"/>
+
+                    <TextView
+                        android:id="@+id/일_end"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="일"
+                        android:textSize="16dp"
+                        android:textStyle="bold"
+                        android:textColor="@color/black"/>
+
+                    <ImageButton
+                        android:id="@+id/end_selectbtn"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:src="@drawable/calendar_icon_btn"
+                        android:background="@color/transparent"
+                        android:layout_marginLeft="15dp"/>
 
 
-
-                </androidx.constraintlayout.widget.ConstraintLayout>
+                </LinearLayout>
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -483,6 +551,32 @@
                     </androidx.constraintlayout.widget.ConstraintLayout>
 
                 </LinearLayout>
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    android:layout_weight="1"
+                    android:padding="5dp">
+
+                    <Button
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"
+                        android:background="@drawable/orangebtn"
+                        android:paddingHorizontal="25dp"
+                        android:text="설정 완료"
+                        android:textStyle="bold"
+                        android:textColor="@color/white"
+                        android:textSize="15dp">
+
+                    </Button>
+
+
+
+                </androidx.constraintlayout.widget.ConstraintLayout>
 
             </LinearLayout>
 
