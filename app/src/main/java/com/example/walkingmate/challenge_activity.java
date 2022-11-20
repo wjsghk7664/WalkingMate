@@ -3,6 +3,7 @@ package com.example.walkingmate;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -35,7 +36,7 @@ public class challenge_activity extends AppCompatActivity {
 
     UserData userData;
 
-    ImageButton back, question,s1,s2,s3,s4,s5,r1,r2,r3,r4,r5,q1,q2,q3,q4,q5,m1,m2,m3,m4,m5;
+    ImageButton back,s1,s2,s3,s4,s5,r1,r2,r3,r4,r5,q1,q2,q3,q4,q5,m1,m2,m3,m4,m5;
     TextView stxt,rtxt,qtxt,mtxt;
 
     @Override
@@ -44,12 +45,20 @@ public class challenge_activity extends AppCompatActivity {
         setContentView(R.layout.activity_challenge);
 
         back=findViewById(R.id.back_challenge);
-        question=findViewById(R.id.question_challenge);
 
         back.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 finish();
+            }
+        });
+
+        findViewById(R.id.question_challenge).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent=new Intent(challenge_activity.this, HelpInfo_Activity.class);
+                intent.putExtra("curitem",1);
+                startActivity(intent);
             }
         });
 
@@ -100,6 +109,7 @@ public class challenge_activity extends AppCompatActivity {
         Log.d("도전과제 연도계산",befyearlastweek+"");
         int[] checkweek=new int[befyearlastweek+1];
         final int[] seqtotal = {0};
+
 
         feed.whereEqualTo("userid",userData.userid).get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
             @Override

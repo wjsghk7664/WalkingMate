@@ -204,7 +204,6 @@ public class HelpInfo_Activity extends AppCompatActivity {
         listView=findViewById(R.id.helplist);
         helpAdapter=new HelpAdapter(getApplicationContext());
         listView.setAdapter(helpAdapter);
-        listView.setSelectionFromTop(curitem,0);
 
         listView.setOnScrollListener(new AbsListView.OnScrollListener() {
             @Override
@@ -237,6 +236,7 @@ public class HelpInfo_Activity extends AppCompatActivity {
 
 
 
+
         for(int i=0; i<btns.length; ++i){
             int finalI = i;
             btns[i].setOnClickListener(new View.OnClickListener() {
@@ -247,6 +247,8 @@ public class HelpInfo_Activity extends AppCompatActivity {
                 }
             });
         }
+
+        btns[curitem].performClick();
     }
 
 

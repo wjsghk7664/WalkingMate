@@ -71,8 +71,11 @@ public class TripFragment extends Fragment implements SwipeRefreshLayout.OnRefre
 
     ArrayList<String> alldocuids=new ArrayList<>();//전체 게시물 가져올떄 모든 아이디
     ArrayList<String> tripdocuids=new ArrayList<>();//필터링된 전체게시물
+
     ArrayList<String> mydocuids=new ArrayList<>();//내 게시물
+
     ArrayList<String> myreqdocuids=new ArrayList<>();//내가 신청한 게시물
+
     HashMap<String, String> userids=new HashMap<>();
     HashMap<String,String> titles=new HashMap<>();
     HashMap<String, String> dates=new HashMap<>();

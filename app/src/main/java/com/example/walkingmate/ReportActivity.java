@@ -108,6 +108,7 @@ public class ReportActivity extends Activity {
                 String reports="";
                 if(reportcase==0){
                     Toast.makeText(ReportActivity.this,"신고사유를 선택해주세요.",Toast.LENGTH_SHORT).show();
+                    return;
                 }
                 if(reportcase==4){
                     reports=reason.getText().toString();
