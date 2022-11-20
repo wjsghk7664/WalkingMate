@@ -47,7 +47,119 @@
             android:layout_weight="14"
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:orientation="vertical"></LinearLayout>
+            android:orientation="horizontal">
+
+
+            <LinearLayout
+                android:paddingVertical="10dp"
+                android:layout_weight="1"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:orientation="vertical">
+
+                <ScrollView
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:orientation="vertical" >
+                    <Button
+                        android:layout_margin="5dp"
+                        android:background="@drawable/plusbtn"
+                        android:id="@+id/mypagebtn"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="마이\n페이지" />
+                    <Button
+                        android:layout_margin="5dp"
+                        android:background="@drawable/plusbtn"
+                        android:id="@+id/challengebtn"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="도전\n과제" />
+                    <Button
+                        android:layout_margin="5dp"
+                        android:background="@drawable/plusbtn"
+                        android:id="@+id/managefriendsbtn"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="차단\n유저\n관리" />
+                    <Button
+                        android:layout_margin="5dp"
+                        android:background="@drawable/plusbtn"
+                        android:id="@+id/setprofilebtn"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="프로필\n설정" />
+                    <Button
+                        android:layout_margin="5dp"
+                        android:background="@drawable/plusbtn"
+                        android:id="@+id/schedulebtn"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="약속\n목록" />
+                    <Button
+                        android:layout_margin="5dp"
+                        android:background="@drawable/plusbtn"
+                        android:id="@+id/walkbtn"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="산책\n게시판" />
+                    <Button
+                        android:layout_margin="5dp"
+                        android:background="@drawable/plusbtn"
+                        android:id="@+id/tripbtn"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="여행\n게시판" />
+                    <Button
+                        android:layout_margin="5dp"
+                        android:background="@drawable/plusbtn"
+                        android:id="@+id/recordbtn"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="도보\n기록" />
+                    <Button
+                        android:layout_margin="5dp"
+                        android:background="@drawable/plusbtn"
+                        android:id="@+id/feedbtn"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="피드" />
+                    <Button
+                        android:layout_margin="5dp"
+                        android:background="@drawable/plusbtn"
+                        android:id="@+id/chatbtn"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="채팅" />
+                    <Button
+                        android:layout_margin="5dp"
+                        android:background="@drawable/plusbtn"
+                        android:id="@+id/profilebtn"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="프로필\n페이지" />
+                    </LinearLayout>
+                </ScrollView>
+
+
+
+            </LinearLayout>
+
+            <View
+                android:layout_width="1dp"
+                android:layout_height="match_parent"
+                android:background="@color/gray"/>
+
+            <ListView
+                android:layout_weight="5"
+                android:id="@+id/helplist"
+                android:layout_width="0dp"
+                android:layout_height="match_parent" />
+        </LinearLayout>
 
     </LinearLayout>
 

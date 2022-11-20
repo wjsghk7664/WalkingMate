@@ -38,6 +38,7 @@ import android.widget.Toast;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.firestore.auth.User;
@@ -47,6 +48,8 @@ import org.checkerframework.checker.units.qual.A;
 import java.util.ArrayList;
 
 public class FeedActivity extends Activity {
+    FirebaseFirestore fb=FirebaseFirestore.getInstance();
+    CollectionReference walklist=fb.collection("feedlist");
 
     ListView feedListView;
 
@@ -156,6 +159,7 @@ public class FeedActivity extends Activity {
     protected void onResume() {
         super.onResume();
         if(iswrite==1&&backfromfeedwrite){
+            Log.d("피드목록 재시작","1");
             backfromfeedwrite=false;
             Intent gofeed=new Intent(this, FeedActivity.class);
             gofeed.putExtra("year",y);
@@ -166,12 +170,14 @@ public class FeedActivity extends Activity {
             finish();
         }
         if(iswrite!=1&&backfromfeedview){
+            Log.d("피드목록 재시작","2");
             backfromfeedview=false;
             Intent gofeed=new Intent(this, FeedActivity.class);
             gofeed.putExtra("year",y);
             gofeed.putExtra("month",m);
             gofeed.putExtra("day",d);
             gofeed.putExtra("iswrite",iswrite);
+            gofeed.putExtra("others",others);
             startActivity(gofeed);
             finish();
         }
@@ -179,8 +185,6 @@ public class FeedActivity extends Activity {
     }
 
     public void receiveData(int year, int month, int day){
-        FirebaseFirestore fb=FirebaseFirestore.getInstance();
-        CollectionReference walklist=fb.collection("feedlist");
         final boolean[] isFeedexist = {true};
 
         ArrayList<String> result=new ArrayList<>();
@@ -382,9 +386,20 @@ public class FeedActivity extends Activity {
                     }
                     backfromfeedview=true;
                     String filename=docuid.get(position);
-                    Intent goFeedwrite=new Intent(FeedActivity.this, ViewFeedActivity.class);
-                    goFeedwrite.putExtra("filename",filename);
-                    startActivity(goFeedwrite);
+                    walklist.document(filename).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                        @Override
+                        public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                            if(task.isSuccessful()&&task.getResult().exists()){
+                                Intent goFeedwrite=new Intent(FeedActivity.this, ViewFeedActivity.class);
+                                goFeedwrite.putExtra("filename",filename);
+                                startActivity(goFeedwrite);
+                            }
+                            else{
+                                Toast.makeText(getApplicationContext(),"삭제된 게시물입니다.",Toast.LENGTH_SHORT).show();
+                            }
+                        }
+                    });
+
                 }
             });
 

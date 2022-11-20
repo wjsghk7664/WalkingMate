@@ -215,7 +215,15 @@ public class ViewFeedActivity extends AppCompatActivity implements OnMapReadyCal
         feeddata.document(filename).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
             @Override
             public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                if(!task.isSuccessful()){
+                    return;
+                }
                 DocumentSnapshot documentSnapshot=task.getResult();
+                if(documentSnapshot==null){
+                    Toast.makeText(getApplicationContext(),"삭제된 게시물입니다.",Toast.LENGTH_SHORT).show();
+                    finish();
+                    return;
+                }
                 docuid=documentSnapshot.getId();
                 feedData =FeedData.decodeFeed((String) documentSnapshot.get("feeddata"));
                 imgurls= (ArrayList<String>) documentSnapshot.get("images");
