@@ -436,6 +436,7 @@ public class WalkFragment extends Fragment implements OnMapReadyCallback{
 
         HashMap<String, Integer> myreq=new HashMap<>();
         myreq.put(userData.userid,0);
+        Log.d("메이트 신청 유저 정보",userData.userid);
 
         //userlist는 map-setoption.merge로 업데이트
         data.put("userlist",myreq);

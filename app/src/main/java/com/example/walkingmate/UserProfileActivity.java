@@ -31,6 +31,7 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Map;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
@@ -86,8 +87,21 @@ public class UserProfileActivity extends AppCompatActivity {
                         ArrayList<String> blocklisttmp=new ArrayList<>();
                         if(task.getResult().exists()){
                             blocklisttmp= (ArrayList<String>) task.getResult().get("userid");
+                            Log.d("차단체크","존재");
                         }
-                        if(!blocklisttmp.contains(userid)){
+                        if(!task.getResult().exists()){
+                            Map<String, ArrayList<String>> users=new HashMap<>();
+                            ArrayList<String> blockstr=new ArrayList<>();
+                            blockstr.add(userid);
+                            users.put("userid",blockstr);
+                            blocklist.document(userData.userid).set(users).addOnCompleteListener(new OnCompleteListener<Void>() {
+                                @Override
+                                public void onComplete(@NonNull Task<Void> task) {
+                                    Toast.makeText(UserProfileActivity.this,"차단되었습니다.",Toast.LENGTH_SHORT).show();
+                                }
+                            });
+                        }
+                        else if(!blocklisttmp.contains(userid)){
                             blocklist.document(userData.userid).update("userid", FieldValue.arrayUnion(userid)).addOnCompleteListener(new OnCompleteListener<Void>() {
                                 @Override
                                 public void onComplete(@NonNull Task<Void> task) {

@@ -436,7 +436,13 @@ public class WalkUserListActivity extends Activity {
                 }
             });
 
-            textView.setText(waituserprofile.get(position));
+            if(waituserprofile.size()>=(position+1)){
+                textView.setText(waituserprofile.get(position));
+            }
+            else{
+                Log.d("에러","error");
+            }
+
 
             accept.setOnClickListener(new View.OnClickListener() {
                 @Override
