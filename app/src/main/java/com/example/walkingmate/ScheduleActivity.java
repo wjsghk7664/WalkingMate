@@ -580,6 +580,9 @@ public class ScheduleActivity extends AppCompatActivity implements OnMapReadyCal
                 if(rel>100){
                     rel=100;
                 }
+                if(rel<0){
+                    rel=0;
+                }
                 users.document(userid).update("reliability",rel).addOnCompleteListener(new OnCompleteListener<Void>() {
                     @Override
                     public void onComplete(@NonNull Task<Void> task) {

@@ -123,7 +123,18 @@ public class TripViewActivity extends AppCompatActivity implements OnMapReadyCal
                     startActivity(intent);
                 }
                 else{
-                    checkandsendreq();
+                    tripdatalist.document(docuid).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                        @Override
+                        public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                            if(task.getResult().exists()){
+                                checkandsendreq();
+                            }
+                            else{
+                                Toast.makeText(getApplicationContext(),"삭제된 게시물입니다.",Toast.LENGTH_SHORT).show();
+                            }
+                        }
+                    });
+
                 }
             }
         });
