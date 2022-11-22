@@ -46,17 +46,17 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="TextView" />
+
             <Button
-                android:visibility="invisible"
-                android:padding="5dp"
-                android:textColor="@color/white"
-                android:background="@drawable/plusbtn"
                 android:id="@+id/permission"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_margin="10dp"
+                android:background="@drawable/plusbtn"
+                android:padding="5dp"
                 android:text="권한설정이 필요합니다.(이동)"
-                 />
+                android:textColor="@color/black"
+                android:visibility="invisible" />
 
         </LinearLayout>
 
