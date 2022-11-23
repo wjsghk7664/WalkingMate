@@ -191,13 +191,13 @@
         android:textStyle="bold"
         android:textSize="20dp"
         android:textColor="@color/white"
-        android:background="@drawable/plusbtn"
+        android:background="@drawable/greenbtn"
         android:layout_marginHorizontal="10dp"
         android:layout_marginBottom="20dp"
         android:layout_gravity="bottom"
         android:id="@+id/mate_tripview"
         android:layout_width="match_parent"
-        android:layout_height="30dp"
+        android:layout_height="40dp"
         android:text="메이트 신청하기" />
 
     <TextView
