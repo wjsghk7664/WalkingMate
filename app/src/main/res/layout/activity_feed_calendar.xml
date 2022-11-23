@@ -86,14 +86,14 @@
                     android:orientation="vertical">
 
 
-                    <com.prolificinteractive.materialcalendarview.MaterialCalendarView
+                    <!--<com.prolificinteractive.materialcalendarview.MaterialCalendarView
                         android:id="@+id/calendarView"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:theme="@style/CalenderViewCustom"
                         app:mcv_dateTextAppearance="@style/CalenderViewDateCustomText"
                         app:mcv_selectionMode="single"
-                        app:mcv_weekDayTextAppearance="@style/CalenderViewWeekCustomText" />
+                        app:mcv_weekDayTextAppearance="@style/CalenderViewWeekCustomText" />-->
 
 
                 </LinearLayout>
@@ -116,6 +116,7 @@
                             android:layout_height="wrap_content"
                             android:orientation="horizontal"
 
+                            app:layout_constraintBottom_toBottomOf="parent"
                             app:layout_constraintEnd_toEndOf="parent"
                             app:layout_constraintStart_toStartOf="parent"
                             app:layout_constraintTop_toTopOf="parent">
@@ -125,7 +126,7 @@
                                 android:layout_width="50dp"
                                 android:layout_height="50dp"
                                 android:layout_marginHorizontal="20dp"
-                                android:layout_marginTop="20dp"
+                                android:layout_marginVertical="20dp"
                                 android:background="@drawable/greenbtn"
                                 android:elevation="30dp"
                                 android:text="F"
@@ -136,7 +137,7 @@
                                 android:id="@+id/plusbtn"
                                 android:background="@drawable/greenbtn"
                                 android:layout_marginHorizontal="20dp"
-                                android:layout_marginTop="20dp"
+                                android:layout_marginVertical="20dp"
                                 android:layout_width="50dp"
                                 android:layout_height="50dp"
                                 android:src="@drawable/add_xml" />
