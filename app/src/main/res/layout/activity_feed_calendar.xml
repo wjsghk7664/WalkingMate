@@ -86,14 +86,14 @@
                     android:orientation="vertical">
 
 
-                    <!--<com.prolificinteractive.materialcalendarview.MaterialCalendarView
+                    <com.prolificinteractive.materialcalendarview.MaterialCalendarView
                         android:id="@+id/calendarView"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:theme="@style/CalenderViewCustom"
                         app:mcv_dateTextAppearance="@style/CalenderViewDateCustomText"
                         app:mcv_selectionMode="single"
-                        app:mcv_weekDayTextAppearance="@style/CalenderViewWeekCustomText" />-->
+                        app:mcv_weekDayTextAppearance="@style/CalenderViewWeekCustomText" />
 
 
                 </LinearLayout>
