@@ -6,70 +6,60 @@
     android:layout_height="match_parent"
     tools:context=".FeedWrite_Activity">
 
-    <FrameLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent">
+    <LinearLayout
+        android:background="@color/white"
+        android:layout_gravity="right"
+        android:layout_width="300dp"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
 
-
-        <LinearLayout
+        <TextView
+            android:textSize="30dp"
+            android:gravity="start"
+            android:textStyle="bold"
+            android:textColor="@color/black"
+            android:paddingHorizontal="10dp"
+            android:paddingVertical="10dp"
             android:layout_width="match_parent"
-            android:layout_height="70dp"
-            android:layout_gravity="bottom"
-            android:background="@drawable/bottom_navigation"
-            android:orientation="horizontal">
+            android:layout_height="wrap_content"
+            android:text="채팅 참가자" />
 
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="@color/brightgray"/>
+
+        <ListView
+            android:id="@+id/chatuserlist"
+            android:layout_width="match_parent"
+            android:layout_height="600dp"
+            android:layout_marginVertical="10dp"
+            android:divider="@null"
+            android:dividerHeight="0dp" />
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="@color/brightgray"/>
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="50dp">
 
             <ImageButton
-                android:id="@+id/imageButton2"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_gravity="bottom"
-                android:layout_marginHorizontal="20dp"
-                android:layout_marginBottom="5dp"
+                android:src="@drawable/icon_logout_xml"
                 android:background="@color/transparent"
-                app:srcCompat="@drawable/icon_home" />
-
-            <ImageButton
-                android:id="@+id/imageButton3"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="bottom"
-                android:layout_marginHorizontal="15dp"
-                android:layout_marginBottom="3dp"
-                android:background="@color/transparent"
-                app:srcCompat="@drawable/icon_trip_xml" />
-
-            <ImageButton
-                android:id="@+id/imageButton"
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
-                android:background="@color/transparent"
-                android:layout_marginHorizontal="16dp"
-                app:srcCompat="@drawable/icon_walk_xml"
-                tools:ignore="SpeakableTextPresentCheck" />
-
-            <ImageButton
-                android:id="@+id/imageButton4"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="bottom"
-                android:layout_marginHorizontal="10dp"
-                android:background="@color/transparent"
-                app:srcCompat="@drawable/icon_feed_xml" />
-
-            <ImageButton
-                android:id="@+id/imageButton5"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="bottom"
-                android:layout_marginHorizontal="17dp"
-                android:layout_marginBottom="7dp"
-                android:background="@color/transparent"
-                app:srcCompat="@drawable/icon_chat_xml" />
+                android:layout_marginTop="10dp"
+                android:layout_marginEnd="5dp"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"/>
 
 
-        </LinearLayout>
+        </androidx.constraintlayout.widget.ConstraintLayout>
 
-    </FrameLayout>
+
+    </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

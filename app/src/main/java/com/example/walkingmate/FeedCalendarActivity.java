@@ -94,7 +94,8 @@ import okhttp3.Challenge;
 public class FeedCalendarActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
 
     MaterialCalendarView calendarView;
-    Button plusBtn,feedBtn;
+    Button feedBtn;
+    ImageButton plusBtn;
     private String TAG=this.getClass().getSimpleName();
 
 
