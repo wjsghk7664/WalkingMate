@@ -1,13 +1,5 @@
 # WalkingMate
 
-제작:ProjectD team
-
-Contributor:
-1. wjsghk7664: 송유호
-2. yw0wy: 문정연
-3. nimjk: 김규용
-4. SeongBokyung: 성보경
-
 소개:
 여행 및 산책메이트를 구하기 위한 소셜 어플리케이션.
 
@@ -18,5 +10,3 @@ Contributor:
 어플 사용 제한
 :안드로이드 OS 버전 12(API 31) 이상인 경우에 사용가능. 
 
-사용을 원할 시 nimjk@naver.com 혹은 김규용 학생의 개인 전화번호로 연락하여 네이버 아이디를 보내주시면
-로그인 환경에 등록하여 사용할 수 있게 설정하겠습니다.
